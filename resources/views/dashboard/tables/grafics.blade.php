@@ -18,7 +18,7 @@
     <script src="https://cdn.amcharts.com/lib/4/themes/animated.js"></script>
     <body>
     <div class="row p-3 border-bottom">
-        <a href="{{ route('dashboard.crm', ['status'=> 1,'page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i class="bi bi-arrow-left m-3"></i></a>
+        <a href="{{ route('crm', ['status'=> 1,'page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i class="bi bi-arrow-left m-3"></i></a>
         <h1 class="col-auto fs-2 fw-bold m-0">Clientes Registrados por Mes</h1>
         <div class="card">
             <div class="card-body">

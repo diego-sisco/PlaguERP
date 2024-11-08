@@ -1,12 +1,12 @@
-<table class="table-static table text-center">
+<table class="table table-bordered text-center">
     <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">{{ __('pagination.branch_table.name') }}</th>
-            <th scope="col">{{ __('pagination.branch_table.address') }}</th>
-            <th scope="col">{{ __('pagination.branch_table.phone') }}</th>
-            <th scope="col">{{ __('pagination.branch_table.city') }}</th>
-            <th scope="col">{{ __('pagination.branch_table.license_number') }}</th>
+            <th scope="col">{{ __('branch.data.name') }}</th>
+            <th scope="col">{{ __('branch.data.address') }}</th>
+            <th scope="col">{{ __('branch.data.phone') }}</th>
+            <th scope="col">{{ __('branch.data.city') }}</th>
+            <th scope="col">{{ __('branch.data.license_number') }}</th>
             <th scope="col">{{ __('buttons.actions') }}</th>
         </tr>
     </thead>

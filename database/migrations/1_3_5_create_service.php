@@ -21,9 +21,9 @@ return new class extends Migration
             $table->text('description')->nullable();
             $table->string('time')->nullable();
             $table->string('time_unit')->nullable();
-            $table->float('cost');
-            $table->string('has_pests');
-            $table->string('has_application_methods');     
+            $table->float('cost')->nullable();
+            $table->string('has_pests')->default(false);
+            $table->string('has_application_methods')->default(false);     
             $table->timestamps();
         });
     }

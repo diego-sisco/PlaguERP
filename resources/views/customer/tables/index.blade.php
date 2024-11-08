@@ -1,7 +1,8 @@
-<table class="table text-center table-bordered">
+<table class="table table-bordered text-center">
     <thead>
         <tr>
             <th scope="col">#</th>
+            <th scope="col">ID</th>
             <th scope="col"> {{ __('customer.data.name') }} </th>
             <th scope="col"> {{ __('customer.data.phone') }} </th>
             <th scope="col"> {{ __('customer.data.email') }} </th>
@@ -16,9 +17,10 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($customers as $customer)
+        @foreach ($customers as $index => $customer)
             <tr>
-                <th scope="row">{{ $customer->id }}</th>
+                <th scope="row">{{ ++$index }}</th>
+                <td>{{ $customer->id }}</td>
                 <td>{{ $customer->name }}</td>
                 <td>{{ $customer->phone }}</td>
                 <td>{{ $customer->email }}</td>

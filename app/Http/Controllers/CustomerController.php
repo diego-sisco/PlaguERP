@@ -33,12 +33,12 @@ use PhpParser\Builder\Property;
 use function PHPUnit\Framework\directoryExists;
 
 class CustomerController extends Controller
-{  
+{
 
     private $files_path = 'customers/files/';
     private $cities_route = 'datas/json/Mexico_cities.json';
     private $states_route = 'datas/json/Mexico_states.json';
-    private $size = 30;
+    private $size = 50;
 
     /*private function createDirectory($customer, $directoryId)
     {
@@ -54,25 +54,16 @@ class CustomerController extends Controller
         return $directory;
     }*/
 
-    public function index(string $type, int $page): View
+    public function index(string $type): View
     {
-        $customers = $type == 0 ? Lead::where('status', '!=', 0)->orderBy('id', 'desc')->get()
+        $customers = $type == 0 ? Lead::where('status', '!=', 0)->orderBy('id', 'desc')->paginate($this->size)
             : ($type == 1
-                ? Customer::where('general_sedes', 0)->where('status', '!=', 0)->orderBy('id', 'desc')->get()
-                : Customer::where('general_sedes', '!=', 0)->where('status', '!=', 0)->orderBy('id', 'desc')->get());
-
-        $total = ceil($customers->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $customers = collect(array_slice($customers->toArray(), $min, $this->size))->map(function ($customer) {
-            return new Customer($customer);
-        });
+                ? Customer::where('general_sedes', 0)->where('status', '!=', 0)->orderBy('id', 'desc')->paginate($this->size)
+                : Customer::where('general_sedes', '!=', 0)->where('status', '!=', 0)->orderBy('id', 'desc')->paginate($this->size));
 
         return view('customer.index', compact(
             'customers',
             'type',
-            'page',
-            'total'
         ));
     }
 
@@ -113,43 +104,33 @@ class CustomerController extends Controller
         return view('customer.edit.reference.references', compact('reference', 'reference_types', 'id', 'type', 'states', 'cities'));
     }
 
-    public function storeReference(Request $request, string $id, string $type)
+    public function storeReference(Request $request, string $customerId)
     {
-
         $reference = new CustomerReference();
         $reference->fill($request->all());
-        $reference->customer_id = $id;
+        $reference->customer_id = $customerId;
         $reference->save();
-        return redirect()->route('customer.edit', ['id' => $id, 'type' => $type, 'section' => 5]);
+
+        return back();
     }
 
-    public function showReference(string $id, string $type): View
-    {
-        $states = file_get_contents(public_path($this->states_route));
-        $cities = file_get_contents(public_path($this->cities_route));
-        $states = json_decode($states, true);
-        $cities = json_decode($cities, true);
-        $reference_types = Reference_type::all();
-        $reference = CustomerReference::find($id);
-        return view('customer.show.reference', compact('reference', 'reference_types', 'id', 'type', 'states', 'cities'));
-    }
-
-    public function updateReference(Request $request, string $id, string $type)
+    public function updateReference(Request $request, string $id)
     {
         $reference = CustomerReference::find($id); // Obtener la referencia por su ID
-        $reference->reference_type_id = $request->input('type');
-        $reference->name = $request->input('name');
-        $reference->phone = $request->input('phone');
-        $reference->email = $request->input('email');
-        $reference->department = $request->input('department');
-        $reference->address = $request->input('address');
-        $reference->zip_code = $request->input('zip_code');
-        $reference->state = $request->input('state');
-        $reference->city = $request->input('city');
-
+        $reference->fill($request->all());
         $reference->save();
-        //success = "Se guardo correctamente la referencia";
-        return redirect()->route('customer.edit', ['id' => $reference->customer_id, 'type' => 2, 'section' => 5]);
+        return back();
+    }
+
+    public function destroyReference(string $id)
+    {
+        try {
+            $reference = CustomerReference::findOrFail($id);
+            $reference->delete();
+            return back();
+        } catch (\Exception $e) {
+            return back();
+        }
     }
 
     public function store(Request $request, string $id, string $type): RedirectResponse
@@ -260,7 +241,7 @@ class CustomerController extends Controller
         $area->customer_id = $customerId;
         $area->save();
 
-        return redirect()->back();
+        return back();
     }
 
     public function show(string $id, int $type, int $section): View
@@ -289,7 +270,7 @@ class CustomerController extends Controller
     {
         $tax_regimes = TaxRegime::all();
         $categs = CompanyCategory::all();
-        $serviceTypes  = ServiceType::all();
+        $serviceTypes = ServiceType::all();
         $services = Service::all();
         $branches = Branch::all();
         $floortype = Floortype::all();
@@ -377,20 +358,19 @@ class CustomerController extends Controller
         $sql = 'UPDATE_CUSTOMER_' . $customer->id;
         PagesController::log('update', $changes, $sql);
 
-        return redirect()->back();
+        return back();
     }
 
-    public function updateArea(Request $request)
+    public function updateArea(Request $request, string $id)
     {
-
-        $area = ApplicationArea::find($request->input('area_id'));
+        $area = ApplicationArea::find($id);
         $area->fill($request->all());
         $area->save();
 
         return back();
     }
 
-    public function search(Request $request, int $type, int $page)
+    public function search(Request $request, int $type)
     {
         if (empty($request->search)) {
             return redirect()->back()->with('error', trans('messages.no_results_found'));
@@ -404,7 +384,7 @@ class CustomerController extends Controller
                 ->orWhere('email', 'LIKE', $searchTerm)
                 ->orWhere('phone', 'LIKE', $searchTerm)
                 ->orderBy('id', 'asc')
-                ->get();
+                ->paginate($this->size);
         } else if ($type == 1) {
             // Cliente
             $customers = Customer::where('general_sedes', 0)
@@ -413,7 +393,7 @@ class CustomerController extends Controller
                 ->orWhere('phone', 'LIKE', $searchTerm)
                 ->where('status', '!=', 0)
                 ->orderBy('id', 'asc')
-                ->get();
+                ->paginate($this->size);
         } else if ($type == 2) {
             // Sedes
             $customers = Customer::where('general_sedes', '!=', 0)
@@ -423,17 +403,10 @@ class CustomerController extends Controller
                 ->orWhere('phone', 'LIKE', $searchTerm)
                 ->where('status', '!=', 0)
                 ->orderBy('id', 'asc')
-                ->get();
+                ->paginate($this->size);
         }
 
-        $total = ceil($customers->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $customers = collect(array_slice($customers->toArray(), $min, $this->size))->map(function ($customer) {
-            return new Customer($customer);
-        });
-
-        return view('customer.index', compact('customers', 'page', 'total', 'type'));
+        return view('customer.index', compact('customers','type'));
     }
 
     public function store_file(Request $request)
@@ -442,7 +415,7 @@ class CustomerController extends Controller
             'file' => 'required|mimes:jpeg,png,jpg,pdf|max:5120'
         ]);
 
-        $disk =  Storage::disk('public');
+        $disk = Storage::disk('public');
         $customer_file = CustomerFile::find($request->file_id);
         $file = $request->file('file');
 
@@ -453,7 +426,7 @@ class CustomerController extends Controller
 
         $newFilename = $customer_file->filename()->pluck('name')[0] . '_cliente' . $customer_file->customer_id . '.' . $request->file('file')->getClientOriginalExtension();
 
-        $url = $this->files_path . $newFilename; 
+        $url = $this->files_path . $newFilename;
 
         $disk->put($url, file_get_contents($file));
 

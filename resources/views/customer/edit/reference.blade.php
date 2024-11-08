@@ -1,5 +1,6 @@
 <div class="col-12 mb-3">
-    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createRefModal"> Crear referencia</button>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#referenceModal" onclick="resetForm()"> Crear
+        referencia</button>
 </div>
 <table class="table text-center table-bordered">
     <thead>
@@ -14,27 +15,28 @@
         </tr>
     </thead>
     <tbody>
-        @if (!empty($customer->references))
-            @foreach ($customer->references as $reference)
-                <tr>
-                    <th scope="row">{{ $reference->id }}</th>
-                    <td class="align-middle">{{ $reference->name }}</td>
-                    <td class="align-middle">{{ $reference->referenceType->name }}</td>
-                    <td class="align-middle">{{ $reference->email }}</td>
-                    <td class="align-middle">{{ $reference->phone }}</td>
-                    <td class="align-middle">{{ $reference->department }}</td>
-                    <td class="align-middle">
-                        <a href="{{ route('reference.show', ['id' => $reference->id, 'type' => $type]) }}"
-                            class="btn btn-info btn-sm">
-                            <i class="bi bi-eye-fill"></i> {{ __('buttons.show') }}
-                        </a>
-                        <a href="{{ Route('reference.edit', ['id' => $reference->id, 'type' => $type]) }}"
-                            class="btn btn-secondary btn-sm btn-sm">
-                            <i class="bi bi-pencil-square"></i> {{ __('buttons.edit') }}
-                        </a>
-                    </td>
-                </tr>
-            @endforeach
-        @endif
+        @forelse ($customer->references as $index => $reference)
+            <tr>
+                <th scope="row">{{ $index + 1 }}</th>
+                <td class="align-middle">{{ $reference->name }}</td>
+                <td class="align-middle">{{ $reference->referenceType->name }}</td>
+                <td class="align-middle">{{ $reference->email }}</td>
+                <td class="align-middle">{{ $reference->phone }}</td>
+                <td class="align-middle">{{ $reference->address }}</td>
+                <td class="align-middle">
+                    <button type="button" class="btn btn-secondary btn-sm" data-reference="{{ $reference }}" data-bs-toggle="modal" data-bs-target="#referenceModal" onclick="setData(this)">
+                        <i class="bi bi-pencil-square"></i> {{ __('buttons.edit') }}
+                    </button>
+                    <a href="{{ route('customer.reference.destroy', ['id' => $reference->id]) }}" class="btn btn-danger btn-sm"
+                        onclick="return confirm('{{ __('messages.are_you_sure_delete') }}')"><i
+                            class="bi bi-trash-fill"></i>
+                        {{ __('buttons.delete') }}</a>
+                </td>
+            </tr>
+        @empty
+            <tr>
+                <td class="text-danger fw-bold" colspan="7">Sin referencias</td>
+            </tr>
+        @endforelse
     </tbody>
 </table>

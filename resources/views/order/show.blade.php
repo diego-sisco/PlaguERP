@@ -1,14 +1,5 @@
 @extends('layouts.app')
 @section('content')
-    @php
-        $i = 1;
-    @endphp
-
-    @if (!auth()->check())
-        <?php header('Location: /login');
-        exit(); ?>
-    @endif
-
     <style>
         .sidebar {
             color: white;

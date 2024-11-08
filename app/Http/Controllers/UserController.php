@@ -8,6 +8,7 @@ use Illuminate\View\View;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Pagination\Paginator;
 use Spatie\Permission\Models\Role;
 use Spatie\SimpleExcel\SimpleExcelWriter;
 
@@ -75,38 +76,31 @@ class UserController extends Controller
 	}
 
 
-	public function index(int $page): View
+	public function index($type): View
 	{
-		$type = 1;
-		$users = User::orderBy('type_id', 'asc')->orderBy('id', 'desc')->get();
-		$total = ceil($users->count() / $this->size);
-		$min = ($page * $this->size) - $this->size;
-
-		$users = collect(array_slice($users->toArray(), $min, $this->size))->map(function ($user) {
-			return new User($user);
-		});
+		$users =  User::where('type_id', $type)->orderBy('id', 'desc')->paginate($this->size);
 
 		return view(
 			'user.index',
 			compact(
 				'users',
 				'type',
-				'page',
-				'total'
 			)
 		);
 	}
 
 	public function create(int $type): View
 	{
-		$disk = Storage::disk('public');
-		$local_dirs = $disk->directories($this->path);
+		//$disk = Storage::disk('public');
+		//$local_dirs = $disk->directories($this->path);
 		$directories = $this->listDirectoriesRecursively($this->path);
 		$statuses = Status::all();
 		$work_departments = WorkDepartment::where('id', '!=', 1)->get();
 		$roles = SimpleRole::where('id', '!=', 4)->get();
 		$branches = Branch::all();
 		$companies = Company::all();
+
+		//dd($type);
 
 		return view(
 			'user.create',
@@ -122,7 +116,7 @@ class UserController extends Controller
 		);
 	}
 
-	public function search(Request $request, int $type, int $page)
+	public function search(Request $request, int $type)
 	{
 		if (empty($request->search)) {
 			return redirect()->back()->with('error', trans('messages.no_results_found'));
@@ -130,29 +124,20 @@ class UserController extends Controller
 
 		$searchTerm = '%' . $request->search . '%';
 
-		$users = User::where('name', 'LIKE', $searchTerm)
+		$users = User::where('type_id', $type)->where('name', 'LIKE', $searchTerm)
 			->orWhere('email', 'LIKE', $searchTerm)
 			->orderBy('id', 'desc')
-			->get();
+			->paginate($this->size);
 
 		if ($users->isEmpty()) {
 			$error = 'No se encontraron resultados de la búsqueda';
 		}
-
-		$total = ceil($users->count() / $this->size);
-		$min = ($page * $this->size) - $this->size;
-
-		$users = collect(array_slice($users->toArray(), $min, $this->size))->map(function ($user) {
-			return new User($user);
-		});
 
 		return view(
 			'user.index',
 			compact(
 				'users',
 				'type',
-				'page',
-				'total'
 			)
 		);
 	}

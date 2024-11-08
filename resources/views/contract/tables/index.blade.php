@@ -7,7 +7,7 @@
             <th scope="col-2">{{ __('contract.data.customer') }}</th>
             <th scope="col-2">{{ __('contract.data.start_date') }}</th>
             <th scope="col-2">{{ __('contract.data.end_date') }}</th>
-            <th scope="col-2">{{ __('contract.data.created_by') }}</th>
+            <th scope="col-2">{{ __('contract.title.technicians') }}</th>
             <th scope="col-2">{{ __('contract.data.status') }}</th>
             <th scope="col-1">{{ __('buttons.actions') }}</th>
         </tr>
@@ -19,7 +19,7 @@
                 <td> {{ $contract->customer->name }} </td>
                 <td>{{ $contract->startdate }}</td>
                 <td>{{ $contract->enddate }}</td>
-                <td> {{ $contract->user->name }} </td>
+                <td> {{ implode(', ', $contract->technicianNames()) }} </td>
 
                 <td>
                     <span
@@ -37,19 +37,15 @@
                             data-bs-target="#technicianModal{{ $contract->id }}">
                             <i class="bi bi-person-fill-gear"></i> {{ __('contract.title.technicians') }}
                         </button>
-                    @endcan
-                    @can('write_order')
                         <!--a href="#" class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#fileModal{{ $contract->id }}"><i class="bi bi-file-earmark-pdf"></i>
-                            {{ __('contract.title.contract') }}</a-->
-                    @endcan
-                    @can('write_order')
+                                data-bs-target="#fileModal{{ $contract->id }}"><i class="bi bi-file-earmark-pdf"></i>
+                                {{ __('contract.title.contract') }}</a-->
                         <a href="{{ route('contract.destroy', ['id' => $contract->id]) }}" class="btn btn-danger btn-sm"
                             onclick="return confirm('{{ __('messages.are_you_sure_delete') }}')">
                             <i class="bi bi-trash-fill"></i> {{ __('buttons.delete') }}
                         </a>
                     @endcan
-                <td>
+                </td>
             </tr>
         @endforeach
     </tbody>

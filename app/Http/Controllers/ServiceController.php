@@ -20,24 +20,16 @@ use Illuminate\View\View;
 class ServiceController extends Controller
 {
 
-    private $size = 30;
+    private $size = 50;
 
-    public function index(int $page): View
+    public function index(): View
     {
-        $services = Service::orderBy('id', 'desc')->get();
-        $total = ceil($services->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $services = collect(array_slice($services->toArray(), $min, $this->size))->map(function ($service) {
-            return new Service($service);
-        });
+        $services = Service::orderBy('id', 'desc')->paginate($this->size);
 
         return view(
             'service.index',
             compact(
                 'services',
-                'total',
-                'page',
             )
         );
     }
@@ -122,35 +114,28 @@ class ServiceController extends Controller
         );
     }
 
-    public function search(Request $request, int $page)
+    public function search(Request $request)
     {
         if (empty($request->search)) {
-            return redirect()->back()->with('error', trans('messages.no_results_found'));
+            session()->flash('error', trans('messages.no_results_found'));
+            return back();
         }
 
         $searchTerm = '%' . $request->search . '%';
 
         $services = Service::where('name', 'LIKE', $searchTerm)
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate($this->size);
 
         if ($services->isEmpty()) {
-            $error = 'No se encontraron resultados de la búsqueda';
+            $services = Service::orderBy('id', 'desc')
+                ->paginate($this->size);
         }
-
-        $total = ceil($services->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $services = collect(array_slice($services->toArray(), $min, $this->size))->map(function ($service) {
-            return new Service($service);
-        });
 
         return view(
             'service.index',
             compact(
                 'services',
-                'page',
-                'total'
             )
         );
     }
@@ -195,70 +180,70 @@ class ServiceController extends Controller
      * Update the specified resource in storage.
      */
 
-     public function update(Request $request, string $id): RedirectResponse
-     {
-         $pestSelected = json_decode($request->input('pestSelected'), true);
-         $appMethodSelected = json_decode($request->input('appMethodSelected'), true);
-     
-         $service = Service::find($id);
-         $service->fill($request->all());
-     
-         $changes = '';
-     
-         // Comparar campos específicos antes de guardar
-         $originalService = $service->getOriginal();
-         if ($originalService['name'] != $request->input('name')) {
-             $changes .= 'Cambio de nombre; ';
-         }
-         if ($originalService['description'] != $request->input('description')) {
-             $changes .= 'Cambio de descripción; ';
-         }
-         if ($originalService['status_id'] != $request->input('status_id')) {
-             $changes .= 'Cambio de estado; ';
-         }
-     
-         if (!empty($pestSelected)) {
-             $service->has_pests = !empty($pestSelected);
-             $pestServices = PestService::where('service_id', $id)->pluck('pest_id')->toArray();
-             $pestsToDelete = array_diff($pestServices, $pestSelected);
-             if (!empty($pestsToDelete)) {
-                 PestService::where('service_id', $id)->whereIn('pest_id', $pestsToDelete)->delete();
-                 $changes .= 'Plagas eliminadas: ' . implode(', ', $pestsToDelete) . '; ';
-             }
-             foreach ($pestSelected as $pestId) {
-                 PestService::updateOrCreate(
-                     ['service_id' => $id, 'pest_id' => $pestId],
-                     ['service_id' => $id, 'pest_id' => $pestId]
-                 );
-                 $changes .= "Plaga ID $pestId añadida o actualizada; ";
-             }
-         }
-     
-         if (!empty($appMethodSelected)) {
-             $service->has_application_methods = !empty($appMethodSelected);
-             $appMethodServices = ApplicationMethodService::where('service_id', $id)->pluck('application_method_id')->toArray();
-             $appMethodsToDelete = array_diff($appMethodServices, $appMethodSelected);
-             if (!empty($appMethodsToDelete)) {
-                 ApplicationMethodService::where('service_id', $id)->whereIn('application_method_id', $appMethodsToDelete)->delete();
-                 $changes .= 'Métodos de aplicación eliminados: ' . implode(', ', $appMethodsToDelete) . '; ';
-             }
-             foreach ($appMethodSelected as $appMethodId) {
-                 ApplicationMethodService::updateOrCreate(
-                     ['service_id' => $id, 'application_method_id' => $appMethodId],
-                     ['service_id' => $id, 'application_method_id' => $appMethodId]
-                 );
-                 $changes .= "Método de aplicación ID $appMethodId añadido o actualizado; ";
-             }
-         }
-     
-         $service->save();
-     
-         $sql = 'UPDATE_SERVICE_' . $service->id;
-         PagesController::log('update', $changes, $sql);
-     
-         return redirect()->back();
-     }
-     
+    public function update(Request $request, string $id): RedirectResponse
+    {
+        $pestSelected = json_decode($request->input('pestSelected'), true);
+        $appMethodSelected = json_decode($request->input('appMethodSelected'), true);
+
+        $service = Service::find($id);
+        $service->fill($request->all());
+
+        $changes = '';
+
+        // Comparar campos específicos antes de guardar
+        $originalService = $service->getOriginal();
+        if ($originalService['name'] != $request->input('name')) {
+            $changes .= 'Cambio de nombre; ';
+        }
+        if ($originalService['description'] != $request->input('description')) {
+            $changes .= 'Cambio de descripción; ';
+        }
+        if ($originalService['status_id'] != $request->input('status_id')) {
+            $changes .= 'Cambio de estado; ';
+        }
+
+        if (!empty($pestSelected)) {
+            $service->has_pests = !empty($pestSelected);
+            $pestServices = PestService::where('service_id', $id)->pluck('pest_id')->toArray();
+            $pestsToDelete = array_diff($pestServices, $pestSelected);
+            if (!empty($pestsToDelete)) {
+                PestService::where('service_id', $id)->whereIn('pest_id', $pestsToDelete)->delete();
+                $changes .= 'Plagas eliminadas: ' . implode(', ', $pestsToDelete) . '; ';
+            }
+            foreach ($pestSelected as $pestId) {
+                PestService::updateOrCreate(
+                    ['service_id' => $id, 'pest_id' => $pestId],
+                    ['service_id' => $id, 'pest_id' => $pestId]
+                );
+                $changes .= "Plaga ID $pestId añadida o actualizada; ";
+            }
+        }
+
+        if (!empty($appMethodSelected)) {
+            $service->has_application_methods = !empty($appMethodSelected);
+            $appMethodServices = ApplicationMethodService::where('service_id', $id)->pluck('application_method_id')->toArray();
+            $appMethodsToDelete = array_diff($appMethodServices, $appMethodSelected);
+            if (!empty($appMethodsToDelete)) {
+                ApplicationMethodService::where('service_id', $id)->whereIn('application_method_id', $appMethodsToDelete)->delete();
+                $changes .= 'Métodos de aplicación eliminados: ' . implode(', ', $appMethodsToDelete) . '; ';
+            }
+            foreach ($appMethodSelected as $appMethodId) {
+                ApplicationMethodService::updateOrCreate(
+                    ['service_id' => $id, 'application_method_id' => $appMethodId],
+                    ['service_id' => $id, 'application_method_id' => $appMethodId]
+                );
+                $changes .= "Método de aplicación ID $appMethodId añadido o actualizado; ";
+            }
+        }
+
+        $service->save();
+
+        $sql = 'UPDATE_SERVICE_' . $service->id;
+        PagesController::log('update', $changes, $sql);
+
+        return redirect()->back();
+    }
+
 
     /**
      * Remove the specified resource from storage.

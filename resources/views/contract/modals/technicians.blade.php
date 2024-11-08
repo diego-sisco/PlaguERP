@@ -28,7 +28,7 @@
                         </li>
                     @endforeach
                 </ul>
-                <input type="hidden" name="technicians" id="technicians" value="">
+                <input type="hidden" name="technicians" id="technicians{{ $contract->id }}" value="">
             </div>
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary"

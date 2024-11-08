@@ -2,9 +2,10 @@
 
 return [
 
-    'no_results_found' => '¿No se encontraron resultados',
+    'no_results_found' => 'No se encontraron resultados',
     'are_you_sure' => '¿Estas seguro de continuar? ',
     'are_you_sure_delete' => '¿Estas seguro de eliminarlo?',
+    'are_you_sure_remove' => '¿Estas seguro de quitarlo?',
     'lead_to_customer' => '¿Estas seguro de convertir a cliente?',
     'are_you_sure_tracking' => '¿Estas seguro de verificar el seguimiento?',
     'do_you_want_create_mip' => '¿Deseas crear las carpetas base MIP?',

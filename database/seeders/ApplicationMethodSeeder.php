@@ -20,7 +20,7 @@ class ApplicationMethodSeeder extends Seeder
             'Aplicación rodenticida',
             'Aspersión manual',
             'Aspersión manual ambiental localizada',
-            'Aspersion motorizada',
+            'Aspersión motorizada',
             'Bandeo',
             'Barrera zanja',
             'Bebederos',

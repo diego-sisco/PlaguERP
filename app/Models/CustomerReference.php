@@ -19,10 +19,6 @@ class CustomerReference extends Model
         'email',
         'department',
         'address',
-        'colony',
-        'zip_code',
-        'state',
-        'city',
         'signature',
     ];
 

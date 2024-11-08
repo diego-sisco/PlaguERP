@@ -7,25 +7,25 @@
     <input type="hidden" name="url_service_input" id="url-service-input"
         value="{{ route('order.search.service', ['type' => 1]) }}">
 
-    <div class="row mb-3">
-        <h5 class="border-bottom pb-1 fw-bold">{{ __('order.title.basic') }}: </h5>
-        <div class="col-2 mb-2">
-            <label for="start_time" class="form-label is-required">{{ __('order.data.start_time') }}:</label>
+    <div class="row">
+        <h5 class="border-bottom pb-1 fw-bold">{{ __('order.title.basic') }}</h5>
+        <div class="col-2 mb-3">
+            <label for="start_time" class="form-label is-required">{{ __('order.data.start_time') }}</label>
             <input type="time" class="form-control border-secondary border-opacity-25" id="start-time"
                 name="start_time" placeholder="00:00" required>
         </div>
-        <div class="col-2 mb-2">
-            <label for="end_time" class="form-label">{{ __('order.data.end_time') }}:</label>
+        <div class="col-2 mb-3">
+            <label for="end_time" class="form-label">{{ __('order.data.end_time') }}</label>
             <input type="time" class="form-control border-secondary border-opacity-25" id="end-time" name="end_time"
                 placeholder="00:00">
         </div>
-        <div class="col-2 mb-2">
-            <label for="request_date" class="form-label is-required">{{ __('order.data.programmed_date') }}:</label>
+        <div class="col-2 mb-3">
+            <label for="request_date" class="form-label is-required">{{ __('order.data.programmed_date') }}</label>
             <input type="date" class="form-control border-secondary border-opacity-25" id="programmed-date"
                 name="programmed_date" required>
         </div>
-        <div class="col-4 mb-2">
-            <label for="request_date" class="form-label">{{ __('order.data.frecuency') }}: </label>
+        <!--div class="col-4 mb-2">
+            <label for="request_date" class="form-label">{{ __('order.data.frecuency') }}</label>
             <div class="row">
                 <div class="col-3">
                     <input type="number" class="form-control border-secondary border-opacity-25" id="number"
@@ -40,12 +40,12 @@
                     </select>
                 </div>
             </div>
-        </div>
+        </div-->
     </div>
 
     <div class="row mb-3">
-        <h5 class="border-bottom pb-1 fw-bold"> {{ __('order.data.customer') }}: </h5>
-        <label for="client" class="form-label m-0">Busca el cliente a traves de los siguientes campos: </label>
+        <h5 class="border-bottom pb-1 fw-bold"> {{ __('order.data.customer') }}</h5>
+        <label for="client" class="form-label m-0">Busca el cliente a traves de los siguientes campos</label>
         <div class="form-text text-danger m-0" id="basic-addon4">* En caso de que no aparezca deberas crearlo.</div>
         <div class="col-12 p-0 m-0">
             <a href="{{ route('customer.create', ['id' => 0, 'type' => 1]) }}" id="form_service_button"
@@ -54,17 +54,17 @@
             </a>
         </div>
         <div class="col-3">
-            <label for="client" class="form-label">Nombre: </label>
+            <label for="client" class="form-label">Nombre</label>
             <input class="form-control border-secondary border-opacity-25" name="customer_name" id="customer-name"
                 placeholder="Example" value="">
         </div>
         <div class="col-3">
-            <label for="client" class="form-label">Teléfono: </label>
+            <label for="client" class="form-label">Teléfono</label>
             <input class="form-control border-secondary border-opacity-25" name="customer_phone" id="customer-phone"
                 placeholder="0000000000" value="">
         </div>
         <div class="col-6">
-            <label for="client" class="form-label">Dirección: </label>
+            <label for="client" class="form-label">Dirección</label>
             <input class="form-control border-secondary border-opacity-25" name="customer_address" id="customer-address"
                 placeholder="Example #00, Col. Example" value="">
         </div>
@@ -95,7 +95,7 @@
     </div>
 
     <div class="row mb-2">
-        <h5 class="border-bottom pb-1 mb-1 fw-bold"> {{ __('order.data.service') }}: </h5>
+        <h5 class="border-bottom pb-1 mb-1 fw-bold"> {{ __('order.data.service') }}</h5>
         <div class="form-text text-danger m-0" id="basic-addon4">
             * Selecciona al menos 1 servicio.
         </div>
@@ -110,7 +110,7 @@
         </div>
 
         <div class="col-12">
-            <h6 class="pb-1 mb-1 fw-bold">{{ __('order.title.find_service') }}:</h6>
+            <h6 class="pb-1 mb-1 fw-bold">{{ __('order.title.find_service') }}</h6>
             <div class="input-group mb-3">
                 <input type="search" class="form-control border-secondary border-opacity-25"
                     id="search-service-input" name="search_service_input" placeholder="Nombre del servicio">
@@ -139,12 +139,12 @@
 
     @include('order.modals.service')
 
-    <div class="row mb-3">
-        <h5 class="border-bottom pb-1 fw-bold"> Asignacioń de técnicos: </h5>
+    <div class="row">
+        <h5 class="border-bottom pb-1 fw-bold"> Asignacioń de técnicos</h5>
         <div class="form-text text-danger mb-2" id="basic-addon4">
             * Selecciona al menos 1 técnico.
         </div>
-        <div class="col-12 mb-2">
+        <div class="col-12 mb-3">
             <ul class="list-group">
                 <li class="list-group-item  bg-dark text-white">
                     Selecciona los técnicos disponibles que realizarán el servicio:
@@ -176,41 +176,40 @@
                     </li>
                 @endforeach
             </ul>
-            <div class="form-text" id="basic-addon4">Asigna 1 o varios técnicos a la orden de trabajo.</div>
         </div>
     </div>
 
-    <div class="row mb-3">
-        <h5 class="border-bottom pb-1 mb-3 fw-bold"> {{ __('order.title.additional') }}: </h5>
+    <div class="row">
+        <h5 class="border-bottom pb-1 mb-3 fw-bold"> {{ __('order.title.additional') }}</h5>
         <div class="col-12 mb-3">
-            <label class="mb-2">{{ __('order.data.execution') }}: </label>
+            <label class="mb-2">{{ __('order.data.execution') }}</label>
             <textarea class="form-control border-secondary border-opacity-25" id="execution" name="execution"
                 style="height: 100px"></textarea>
         </div>
         <div class="col-12 mb-3">
-            <label class="mb-2">{{ __('order.data.areas') }}: </label>
+            <label class="mb-2">{{ __('order.data.areas') }}</label>
             <textarea class="form-control border-secondary border-opacity-25" id="areas" name="areas"
                 style="height: 100px"></textarea>
         </div>
-        <div class="col-12">
-            <label class="mb-2">{{ __('order.data.comments') }}: </label>
+        <div class="col-12 mb-3">
+            <label class="mb-2">{{ __('order.data.comments') }}</label>
             <textarea class="form-control border-secondary border-opacity-25" id="additional_comments" name="additional_comments"
                 style="height: 100px"></textarea>
         </div>
     </div>
 
-    <div class="row mb-3">
-        <h5 class="border-bottom pb-1 mb-3 fw-bold"> {{ __('order.data.quotation') }}: </h5>
-        <div class="col-2">
-            <label for="cost" class="form-label">{{ __('order.data.cost') }}:</label>
+    <div class="row">
+        <h5 class="border-bottom pb-1 mb-3 fw-bold"> {{ __('order.data.quotation') }}</h5>
+        <div class="col-2 mb-3">
+            <label for="cost" class="form-label">{{ __('order.data.cost') }}</label>
             <div class="input-group mb-0">
                 <span class="input-group-text bg-secondary">$</span>
                 <input type="number" class="form-control" id="cost" name="cost" min="0"
                     placeholder="0" readonly disabled/>
             </div>
         </div>
-        <div class="col-2">
-            <label for="price" class="form-label is-required"> {{ __('order.data.price') }}: </label>
+        <div class="col-2 mb-3">
+            <label for="price" class="form-label is-required"> {{ __('order.data.price') }}</label>
             <div class="input-group rounded mb-0">
                 <span class="input-group-text bg-success border-success text-white">$</span>
                 <input type="number" class="form-control" id="price" name="price" min="0"
@@ -223,7 +222,7 @@
     <input type="hidden" id="services" name="services" value="">
     <input type="hidden" name="technicians" id="technicians" value="">
 
-    <button type="button" class="btn btn-primary mt-3" onclick="generateOrder()">{{ __('buttons.store') }} </button>
+    <button type="button" class="btn btn-primary my-3" onclick="generateOrder()">{{ __('buttons.store') }} </button>
 </form>
 
 <script>

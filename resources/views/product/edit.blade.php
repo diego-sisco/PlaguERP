@@ -33,7 +33,7 @@
                 <div class="collapse" id="collapseExample" style="background-color: #495057;">
                     <div class="row">
                         <a href="{{ route('product.edit', ['id' => $product->id, 'section' => 1]) }}"
-                            class="sidebar col-12 p-2 text-center"> Basicas
+                            class="sidebar col-12 p-2 text-center"> Generales
                         </a>
                         <a href="{{ route('product.edit', ['id' => $product->id, 'section' => 2]) }}"
                             class="sidebar col-12 p-2 text-center"> Técnicas
@@ -42,7 +42,7 @@
                             class="sidebar col-12 p-2 text-center"> Toxicidad
                         </a>
                         <a href="{{ route('product.edit', ['id' => $product->id, 'section' => 4]) }}"
-                            class="sidebar col-12 p-2 text-center"> Unidades
+                            class="sidebar col-12 p-2 text-center"> Compra/Venta
                         </a>
                     </div>
                 </div>
@@ -63,17 +63,17 @@
 
         <div class="col-11">
             <div class="row p-3 border-bottom">
-                <a href="{{ route('product.index', ['type' => 1, 'page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i
+                <a href="{{ route('product.index') }}" class="col-auto btn-primary p-0 fs-3"><i
                         class="bi bi-arrow-left m-3"></i></a>
-                <h1 class="col-auto fs-2 m-0">{{ __('modals.title.edit_product') }} <span class="fw-bold">{{$product->name}}</span></h1>
+                <h1 class="col-auto fs-2 m-0">{{ __('product.title.edit') }} <span class="fw-bold">[{{$product->name}}]</span></h1>
             </div>
             <div class="row p-3 m-0">
-                @include('product.edit.index')
+                @include('product.edit.form')
             </div>
         </div>
     </div>
-    @include('product.create.modals.input')
     @include('product.edit.modals.input')
+    @include('product.edit.modals.file')
 
     <script src="{{ asset('js/service/control.min.js') }}"></script>
 @endsection

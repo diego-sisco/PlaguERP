@@ -22,7 +22,7 @@
     <div class="w-100 h-100 m-0 p-5">
         <h1 class="fw-bold text-center mb-5"> BIENVENIDO A SISCOPLAGAS </h1>
         <div class="d-flex flex-wrap justify-content-evenly ">
-            <a href="{{ route('dashboard.crm', ['section' => 1]) }}"
+            <a href="{{ route('crm.dashboard') }}"
                 class="d-flex flex-column align-items-center justify-content-center card shadow text-center text-white text-decoration-none p-2 m-2"
                 style="height: 10rem; width:12rem; background-color:#ff6f00;">
                 <div class="w-100 d-flex justify-content-center align-items-end" style="font-size: 3rem; height: 60%">
@@ -37,7 +37,7 @@
                 class="d-flex flex-column align-items-center justify-content-center card shadow text-center text-white text-decoration-none p-2 m-2"
                 style="height: 10rem; width:12rem; background-color:#01579b;">
                 <div class="w-100 d-flex justify-content-center align-items-end" style="font-size: 3rem; height: 60%">
-                    <i class="bi bi-calendar4-week"></i>
+                    <i class="bi bi-calendar-fill"></i>
                 </div>
                 <div class="w-100 d-flex justify-content-center align-items-center" style="font-size: 1.2rem; height: 40%">
                     <p class="card-text fw-bold">Planificación</p>
@@ -66,7 +66,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('dashboard.rrhh', ['section' => 1]) }}"
+            <a href="{{ route('rrhh', ['section' => 1]) }}"
                 class="d-flex flex-column align-items-center justify-content-center card shadow text-center text-white text-decoration-none p-2 m-2"
                 style="height: 10rem; width:12rem; background-color:#ad1457">
                 <div class="w-100 d-flex justify-content-center align-items-end" style="font-size: 3rem; height: 60%">

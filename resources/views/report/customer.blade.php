@@ -7,7 +7,7 @@
 
 <div class="border rounded shadow m-3 p-2 bg-white">
     <h1 class="fs-2 fw-bold m-0">
-        <a href="{{ route('dashboard.crm', ['status' => 1, 'page' => 1 ]) }}"><i class="bi bi-arrow-left m-3"></i></a>
+        <a href="{{ route('crm', ['status' => 1, 'page' => 1 ]) }}"><i class="bi bi-arrow-left m-3"></i></a>
         @if($va == 1)
             Crea un reporte de los clientes registrados
         @else

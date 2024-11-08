@@ -1,5 +1,5 @@
 <div class="col-12 mb-3">
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createAreaModal">Crear zona </button>
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#areaModal" onclick="resetForm()">Crear zona</button>
 </div>
 <table class="table table-bordered text-center">
     <thead>
@@ -13,8 +13,7 @@
         </tr>
     </thead>
     <tbody>
-        @if (!$customer->applicationAreas->isEmpty())
-            @foreach ($customer->applicationAreas as $area)
+            @forelse ($customer->applicationAreas as $area)
                 <tr>
                     <th scope="row">{{ $area->id }}</th>
                     <td class="align-middle">{{ $area->name }}</td>
@@ -24,7 +23,7 @@
                     <td class="align-middle">{{ $area->m2 }}</td>
                     <td class="align-middle">{{ $area->created_at }}</td>
                     <td class="align-middle">
-                        <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#editAreaModal" data-area="{{ $area }}" onclick="setDataArea(this)"> 
+                        <button type="button" class="btn btn-secondary btn-sm" data-area="{{ $area }}" onclick="setData(this)" data-bs-toggle="modal" data-bs-target="#areaModal"> 
                             <i class="bi bi-pencil-square"></i> {{ __('buttons.edit')}} 
                         </button>
                         <a href="{{ Route('area.destroy', ['id' => $area->id]) }}"
@@ -33,7 +32,12 @@
                         </a>
                     </td>
                 </tr>
-            @endforeach
-        @endif
+                @empty
+                <tr>
+                    <td class="text-danger fw-bold" colspan="6">
+                        Sin zonas
+                    </td>
+                </tr>
+            @endforelse
     </tbody>
 </table>

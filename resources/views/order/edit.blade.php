@@ -1,9 +1,5 @@
 @extends('layouts.app')
 @section('content')
-    @if (!auth()->check())
-        <?php header('Location: /login');
-        exit(); ?>
-    @endif
 
     <div class="w-100 m-0">
         <div class="row w-100 justify-content-between p-3 m-0 mb-3">

@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('lead', function (Blueprint $table) {
             $table->id();
             $table->integer('company_category_id')->constrained('company_category')->onDelete('cascade')->nullable();
-            $table->integer('administrative_id')->constrained('user')->onDelete('cascade');
+            $table->integer('administrative_id')->nullable()->constrained('user')->onDelete('cascade');
             $table->integer('service_type_id')->constrained('service_type')->onDelete('cascade')->nullable();
             $table->integer('branch_id')->constrained('branch')->onDelete('cascade')->nullable();
             $table->integer('company_id')->nullable()->constrained('company')->onDelete('cascade');

@@ -14,50 +14,48 @@ class FilenamesSeeder extends Seeder
      */
     public function run(): void
     {
-        $customerFileNames = [
-            'Certificado RFC',
-            'Comprobante domicilio fiscal',
-            'Credencial INE',
-            'Estatutos de incorporación',
-            'Comprobante situación fiscal',
-            'Manual del portal',
+        $fileNames = [
+            'customer' => [
+                'Certificado RFC',
+                'Comprobante domicilio fiscal',
+                'Credencial INE',
+                'Estatutos de incorporación',
+                'Comprobante situación fiscal',
+                'Manual del portal',
+            ],
+            'user' => [
+                'INE',
+                'CURP',
+                'Constancia de situación fiscal (RFC)',
+                'NSS',
+                'Acta de nacimiento',
+                'Comprobante de domicilio',
+                'Licencia para conducir',
+                'Foto',
+                'Firma'
+            ],
+            'product' => [
+                'Especificación RP',
+                'Especificación técnica',
+                'Especificaciones de seguridad',
+                'Especificación de registro',
+                'Registro sanitario'
+            ],
         ];
-    
-        $userFileNames = [
-            'INE',
-            'CURP',
-            'Constancia de situación fiscal (RFC)',
-            'NSS',
-            'Acta de nacimiento',
-            'Comprobante de domicilio',
-            'Licencia para conducir',
-            'Foto',
-            'Firma'
-        ];
-    
+
         $data = [];
-    
-        // Generar datos para los archivos del cliente
-        foreach ($customerFileNames as $fileName) {
-            $data[] = [
-                'name' => $fileName,
-                'type' => 'customer',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
+
+        foreach ($fileNames as $type => $names) {
+            foreach ($names as $name) {
+                $data[] = [
+                    'name' => $name,
+                    'type' => $type,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ];
+            }
         }
-    
-        // Generar datos para los archivos de usuario
-        foreach ($userFileNames as $fileName) {
-            $data[] = [
-                'name' => $fileName,
-                'type' => 'user',
-                'created_at' => now(),
-                'updated_at' => now(),
-            ];
-        }
-    
+
         Filenames::insert($data);
     }
-    
 }

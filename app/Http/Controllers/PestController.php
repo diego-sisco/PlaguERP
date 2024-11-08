@@ -14,20 +14,13 @@ class PestController extends Controller
 {
     private static $images_path = 'storage/pest_images/';
 
-    private $size = 30;
+    private $size = 50;
 
-    public function index(int $page): View
+    public function index(): View
     {
-        $pests = PestCatalog::orderBy('id', 'desc')->get();
+        $pests = PestCatalog::orderBy('id', 'desc')->paginate($this->size);
 
-        $total = ceil($pests->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $pests = collect(array_slice($pests->toArray(), $min, $this->size))->map(function ($pest) {
-            return new PestCatalog($pest);
-        });
-
-        return view('pest.index', compact('pests', 'page', 'total'));
+        return view('pest.index', compact('pests'));
     }
     public function create()
     {
@@ -53,7 +46,7 @@ class PestController extends Controller
         }
         $pest->save();
 
-        return redirect()->route('pest.index', ['page' => 1]);
+        return redirect()->route('pest.index');
     }
 
     public function show(string $id): View
@@ -86,7 +79,7 @@ class PestController extends Controller
         return redirect()->route('pest.index', ['page' => 1]);
     }
 
-    public function search(Request $request, int $page)
+    public function search(Request $request)
     {
         if (empty($request->search)) {
             return redirect()->back()->with('error', trans('messages.no_results_found'));
@@ -101,26 +94,18 @@ class PestController extends Controller
         $pests = PestCatalog::where('name', 'LIKE', $searchTerm)
             ->orWhereIn('pest_category_id', $categoryIds)
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate($this->size);
 
 
         if ($pests->isEmpty()) {
             $error = 'No se encontraron resultados de la búsqueda';
+            $pests = PestCatalog::orderBy('id', 'desc')->paginate($this->size);
         }
-
-        $total = ceil($pests->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $pests = collect(array_slice($pests->toArray(), $min, $this->size))->map(function ($pest) {
-            return new PestCatalog($pest);
-        });
 
         return view(
             'pest.index',
             compact(
                 'pests',
-                'page',
-                'total'
             )
         );
     }
@@ -130,7 +115,7 @@ class PestController extends Controller
         $pest = PestCatalog::find($id);
         if ($pest) {
             $pest->delete();
-            return redirect()->route('pest.index', ['page' => 1]);
+            return redirect()->route('pest.index');
         }
     }
 }

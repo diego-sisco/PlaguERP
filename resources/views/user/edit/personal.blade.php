@@ -2,7 +2,6 @@
     onsubmit="return submitForm()">
     @csrf
 
-    <input type="hidden" id="type" name="type_id" value="{{ $user->type_id }}">
     <input type="hidden" name="url_customer" id="url-customer" value="{{ route('order.search.customer') }}">
 
     <div class="row mb-3">
@@ -164,6 +163,7 @@
         <script>
             const directories = @json($directories);
             const paths = @json($user->directories->pluck('path')->toArray());
+            const type = @json($user->type_id);
             const new_client_account = false;
         </script>
     @endif

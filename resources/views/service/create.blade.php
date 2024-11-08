@@ -4,11 +4,6 @@
         $time_types = ['Segundo(s)', 'Minuto(s)', 'Hora(s)'];
     @endphp
 
-    @if (!auth()->check())
-        <?php header('Location: /login');
-        exit(); ?>
-    @endif
-
     <div class="container-fluid">
         <div class="row border-bottom p-3 mb-3">
             <a href="{{ route('service.index', ['page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i

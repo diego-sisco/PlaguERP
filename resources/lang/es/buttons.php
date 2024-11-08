@@ -30,5 +30,7 @@ return [
     'input' => 'Entrada',
     'output' => 'Salida',
     'movements' => 'Movimientos',
-    'stock' => 'Stock'
+    'stock' => 'Stock',
+    'assign' => 'Asignar',
+    'remove' => 'Quitar',
 ];

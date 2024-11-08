@@ -7,21 +7,13 @@ use App\Models\DeviceStates;
 use App\Models\FloorPlans;
 use App\Models\Order;
 use App\Models\OrderIncidents;
-use App\Models\Branch;
-use App\Models\ControlPoint;
-use App\Models\Customer;
 use App\Models\Device;
 use App\Models\OrderProduct;
 use App\Models\OrderRecommendation;
-use App\Models\OrderTechnician;
 use App\Models\PestCatalog;
 use App\Models\ProductCatalog;
 use App\Models\ServiceDetails;
 use App\Models\Lot;
-use App\Models\OrderPest;
-use App\Models\User;
-use App\Models\Recommendations;
-
 use App\PDF\MyPDF;
 
 use Illuminate\Support\Facades\File;
@@ -250,7 +242,7 @@ class ReportController extends Controller
             }
         }
 
-        $this->PrintReport($order->id);
+        return redirect()->route('report.print', ['orderId' => $orderId]);
     }
 
     public function searchProduct(Request $request)
@@ -313,7 +305,7 @@ class ReportController extends Controller
         return back();
     }
 
-    public function PrintReport(string $orderId)
+    public function print(string $orderId)
     {
         $order = Order::find($orderId);
         if ($order) {

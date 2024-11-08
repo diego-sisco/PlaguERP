@@ -55,4 +55,10 @@ class Contract extends Model
     {
         return $this->technicians()->where('technician.id', $technicianId)->exists();
     }
+
+    public function technicianNames() {
+        $technicianIds = $this->technicians()->pluck('user_id');
+        $users = User::whereIn('id', $technicianIds)->get()->pluck('name')->toArray();
+        return $users;
+    }
 }

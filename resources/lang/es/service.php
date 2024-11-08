@@ -32,7 +32,7 @@ return [
         'has_application_methods' => '¿Tiene métodos de aplicación?',
         'duration' => 'Duración promedio',
         'service_type' => 'Tipo de servicio',
-        'status' => 'Estado',
+        'status' => 'Status',
         'prefix' => 'Prefijo'
     ],
 

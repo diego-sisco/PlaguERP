@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('control_point', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('device_id')->constrained('product_catalog')->onDelete('cascade');
             $table->string('name');
             $table->string('color');
-            $table->foreignId('associated_device_id')->nullable()->constrained('product_catalog')->onDelete('cascade');
             $table->timestamps();
         });
     }

@@ -4,13 +4,7 @@
         $time_types = ['Segundo(s)', 'Minuto(s)', 'Hora(s)'];
         $i = 1;
     @endphp
-
-    @if (!auth()->check())
-        <?php header('Location: /login');
-        exit(); ?>
-    @endif
-
-
+    
     <style>
         .sidebar {
             color: white;
@@ -46,7 +40,7 @@
             <div class="row p-3 border-bottom">
                 <a href="{{ route('service.index', ['page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i
                         class="bi bi-arrow-left m-3"></i></a>
-                <h1 class="col-auto fs-2 fw-bold m-0">{{ __('service.title.show') }}</h1>
+                <h1 class="col-auto fs-2 m-0">{{ __('service.title.show') }} <span class="fw-bold"> [{{ $service->name }}] </span></h1>
             </div>
             <div class="row p-5 pt-3">
                 @switch($section)
@@ -92,7 +86,7 @@
                                 </div>
                             @endforeach
                         @else
-                            <span class="col fw-normal"> Sin plagas agregadas </span>
+                            <span class="col fw-bold text-danger"> Sin plagas agregadas </span>
                         @endif
                     @break
 
@@ -105,7 +99,7 @@
                                 </div>
                             @endforeach
                         @else
-                            <span class="col fw-normal"> Sin metodos agregados agregadas </span>
+                            <span class="col fw-bold text-danger"> Sin metodos agregados agregadas </span>
                         @endif
                     @break
                 @endswitch

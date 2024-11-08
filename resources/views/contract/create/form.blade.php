@@ -14,7 +14,7 @@
             <h5 class="border-bottom pb-1 fw-bold">
                 {{ __('contract.title.set_customer') }}:
             </h5>
-            <label for="client" class="form-label m-0">Busca el cliente a traves de los siguientes campos:
+            <label for="client" class="form-label m-0">Busca el cliente a traves de los siguientes campos
             </label>
             <div class="form-text text-danger m-0" id="basic-addon4">
                 * Selecciona al menos 1 servicio.
@@ -29,21 +29,21 @@
                 </a>
             </div>
             <div class="col-3">
-                <label for="client" class="form-label">Nombre: </label>
+                <label for="client" class="form-label">Nombre </label>
                 <input class="form-control border-secondary border-opacity-25" name="customer_name" id="customer-name"
                     placeholder="Example" value="" />
             </div>
             <div class="col-3">
-                <label for="client" class="form-label">Teléfono: </label>
+                <label for="client" class="form-label">Teléfono </label>
                 <input class="form-control border-secondary border-opacity-25" name="customer_phone" id="customer-phone"
                     placeholder="0000000000" value="" />
             </div>
             <div class="col-6">
-                <label for="client" class="form-label">Dirección: </label>
+                <label for="client" class="form-label">Dirección </label>
                 <input class="form-control border-secondary border-opacity-25" name="customer_address"
                     id="customer-address" placeholder="Example #00, Col. Example" value="" />
             </div>
-            <div class="col-3 mt-2 mb-3">
+            <div class="col-3 my-2">
                 <button id="form_service_button" type="button" class="btn btn-primary btn-sm"
                     onclick="searchCustomer()">
                     {{ __('buttons.search') }}
@@ -57,7 +57,7 @@
 
         <div class="row mb-3" id="select-contract">
             <h5 class="border-bottom pb-1 fw-bold">
-                {{ __('contract.title.associate_contract') }}:
+                {{ __('contract.title.associate_contract') }}
             </h5>
             <div class="form-text text-danger m-0 mb-1" id="basic-addon4">
                 * Si deseas vincular las órdenes a un contrato que ya ha sido creado, selecciónalo despues de buscar al
@@ -70,16 +70,16 @@
             </div>
         </div>
 
-        <div class="row mb-3" id="duration">
+        <div class="row" id="duration">
             <h5 class="border-bottom pb-1 fw-bold">
-                {{ __('contract.title.duration') }}:
+                {{ __('contract.title.duration') }}
             </h5>
             <div class="form-text text-danger m-0 mb-1" id="basic-addon4">
                 * En caso de haber seleccionado un contrato, se toman como intervalo de fechas para las ordenes.
             </div>
             <div class="col-3 mb-3">
                 <label for="client" class="form-label is-required">
-                    {{ __('contract.data.start_date') }}:
+                    {{ __('contract.data.start_date') }}
                 </label>
                 <input type="date" class="form-control border-secondary border-opacity-25" name="startdate"
                     id="startdate" oninput="set_endDate()" required />
@@ -87,7 +87,7 @@
 
             <div class="col-3 mb-3">
                 <label for="client" class="form-label">
-                    {{ __('contract.data.end_date') }}:
+                    {{ __('contract.data.end_date') }}
                 </label>
                 <input type="date" class="form-control border-secondary border-opacity-25" name="enddate"
                     id="enddate" />
@@ -96,7 +96,7 @@
 
         <div class="row mb-3">
             <h5 class="border-bottom pb-1 mb-1 fw-bold">
-                {{ __('contract.title.set_services') }}:
+                {{ __('contract.title.set_services') }}
             </h5>
             <div class="form-text text-danger m-0" id="basic-addon4">
                 * Selecciona al menos 1 servicio.
@@ -118,7 +118,7 @@
 
             <div class="col-12">
                 <h6 class="pb-1 mb-1 fw-bold">
-                    {{ __('contract.title.find_service') }}:
+                    {{ __('contract.title.find_service') }}
                 </h6>
                 <div class="input-group mb-3">
                     <input type="search" class="form-control border-secondary border-opacity-25"
@@ -155,14 +155,14 @@
             </div>
         </div>
 
-        <div class="row mb-3">
+        <div class="row">
             <h5 class="border-bottom pb-1 fw-bold">
                 {{ __('contract.title.set_technicians') }}
             </h5>
             <div class="form-text text-danger mb-2" id="basic-addon4">
                 * Selecciona al menos 1 técnico.
             </div>
-            <div class="col-12 mb-2">
+            <div class="col-12 mb-3">
                 <ul class="list-group">
                     <li class="list-group-item bg-dark text-white">
                         Selecciona los técnicos disponibles que realizarán el
@@ -194,9 +194,6 @@
                         </li>
                     @endforeach
                 </ul>
-                <div class="form-text" id="basic-addon4">
-                    Asigna 1 o varios técnicos a la orden de trabajo.
-                </div>
             </div>
         </div>
     </div>

@@ -35,18 +35,11 @@ class ContractController extends Controller
         'Señaléticas', 'Pago seguro'
     ];
 
-    private $size = 30;
+    private $size = 50;
 
-    public function index(int $page): View
+    public function index(): View
     {
-        $contracts = Contract::orderBy('id', 'desc')->get();
-        $total = ceil($contracts->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $contracts = collect(array_slice($contracts->toArray(), $min, $this->size))->map(function ($contract) {
-            return new Contract($contract);
-        });
-
+        $contracts = Contract::orderBy('id', 'desc')->paginate($this->size);
         $technicians = Technician::all();
 
         return view(
@@ -54,8 +47,6 @@ class ContractController extends Controller
             compact(
                 'contracts',
                 'technicians',
-                'page',
-                'total',
             )
         );
     }
@@ -187,10 +178,10 @@ class ContractController extends Controller
                 'created_at' => now(),
             ]);
         }
-        return redirect()->route('contract.index', ['page' => 1]);
+        return redirect()->route('contract.index');
     }
 
-    public function search(Request $request, int $page)
+    public function search(Request $request)
     {
 
         if (empty($request->search)) {
@@ -205,18 +196,12 @@ class ContractController extends Controller
             ->orWhereDate('startdate', 'LIKE', $searchTerm)
             ->orWhereDate('enddate', 'LIKE', $searchTerm)
             ->orderBy('id', 'desc')
-            ->get();
+            ->paginate($this->size);
 
         if ($contracts->isEmpty()) {
-            $error = 'No se encontraron resultados de la búsqueda';
+            session()->flash('error', trans('messages.no_results_found'));
+            $contracts = Contract::orderBy('id', 'desc')->paginate($this->size);
         }
-
-        $total = ceil($contracts->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $contracts = collect(array_slice($contracts->toArray(), $min, $this->size))->map(function ($contract) {
-            return new Order($contract);
-        });
 
         $technicians = Technician::all();
 
@@ -224,9 +209,7 @@ class ContractController extends Controller
             'contract.index',
             compact(
                 'contracts',
-                'technicians',
-                'page',
-                'total'
+                'technicians'
             )
         );
     }
@@ -252,7 +235,6 @@ class ContractController extends Controller
     public function updateTechnicians(Request $request, int $id)
     {
         $ot_array = json_decode($request->input('technicians'));
-
         $contract = Contract::find($id);
 
         if (empty($ot_array)) {

@@ -1,10 +1,5 @@
 @extends('layouts.app')
 @section('content')
-    @if (!auth()->check())
-        <?php header('Location: /login');
-        exit(); ?>
-    @endif
-
     @php
         function isPDF($filePath)
         {
@@ -46,7 +41,7 @@
 
         <div class="col-11">
             <div class="row p-3 border-bottom">
-                <a href="{{ route('user.index', ['type' => 1, 'page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i
+                <a href="{{ route('user.index', ['type' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i
                         class="bi bi-arrow-left m-3"></i></a>
                 <h1 class="col-auto fs-2 m-0">
                     {{ __('user.title.show') }} [<span class="fw-bold">{{ $user->name }}</span>]

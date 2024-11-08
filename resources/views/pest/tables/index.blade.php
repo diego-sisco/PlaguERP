@@ -10,7 +10,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($pests as $pest)
+        @forelse ($pests as $pest)
             <tr class="text-center">
                 <td class="text-center">{{-- <img src="{{ asset($pest->image) }}" class="w-25"> --}} {{ $pest->id }} </td>
                 <td class="text-center">{{ $pest->name }}</td>
@@ -27,6 +27,10 @@
                         <i class="bi bi-x-lg"></i> {{ __('buttons.delete') }} </a>
                 </td>
             </tr>
-        @endforeach
+        @empty
+        <tr>
+            <td class="text-danger fw-bold" colspan="10">Sin plagas</td>
+        </tr>
+        @endforelse
     </tbody>
 </table>

@@ -9,13 +9,16 @@ class ProductFile extends Model
 {
     use HasFactory;
 
-    protected $table = 'product_files';
+    protected $table = 'product_file';
 
     protected $fillable = [
-        'rp_specification',
-        'techical_specification',
-        'segurity_specification',
-        'register_specification',
-        'sanitary_register'
+        'product_id',
+        'filename_id',
+        'path',
+        'expirated_at',
     ];
+
+    public function product() {
+        return $this->belongsTo(ProductCatalog::class ,'product_id');
+    }
 }

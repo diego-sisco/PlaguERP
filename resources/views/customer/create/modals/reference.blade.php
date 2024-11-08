@@ -1,5 +1,5 @@
 <div class="modal fade" id="createRefModal" tabindex="-1" aria-labelledby="createRefModalLabel" aria-hidden="true">
-    <form class="modal-dialog" action="{{ route('reference.store', ['id' => $id, 'type' => $type]) }}"
+    <form class="modal-dialog" action="{{ route('customer.reference.store', ['id' => $id, 'type' => $type]) }}"
         method="POST" enctype="multipart/form-data">
         @csrf
         <div class="modal-content">

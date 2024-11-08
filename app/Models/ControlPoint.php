@@ -16,12 +16,12 @@ class ControlPoint extends Model
         'id',
         'name',
         'color',
-        'associated_device_id',
+        'device_id',
     ];
 
     public function product()
     {
-        return $this->belongsTo(ProductCatalog::class, 'associated_device_id');
+        return $this->belongsTo(ProductCatalog::class, 'device_id');
     }
 
     public function products()

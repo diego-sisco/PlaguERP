@@ -5,26 +5,25 @@
     <div class="row">
         <h5 class="border-bottom pb-1 fw-bold"> Datos generales </h5>
         <div class="col-4 mb-3">
-            <label for="name" class="form-label is-required">{{ __('product.product-data.name') }}: </label>
+            <label for="name" class="form-label is-required">{{ __('product.data.name') }}</label>
             <input type="text" class="form-control border-secondary border-opacity-25" id="name" name="name"
                 required>
         </div>
         <div class="col-4 mb-3">
-            <label for="business_name" class="form-label">Nombre comercial:
+            <label for="business_name" class="form-label">{{ __('product.data.business_name') }}
             </label>
             <input type="text" class="form-control border-secondary border-opacity-25" id="business-name"
                 name="business_name">
         </div>
         <div class="col-4 mb-3">
-            <label for="manufacturer" class="form-label">{{ __('product.product-data.manufacturer') }}: </label>
+            <label for="manufacturer" class="form-label">{{ __('product.data.manufacturer') }}</label>
             <input type="text" class="form-control border-secondary border-opacity-25" name="manufacturer"
                 id="manufacturer">
         </div>
     </div>
     <div class="row">
         <div class="col-3 mb-3">
-            <label for="presentation" class="form-label is-required"> {{ __('product.product-data.pres') }}:
-            </label>
+            <label for="presentation" class="form-label is-required"> {{ __('product.data.presentation') }}</label>
             <select class="form-select border-secondary border-opacity-25 " name="presentation_id" id="presentation"
                 required>
                 @foreach ($presentations as $presentation)
@@ -33,7 +32,7 @@
             </select>
         </div>
         <div class="col-3 mb-3">
-            <label for="line-business" class="form-label is-required">{{ __('product.product-data.line_b') }}: </label>
+            <label for="line-business" class="form-label is-required">{{ __('product.data.line_business') }}</label>
             <select class="form-select border-secondary border-opacity-25 " id="linebusiness" name="linebusiness_id"
                 required>
                 @foreach ($line_business as $line)
@@ -43,7 +42,7 @@
         </div>
 
         <div class="col-3 mb-3">
-            <label for="application_method" class="form-label is-required">Métrica: </label>
+            <label for="application_method" class="form-label is-required">{{ __('product.data.metric') }}</label>
             <select class="form-select border-secondary border-opacity-25 " name="metric_id" id="metric">
                 @foreach ($metrics as $metric)
                     <option value="{{ $metric->id }}">{{ $metric->value }}</option>
@@ -53,19 +52,19 @@
     </div>
     <div class="row">
         <div class="col-6 mb-3">
-            <label for="description" class="form-label">Descripción:
+            <label for="description" class="form-label">{{ __('product.data.description') }}
             </label>
             <textarea class="form-control border-secondary border-opacity-25" name="description" id="description" rows="4"> </textarea>
         </div>
         <div class="col-6 mb-3">
             <label for="execution_indications"
-                class="form-label">{{ __('product.product-data.indications_execution') }}: </label>
+                class="form-label">{{ __('product.data.execution_indications') }}</label>
             <textarea class="form-control border-secondary border-opacity-25" name="execution_indications"
                 id="execution_indications" rows="4"> </textarea>
         </div>
 
         <div class="col-12 mb-3">
-            <label for="image" class="form-label">{{ __('product.product-data.image') }}: </label>
+            <label for="image" class="form-label">{{ __('product.data.image') }}</label>
             <input type="file" class="form-control-file form-control border-secondary border-opacity-25"
                 name="image" id="image">
         </div>
@@ -75,7 +74,7 @@
     <div class="row">
         <h5 class="border-bottom pb-1 fw-bold"> Detalle del producto </h5>
         <div class="col-auto mb-3">
-            <label for="type_b" class="form-label is-required">{{ __('product.product-data.type_b') }}: </label>
+            <label for="type_b" class="form-label is-required">{{ __('product.data.biocide') }}</label>
             <select class="form-select border-secondary border-opacity-25 " name="biocide_id" id="biocide" required>
                 @foreach ($biocides as $biocide)
                     <option value="{{ $biocide->id }}"> ({{ $biocide->group }}) {{ $biocide->type }}</option>
@@ -83,7 +82,7 @@
             </select>
         </div>
         <div class="col-2 mb-3">
-            <label for="purpose" class="form-label is-required">{{ __('product.product-data.porp') }}: </label>
+            <label for="purpose" class="form-label is-required">{{ __('product.data.purpose') }}</label>
             <select class="form-select border-secondary border-opacity-25 " name="purpose_id" id="purpose" required>
                 @foreach ($purposes as $purpose)
                     <option value="{{ $purpose->id }}">{{ $purpose->type }}</option>
@@ -101,16 +100,16 @@
             @foreach ($pest_categories as $i => $pest_category)
                 <div class="accordion-item col-4 border-0">
                     <h2 class="accordion-header">
-                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                            data-bs-target="#collapse{{ $i }}" aria-expanded="true"
-                            aria-controls="collapse{{ $i }}">
+                        <button class="accordion-button collapsed  border-bottom" type="button"
+                            data-bs-toggle="collapse" data-bs-target="#collapse{{ $i }}"
+                            aria-expanded="true" aria-controls="collapse{{ $i }}">
                             {{ $pest_category->category }}
                         </button>
                     </h2>
-                    @if (!$pest_category->pests->isEmpty())
-                        <div id="collapse{{ $i }}" class="accordion-collapse collapse"
-                            data-bs-parent="#accordionPest">
-                            <div class="accordion-body">
+                    <div id="collapse{{ $i }}" class="accordion-collapse collapse"
+                        data-bs-parent="#accordionPest">
+                        <div class="accordion-body">
+                            @if (!$pest_category->pests->isEmpty())
                                 @foreach ($pest_category->pests as $pest)
                                     <div class="form-check">
                                         <input class="pest form-check-input" type="checkbox"
@@ -120,16 +119,11 @@
                                         </label>
                                     </div>
                                 @endforeach
-                            </div>
+                            @else
+                                <p class="text-danger fw-bold">No hay plagas asociadas</p>
+                            @endif
                         </div>
-                    @else
-                        <div id="collapse{{ $i }}" class="accordion-collapse collapse"
-                            data-bs-parent="#accordionPest">
-                            <div class="accordion-body text-danger">
-                                No hay plagas asociadas.
-                            </div>
-                        </div>
-                    @endif
+                    </div>
                 </div>
             @endforeach
         </div>
@@ -144,7 +138,7 @@
             <div class="col-3">
                 <div class="form-check">
                     <input class="appMethod form-check-input border-opacity-50" type="checkbox"
-                        value="{{ $app_method->id }}" onchange="setAppMethods()"/>
+                        value="{{ $app_method->id }}" onchange="setAppMethods()" />
                     <label class="form-check-label" for="app_method-{{ $app_method->id }}">
                         {{ $app_method->name }}
                     </label>
@@ -154,9 +148,9 @@
         <input type="hidden" id="appMethod-select" name="appMethodSelected" value="" />
     </div>
     <div class="row">
-        <h5 class="border-bottom pb-1 fw-bold"> Toxicidad </h5>
+        <h5 class="border-bottom pb-1 fw-bold">Toxicidad</h5>
         <div class="col-auto mb-3">
-            <label class="form-check-label is-required" for="is_basic">¿Es un producto toxico?</label>
+            <label class="form-check-label is-required" for="is_basic">{{ __('product.data.is_toxic') }}</label>
             <select class="form-select" id="is-toxic" name="is_toxic" onchange="showToxic(this.value)" required>
                 <option value="0" selected>No</option>
                 <option value="1">Si</option>
@@ -164,7 +158,7 @@
         </div>
     </div>
     <div class="row" id="toxic" style="display: none">
-        <div class="col-automb-3">
+        <div class="col-auto mb-3">
             <select class="form-select border-secondary border-opacity-25 " name="is_toxic" id="is_toxic">
                 @foreach ($toxics as $toxic)
                     <option value="{{ $toxic->id }}">{{ $toxic->name }}</option>
@@ -178,12 +172,11 @@
 </form>
 
 <script>
-    $(document).ready(function() {
-    });
+    $(document).ready(function() {});
 
     function showToxic(value) {
         const is_toxic = parseInt(value);
-        if(is_toxic) {
+        if (is_toxic) {
             $('#toxic').show();
         } else {
             $('#toxic').hide();

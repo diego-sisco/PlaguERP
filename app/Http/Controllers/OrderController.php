@@ -3,54 +3,38 @@
 namespace App\Http\Controllers;
 
 use App\Models\Administrative;
-use App\Models\ApplicationArea;
 use App\Models\ApplicationMethod;
 use App\Models\ApplicationMethodService;
-use App\Models\Branch;
-use App\Models\ControlPointQuestion;
-use App\Models\ControlPoint;
 use App\Models\Customer;
 use App\Models\Device;
-use App\Models\Execfrequency;
-use App\Models\FloorPlans;
+
 use App\Models\Order;
-use App\Models\OrderFrequency;
-use App\Models\OrderIncidents;
-use App\Models\OrderProduct;
+
 use App\Models\OrderService;
 use App\Models\OrderStatus;
 use App\Models\OrderTechnician;
 use App\Models\PestCategory;
-use App\Models\PestService;
-use App\Models\PestCatalog;
-use App\Models\ProductCatalog;
-use App\Models\Question;
-use App\Models\QuestionOption;
+
 use App\Models\Service;
 use App\Models\Technician;
-use App\Models\FloorplanVersion;
 use App\Models\Contract;
 use App\Models\Lot;
 use App\Models\DatabaseLog;
 use App\Models\User;
 use App\Models\Recommendations;
-use App\PDF\MiPDF;
 
-use Illuminate\Support\Facades\File;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
-use TCPDF;
 use Carbon\Carbon;
-use Ramsey\Uuid\Type\Integer;
 
 class OrderController extends Controller
 {
 
 	private $files_path = 'files/customers';
 	private $file_answers_path = 'datas/json/answers.json';
-	private $size = 50;
+	private $size = 100;
 
 	private function generateDate($date, $number, $frequency)
 	{
@@ -76,25 +60,18 @@ class OrderController extends Controller
 		return $newDate->format('Y-m-d');
 	}
 
-	public function index(int $page): View
+	public function index(): View
 	{
-		$orders = Order::orderBy('id', 'desc')->get();
-		$total = ceil($orders->count() / $this->size);
-		$min = ($page * $this->size) - $this->size;
-
-		$orders = collect(array_slice($orders->toArray(), $min, $this->size))->map(function ($order) {
-			return new Order($order);
-		});
+		$orders = Order::orderBy('id', 'desc')->paginate($this->size);
 
 		return view(
 			'order.index',
 			compact(
 				'orders',
-				'page',
-				'total',
 			)
 		);
 	}
+
 	public function create(): View
 	{
 		$success = $warning = $error = null;
@@ -124,15 +101,15 @@ class OrderController extends Controller
 		//dd($request->all());
 
 		if (!$request->input('customer_id')) {
-			return redirect()->back();
+			return back();
 		}
 
 		if (empty($selected_services)) {
-			return redirect()->back();
+			return back();
 		}
 
 		if (empty($selected_technicians)) {
-			return redirect()->back();
+			return back();
 		}
 
 		$order = new Order();
@@ -180,22 +157,22 @@ class OrderController extends Controller
 
 		OrderService::insert($order_services);
 		OrderTechnician::insert($order_technicians);
-		OrderFrequency::insert([
+		/*OrderFrequency::insert([
 			'order_id' => $order->id,
 			'number' => $request->input('number'),
 			'frequency' => $request->input('frequency'),
 			'next_date' => $this->generateDate($order->programmed_date, $request->input('number'), $request->input('frequency')),
 			'created_at' => now(),
 			'updated_at' => now()
-		]);
+		]);*/
 
 		$sql = 'INSERT_ORDER_' . $order->id;
 		PagesController::log('store', 'Creacion de orden', $sql);
 
-		return redirect()->route('order.index', ['page' => 1]);
+		return redirect()->route('order.index');
 	}
 
-	public function search(Request $request, string $page)
+	public function search(Request $request)
 	{
 		if (empty($request->search)) {
 			return redirect()->back()->with('error', trans('messages.no_results_found'));
@@ -208,25 +185,17 @@ class OrderController extends Controller
 		$orders = Order::whereIn('customer_id', $customerIds)
 			->orWhereDate('programmed_date', 'LIKE', $searchTerm)
 			->orderBy('id', 'desc')
-			->get();
+			->paginate($this->size);
 
 		if ($orders->isEmpty()) {
-			$error = 'No se encontraron resultados de la búsqueda';
+			session()->flash('error', trans('messages.no_results_found'));
+			$orders = Order::orderBy('id', 'desc')->paginate($this->size);
 		}
-
-		$total = ceil($orders->count() / $this->size);
-		$min = ($page * $this->size) - $this->size;
-
-		$orders = collect(array_slice($orders->toArray(), $min, $this->size))->map(function ($order) {
-			return new Order($order);
-		});
 
 		return view(
 			'order.index',
 			compact(
 				'orders',
-				'page',
-				'total'
 			)
 		);
 	}
@@ -294,6 +263,7 @@ class OrderController extends Controller
 			'show' => count($serviceIdsArray) > 0 ? true : false,
 		]);
 	}
+
 	public function searchCustomer(Request $request)
 	{
 		$clients = [];
@@ -368,6 +338,7 @@ class OrderController extends Controller
 			)
 		);
 	}
+
 	public function selectItems($comp_arr, $data_arr)
 	{
 		foreach ($data_arr as $data) {
@@ -375,6 +346,7 @@ class OrderController extends Controller
 		}
 		return $data_arr;
 	}
+
 	public function edit(string $id): View
 	{
 		$services = $pest_categories = $application_methods = [];
@@ -421,13 +393,8 @@ class OrderController extends Controller
 
 		if ($request->missing('technicians')) {
 			$error = 'No se ha seleccionado un técnico.';
-			return redirect()->back()->with(
-				compact(
-					'error',
-					'success',
-					'warning'
-				)
-			);
+			
+			return back();
 		}
 		/*$changes = '';
 
@@ -543,7 +510,7 @@ class OrderController extends Controller
 		/*$sql = 'UPDATE_ORDER_' . $order->id;
 						  PagesController::log('update', $changes, $sql);*/
 
-		return redirect()->back();
+		return back();
 	}
 
 	public function destroy(string $id): RedirectResponse
@@ -555,7 +522,7 @@ class OrderController extends Controller
 			$order->save();
 		}
 
-		return redirect()->back();
+		return back();
 	}
 
 	private function setFile($data, $name, $extension = 'png')

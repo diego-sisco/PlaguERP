@@ -41,4 +41,9 @@ class Lead extends Model
     {
         return $this->belongsTo(CompanyCategory::class, 'company_category_id');
     }
+
+    public function trackings()
+    {
+        return $this->morphMany(ServiceTracking::class, 'model');
+    }
 }

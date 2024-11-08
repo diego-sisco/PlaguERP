@@ -46,16 +46,16 @@ class RoleSeeder extends Seeder
 		$workDepts = WorkDepartment::where('id', '!=', 1)->get();
 
 		$toWritePermissions = [
-			['word_id' => 2, 'permissions' => [10, 13, 15]],
-			['word_id' => 3, 'permissions' => [10, 13, 15, 16, 17]],
-			['word_id' => 4, 'permissions' => [15]],
-			['word_id' => 5, 'permissions' => [12, 13]],
-			['word_id' => 6, 'permissions' => [9, 10, 11, 13, 14, 17]],
-			['word_id' => 7, 'permissions' => [9, 10, 11, 12, 13, 14, 16, 17, 18, 19, 20]],
-			['word_id' => 8, 'permissions' => [11, 18]],
+			['word_id' => 2, 'permissions' => [1, 3, 6, 7, 9]],
+			['word_id' => 3, 'permissions' => [1, 4, 5, 7, 9, 11]],
+			['word_id' => 4, 'permissions' => [10]],
+			['word_id' => 5, 'permissions' => [1, 4, 5, 6, 7, 9, 10, 11]],
+			['word_id' => 6, 'permissions' => [1, 2, 3, 4, 5, 6, 7, 9, 10, 11]],
+			['word_id' => 7, 'permissions' => [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]],
+			['word_id' => 8, 'permissions' => [2]],
 		];
 
-		$read_permissions = Permission::where('type', 'r')->get();
+		//$read_permissions = Permission::where('type', 'r')->get();
 
 		foreach ($roles as $role) {
 			foreach ($workDepts as $wd) {
@@ -68,7 +68,7 @@ class RoleSeeder extends Seeder
 					'updated_at' => now(),
 				]);
 
-				$newRole->givePermissionTo($read_permissions->pluck('name')->toArray());
+				//$newRole->givePermissionTo($read_permissions->pluck('name')->toArray());
 
 				$writePermissions = collect($toWritePermissions)->firstWhere('word_id', $wd->id);
 				if ($writePermissions) {
@@ -78,7 +78,7 @@ class RoleSeeder extends Seeder
 		}
 
 		// Crea el rol administrador para la definición de permisos
-		$role = SimpleRole::find(5);
+		/*$role = SimpleRole::find(5);
 		$permission = Permission::find(19);
 		$client = Role::create([
 			'simple_role_id' => $role->id,
@@ -89,6 +89,6 @@ class RoleSeeder extends Seeder
 		]);
 
 		// Define los permisos para el cliente-usuario
-		$client->givePermissionTo($permission->name);
+		$client->givePermissionTo($permission->name);*/
 	}
 }

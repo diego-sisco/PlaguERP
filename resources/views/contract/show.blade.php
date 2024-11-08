@@ -43,7 +43,7 @@
 
         <div class="col-11">
             <div class="row p-3 border-bottom">
-                <a href="{{ route('contract.index', ['page' => 1]) }}" class="col-auto btn-primary p-0 fs-3">
+                <a href="{{ route('contract.index') }}" class="col-auto btn-primary p-0 fs-3">
                     <i class="bi bi-arrow-left m-3"></i>
                 </a>
                 <h1 class="col-auto fs-2 fw-bold m-0">{{ __('contract.title.show') }} {{ $contract->id }} </h1>

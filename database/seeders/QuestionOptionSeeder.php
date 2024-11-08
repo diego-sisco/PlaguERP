@@ -14,22 +14,24 @@ class QuestionOptionSeeder extends Seeder
     public function run(): void
     {
         $values = [
-            'Si,No',
-            'Bien,Mal,Regular',
-            'Numero Entero',
-            'Numero Decimal',
-            'Texto Corto',
-            'Texto Largo',
-            'Nulo,Bajo,Poco',
-            'Porcentaje',
-            'Evaluacion',/*1 - 10 */
-            'Muy mal,Mal,Regular,Bien,Perfecto',
-            'Nulo,Bajo,Medio,Alto',
-            'Tipo de plaga',
-            'Correcta,Desaparecida,Inaccesible,Reducida,Rota,Apagada',
-            'Correcto,Estropeado,Completamente comido,Parcialmente,Comido,Sin cebo',
-            'Huella,Deposicion,Restos comida,Pelos,Rata,Raton,No hay deteccion,Cebo roido',
-            'Area interior,Area exterior,Perimetro'
+            /*1*/ 'Sí o No',
+            /*2*/ 'Bien, Regular o Mal',
+            /*3*/ 'Numero Entero',
+            /*4*/ 'Numero Decimal',
+            /*5*/ 'Texto Corto',
+            /*6*/ 'Texto Largo',
+            /*7*/ 'Nulo, Bajo o Poco',
+            /*8*/ 'Porcentaje',
+            /*9*/ 'Evaluacion',
+            //'Muy mal, Mal, Regular, Bien, Perfecto',
+            /*10*/ 'Perfecto, Bien, Regular, Mal o Muy mal',
+            /*11*/ 'Alto, Medio, Bajo o Nulo',
+            //'Nulo,Bajo,Medio,Alto',
+            /*12*/ 'Tipo de plaga',
+            /*13*/ 'Correcta, Desaparecida, Inaccesible, Reducida, Rota, Apagada',
+            /*14*/ 'Correcto, Estropeado, Completamente comido, Parcialmente, Comido, Sin cebo',
+            /*15*/ 'Huella, Deposicion, Restos comida, Pelos, Rata, Raton, Cebo roido o No hay deteccion',
+            /*16*/ 'Area interior, Area exterior o Perimetro'
         ];
         $descriptions = [
             'El aplicador podra contestar entre un',

@@ -1,10 +1,5 @@
 @extends('layouts.app')
 @section('content')
-    @if (!auth()->check())
-        <?php header('Location: /login');
-        exit(); ?>
-    @endif
-
     <style>
         .sidebar {
             color: white;
@@ -39,7 +34,7 @@
 
         <div class="col-11">
             <div class="row p-3 border-bottom">
-                <a href="{{ route('user.index', ['type' => $user->type_id, 'page' => 1]) }}"
+                <a href="{{ route('user.index', ['type' => 1]) }}"
                     class="col-auto btn-primary p-0 fs-3"><i class="bi bi-arrow-left m-3"></i></a>
                 <h1 class="col-auto fs-2 m-0">{{ __('user.title.edit') }} [<span class="fw-bold">{{ $user->name }}</span>]
                 </h1>

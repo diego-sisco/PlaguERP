@@ -19,26 +19,19 @@ use App\Models\ProductCatalog;
 
 class ControlPointController extends Controller
 {
-    private $size = 30;
+    private $size = 50;
 
-    public function index(int $page)
+    public function index()
     {
-
-        $points = ControlPoint::orderBy('id', 'desc')->get();
-		$total = ceil($points->count() / $this->size);
-		$min = ($page * $this->size) - $this->size;
-
-		$points = collect(array_slice($points->toArray(), $min, $this->size))->map(function ($point) {
-			return new ControlPoint($point);
-		});
-        return view('product.control_point.index_point_type', compact('points', 'page', 'total'));
+        $points = ControlPoint::orderBy('id', 'desc')->paginate($this->size);
+        return view('control_point.index', compact('points'));
     }
 
     public function create()
     {
         $products = ProductCatalog::where('presentation_id', '!=', 1)->get();
         $devices = ProductCatalog::where('presentation_id', 1)->get();
-        return view('product.control_point.form-create-point', compact('products', 'devices'));
+        return view('control_point.create', compact('products', 'devices'));
     }
 
     public function store(Request $request): RedirectResponse
@@ -59,7 +52,7 @@ class ControlPointController extends Controller
             }
         }
 
-        return redirect()->route('point.index', ['page' => 1]);
+        return redirect()->route('point.index');
     }
 
     public function edit(string $id, string $section)
@@ -69,7 +62,7 @@ class ControlPointController extends Controller
         $products = ProductCatalog::where('presentation_id', '!=', 1)->get();
         $devices = ProductCatalog::where('presentation_id', 1)->get();
 
-        return view('product.control_point.edit', compact('point', 'questions', 'products', 'devices', 'section'));
+        return view('control_point.edit', compact('point', 'questions', 'products', 'devices', 'section'));
     }
 
     public function show(string $id, string $section): View
@@ -82,7 +75,7 @@ class ControlPointController extends Controller
         $controlPoint_questions = ControlPointQuestion::where('control_point_id', $id)->get();
         $question_options = QuestionOption::all();
         $quests = Question::all();
-        return view('product.control_point.show', compact('quests', 'question_options', 'controlPoint_questions', 'porps', 'lineBs', 'point', 'products', 'products_included', 'section'));
+        return view('control_point.show', compact('quests', 'question_options', 'controlPoint_questions', 'porps', 'lineBs', 'point', 'products', 'products_included', 'section'));
     }
 
     public function update(Request $request, string $id)
@@ -105,7 +98,7 @@ class ControlPointController extends Controller
             }
         }
 
-        return redirect()->back();
+        return back();
     }
 
     public function destroy(string $id)
@@ -114,10 +107,10 @@ class ControlPointController extends Controller
         if ($point) {
             $point->delete();
         }
-        return redirect()->back();
+        return back();
     }
 
-    public function search(Request $request, int $page)
+    public function search(Request $request)
     {
         if(empty($request->search)) {
 			return redirect()->back()->with('error', trans('messages.no_results_found'));
@@ -127,26 +120,13 @@ class ControlPointController extends Controller
 
 		$points = ControlPoint::where('name', 'LIKE', $searchTerm)
 			->orderBy('id', 'desc')
-			->get();
+            ->paginate($this->size);
 
 		if ($points->isEmpty()) {
-			$error = 'No se encontraron resultados de la búsqueda';
+			session()->flash('error', trans('messages.no_results_found'));
+            $points = ControlPoint::orderBy('id', 'desc')->paginate($this->size);
 		}
 
-		$total = ceil($points->count() / $this->size);
-		$min = ($page * $this->size) - $this->size;
-
-		$points = collect(array_slice($points->toArray(), $min, $this->size))->map(function ($point) {
-			return new ControlPoint($point);
-		});
-
-		return view(
-			'product.control_point.index_point_type',
-			compact(
-				'points',
-				'page',
-				'total'
-			)
-		);
+        return view('control_point.index', compact('points'));
     }
 }

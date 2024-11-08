@@ -8,7 +8,7 @@
     @endif
     
     <div class="row p-3 border-bottom">
-        <a href="{{ route('dashboard.crm', ['status'=> 1,'page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i class="bi bi-arrow-left m-3"></i></a>
+        <a href="{{ route('crm', ['status'=> 1,'page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i class="bi bi-arrow-left m-3"></i></a>
         @if($va == 1)
             <h1 class="col-auto fs-2 fw-bold m-0">Para seguimiento clientes</h1>
         @elseif($va == 2)

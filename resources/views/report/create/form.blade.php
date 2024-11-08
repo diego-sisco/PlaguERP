@@ -15,7 +15,7 @@
 
 @endphp
 
-<form id="report_form" class="form p-5 pt-3" method="POST" action="{{ route('report.store', ['orderId' => $order->id]) }}"
+<form id="report_form" class="form" method="POST" action="{{ route('report.store', ['orderId' => $order->id]) }}"
     enctype="multipart/form-data">
     @csrf
     <input type="hidden" id="service-details" name="service_details" value="">
@@ -142,7 +142,7 @@
         </div>
     </div-->
 
-    <button type="submit" class="btn btn-primary mt-3" onclick="setData()">{{ __('buttons.generate') }}</button>
+    <button type="submit" class="btn btn-primary my-3" onclick="setData()">{{ __('buttons.generate') }}</button>
     </div>
 </form>
 

@@ -159,6 +159,7 @@
 
 <script>
     const directories = @json($directories);
+    const type = @json($type);
     const new_client_account = true;
     const paths = [];
 

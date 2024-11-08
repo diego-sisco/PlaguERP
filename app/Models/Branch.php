@@ -8,8 +8,6 @@ class Branch extends Model
 {
     use HasFactory;
     protected $table = 'branch';
-
-    private $statusOptions = ['Activo', 'Inactivo']; // Renombrado para mayor claridad
    
     protected $fillable = [
         'id',
@@ -33,9 +31,9 @@ class Branch extends Model
         'url',
         'description', // También corrige un typo aquí si "description" es el nombre correcto
     ];
-    
-    public function getStatusAttribute() {
-        return $this->statusOptions[$this->status_id-1];
+
+    public function status() {
+        return $this->belongsTo(Status::class, 'status_id');
     }
 
 }

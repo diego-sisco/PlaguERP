@@ -1,10 +1,5 @@
 @extends('layouts.app')
 @section('content')
-    @if (!auth()->check())
-        <?php header('Location: /login');
-        exit(); ?>
-    @endif
-
     <style>
         .sidebar {
             color: white;
@@ -14,10 +9,6 @@
         .sidebar:hover {
             background-color: #e9ecef;
             color: #212529;
-        }
-
-        .flat-btn {
-            background-color: #55ff00;
         }
     </style>
 
@@ -57,7 +48,7 @@
                             Referencias
                         </a>
 
-                       {{-- @include('customer.create.modals.reference') --}}
+                       @include('customer.edit.modals.reference')
                     @endif
 
                     @if ($customer->general_sedes != 0)
@@ -76,7 +67,6 @@
                                 Zonas
                             </a>
 
-                            @include('customer.create.modals.area')
                             @include('customer.edit.modals.area')
                         @endif
 
@@ -104,7 +94,7 @@
             <div class="row p-3 border-bottom">
                 <a href="{{ route('customer.index', ['type' => 1, 'page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i
                         class="bi bi-arrow-left m-3"></i></a>
-                <h1 class="col-auto fs-2 m-0">{{ __('customer.title.edit') }} <span class="fw-bold">{{$customer->name}}</span></h1>
+                <h1 class="col-auto fs-2 m-0">Editar cliente <span class="fw-bold">{{$customer->name}}</span></h1>
             </div>
             <div class="row p-3">
                 @include('customer.edit.form')

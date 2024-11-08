@@ -11,7 +11,7 @@ class BranchController extends Controller {
     private $cities_route = 'datas/json/Mexico_cities.json';
     public function index()
     {
-        $branches = Branch::all();
+        $branches = Branch::where('status_id', '!=', 3)->get();
         $message = null;
         $states = json_decode(file_get_contents(public_path($this->states_route)), true); 
         $cities = json_decode(file_get_contents(public_path($this->cities_route)), true);
@@ -23,7 +23,7 @@ class BranchController extends Controller {
      */
     public function create()
     {
-        $branches = Branch::all();
+        $branches = Branch::where('status_id', '!=', 3);
         $message = null;
         $states = json_decode(file_get_contents(public_path($this->states_route)), true); 
         $cities = json_decode(file_get_contents(public_path($this->cities_route)), true);
@@ -57,9 +57,10 @@ class BranchController extends Controller {
     public function edit(string $id, int $section)
     {
         $branch = Branch::find($id);
+        $status = Status::all();
         $states = json_decode(file_get_contents(public_path($this->states_route)), true); 
         $cities = json_decode(file_get_contents(public_path($this->cities_route)), true);
-        return view('branch.edit', compact('branch', 'section', 'states', 'cities'));
+        return view('branch.edit', compact('branch', 'section', 'states', 'cities', 'status'));
     }
 
     /**

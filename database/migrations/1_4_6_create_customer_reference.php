@@ -20,10 +20,6 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('department')->nullable();
             $table->string('address')->nullable();
-            $table->string('colony')->nullable();
-            $table->string('zip_code')->nullable();
-            $table->string('state')->nullable();
-            $table->string('city')->nullable();
             $table->string('signature')->nullable();
             $table->timestamps();
         });

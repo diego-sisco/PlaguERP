@@ -10,85 +10,53 @@ class PermissionSeeder extends Seeder {
 	public function run(): void {
 		$permissions = [
 			[
-				'name' => 'read_contract', // 1
-				'type' => 'r',
-			],
-			[
-				'name' => 'read_customer', // 2
-				'type' => 'r',
-			],
-			[
-				'name' => 'read_order', // 3
-				'type' => 'r',
-			],
-			[
-				'name' => 'read_pest', // 4
-				'type' => 'r',
-			],
-			[
-				'name' => 'read_product', // 5
-				'type' => 'r',
-			],
-			[
-				'name' => 'read_service', // 6
-				'type' => 'r',
-			],
-			[
-				'name' => 'read_user', // 7
-				'type' => 'r',
-			],
-			[
-				'name' => 'read_controlPoint', // 8
-				'type' => 'r',
-			],
-			[
-				'name' => 'write_contract', // 9
+				'name' => 'write_branch', // 1
 				'type' => 'w',
 			],
 			[
-				'name' => 'write_customer', // 10
+				'name' => 'write_calendary', // 2
 				'type' => 'w',
 			],
 			[
-				'name' => 'write_order', // 11
+				'name' => 'write_customer', // 3
 				'type' => 'w',
 			],
 			[
-				'name' => 'write_pest', // 12
-				'type' => 'w',
-			],
-			[
-				'name' => 'write_product', // 13
-				'type' => 'w',
-			],
-			[
-				'name' => 'write_service', // 14
-				'type' => 'w',
-			],
-			[
-				'name' => 'write_user', // 15
-				'type' => 'w',
-			],
-			[
-				'name' => 'write_controlPoint', // 16
-				'type' => 'w',
-			],
-			[
-				'name' => 'write_report', //17
-				'type' => 'w',
-			],
-			[
-				'name' => 'write_schedule', //18
-				'type' => 'w',
-			],
-			[
-				'name' => 'read_client', //19
-				'type' => 'r'
-			],
-			[
-				'name' => 'write_client', //20
+				'name' => 'write_lot', // 4
 				'type' => 'w'
-			]
+			],
+			[
+				'name' => 'write_order', // 5
+				'type' => 'w',
+			],
+			[ 
+				'name' => 'write_pest', // 6
+				'type' => 'w',
+			],
+			[
+				'name' => 'write_product', // 7
+				'type' => 'w',
+			],
+			[
+				'name' => 'write_point', // 8
+				'type' => 'w',
+			],
+			[
+				'name' => 'write_service', // 9
+				'type' => 'w',
+			],
+			[
+				'name' => 'write_user', // 10
+				'type' => 'w',
+			],
+			[
+				'name' => 'write_warehouse', // 11
+				'type' => 'w'
+			],
+			[
+				'name' => 'write_system_client', // 12
+				'type' => 'w'
+			],
 		];
 
 		$data = array_map(function ($permission) {

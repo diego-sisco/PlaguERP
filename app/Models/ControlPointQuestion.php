@@ -11,7 +11,8 @@ class ControlPointQuestion extends Model
     protected $table = 'control_point_question';
 
     protected $fillable = [
+        'id',
+        'control_point_id',
         'question_id',
-        'control_point_id'
     ];
 }

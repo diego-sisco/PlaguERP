@@ -2,18 +2,18 @@
     $pos_pest_cat = [];
     $pos_app_method = [];
 @endphp
-<form id="create_service_form" class="form p-5 pt-3" method="POST"
+<form id="create_service_form" class="form" method="POST"
     action="{{ route('service.update', ['id' => $service->id]) }}" enctype="multipart/form-data">
     @csrf
 
     <div class="row">
         <div class="col-12 mb-3">
-            <label for="name" class="form-label is-required">{{ __('service.data.name') }}:</label>
+            <label for="name" class="form-label is-required">{{ __('service.data.name') }}</label>
             <div class="input-group">
                 <select class="input-group-text bg-secondary-subtle" id="prefix" name="prefix"
                     onchange="set_instructions()">
                     @foreach ($prefixes as $prefix)
-                        <option value="{{ $prefix->id }}" @if ($prefix->id == $service->prefix) selected @endif>
+                        <option value="{{ $prefix->id }}" {{ $prefix->id == $service->prefix ? 'selected' : '' }}>
                             {{ $prefix->name }}</option>
                     @endforeach
                 </select>
@@ -24,7 +24,7 @@
         </div>
 
         <div class="col-3 mb-3">
-            <label for="name" class="form-label is-required">{{ __('service.data.service_type') }}: </label>
+            <label for="name" class="form-label is-required">{{ __('service.data.service_type') }} </label>
             <select class="form-select border-secondary border-opacity-25" id="service_type" name="service_type_id"
                 required>
                 @foreach ($service_types as $service_type)
@@ -38,7 +38,7 @@
         </div>
 
         <div class="col-3 mb-3">
-            <label for="name" class="form-label is-required">{{ __('service.data.business_line') }}:</label>
+            <label for="name" class="form-label is-required">{{ __('service.data.business_line') }}</label>
             <select class="form-select border-secondary border-opacity-25 " id="business_line" name="business_line_id"
                 required>
                 <option value="" selected disabled>Selecciona una opción</option>
@@ -53,17 +53,17 @@
         <div class="col-3 mb-3">
             <div class="row">
                 <div class="col-4 mb-1">
-                    <label for="name" class="form-label">{{ __('service.data.time') }}:</label>
+                    <label for="name" class="form-label">{{ __('service.data.time') }}</label>
                     <input type="number" class="form-control border-secondary border-opacity-25" id="time"
                         $pos_pest_cat=Array(); name="time" value="{{ $service->time }}" min="0"
-                        max="59" placeholder="00" required />
+                        max="59" placeholder="00" />
                 </div>
                 <div class="col-8 mb-1">
-                    <label for="name" class="form-label">{{ __('service.data.time_unit') }}:</label>
+                    <label for="name" class="form-label">{{ __('service.data.time_unit') }}</label>
                     <select class="form-select border-secondary border-opacity-25 " id="time_unit" name="time_unit"
                         required>
                         @for ($i = 0; $i < count($time_types); $i++)
-                            <option value="{{ $i + 1 }}" @if ($i + 1 == $service->time_unit) selected @endif>
+                            <option value="{{ $i + 1 }}"  @if ($i + 1 == $service->time_unit) selected @endif>
                                 {{ $time_types[$i] }} </option>
                         @endfor
                     </select>
@@ -72,18 +72,17 @@
         </div>
 
         <div class="col-2 mb-3">
-            <label for="name" class="form-label is-required">{{ __('service.data.status') }}:</label>
-            <select class="form-select border-secondary border-opacity-25" id="status" name="status_id"
-                required>
+            <label for="name" class="form-label is-required">{{ __('service.data.status') }}</label>
+            <select class="form-select border-secondary border-opacity-25" id="status" name="status_id" required>
                 @foreach ($service_status as $status)
-                    <option @if ($status->id == $service->status_id) selected @endif value="{{ $status->id }}">
+                    <option value="{{ $status->id }}" {{$status->id == $service->status_id ? 'selected' : '' }} >
                         {{ $status->name }} </option>
                 @endforeach
             </select>
         </div>
 
         <div class="row mb-3">
-            <h5 class="fw-bold pb-1 border-bottom">{{ __('service.data.pests') }}:</h5>
+            <h5 class="fw-bold pb-1 border-bottom">{{ __('service.data.pests') }}</h5>
             <div class="form-text text-danger pb-1" id="basic-addon4">
                 * Selecciona al menos 1 plaga.
             </div>
@@ -91,16 +90,16 @@
                 @foreach ($pest_categories as $i => $pest_category)
                     <div class="accordion-item col-4 border-0">
                         <h2 class="accordion-header">
-                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
-                                data-bs-target="#collapse{{ $i }}" aria-expanded="true"
-                                aria-controls="collapse{{ $i }}">
+                            <button class="accordion-button collapsed border-bottom" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#collapse{{ $i }}"
+                                aria-expanded="true" aria-controls="collapse{{ $i }}">
                                 {{ $pest_category->category }}
                             </button>
                         </h2>
-                        @if (!$pest_category->pests->isEmpty())
-                            <div id="collapse{{ $i }}" class="accordion-collapse collapse"
-                                data-bs-parent="#accordionPest">
-                                <div class="accordion-body">
+                        <div id="collapse{{ $i }}" class="accordion-collapse collapse"
+                            data-bs-parent="#accordionPest">
+                            <div class="accordion-body">
+                                @if (!$pest_category->pests->isEmpty())
                                     @foreach ($pest_category->pests as $pest)
                                         <div class="form-check">
                                             <input class="pest form-check-input border-secondary" type="checkbox"
@@ -111,16 +110,13 @@
                                             </label>
                                         </div>
                                     @endforeach
-                                </div>
+                                @else
+                                    <p class="fw-bold text-danger">
+                                        No hay plagas asociadas.
+                                    </p>
+                                @endif
                             </div>
-                        @else
-                            <div id="collapse{{ $i }}" class="accordion-collapse collapse"
-                                data-bs-parent="#accordionPest">
-                                <div class="accordion-body text-danger">
-                                    No hay plagas asociadas.
-                                </div>
-                            </div>
-                        @endif
+                        </div>
                     </div>
                 @endforeach
             </div>
@@ -128,14 +124,14 @@
         </div>
 
         <div class="row mb-3">
-            <h5 class="fw-bold pb-1 border-bottom">{{ __('service.data.app_methods') }}:</h5>
+            <h5 class="fw-bold pb-1 border-bottom">{{ __('service.data.app_methods') }}</h5>
             <div class="form-text text-danger pb-1" id="basic-addon4">
                 * Selecciona al menos 1 método de aplicación.
             </div>
             @foreach ($application_methods as $app_method)
                 <div class="col-3">
                     <div class="form-check">
-                        <input class="appMethod form-check-input border-secondary" type="checkbox"
+                        <input class="appMethod form-check-input" type="checkbox"
                             value="{{ $app_method->id }}" onchange="setAppMethods()"
                             {{ $service->hasAppMethods($app_method->id) ? 'checked' : '' }} />
                         <label class="form-check-label" for="app_method-{{ $app_method->id }}">
@@ -148,26 +144,26 @@
         </div>
 
         <div class="col-12 mb-3">
-            <h5 class="fw-bold pb-1 mb-3 border-bottom">Descripción del servicio:</h5>
+            <h5 class="fw-bold pb-1 mb-3 border-bottom">Descripción del servicio</h5>
             <textarea type="text" class="form-control border-secondary border-opacity-25 p-3" id="description"
-                name="description" rows="7" placeholder="{{ __('service.data.input.description') }}"
-                style="text-align: justify;" required>{{ $service->description }}</textarea>
+                name="description" rows="7" placeholder="Incluye una descripción, directrices o prevenciones sobre el servicio."
+                style="text-align: justify;">{{ $service->description }}</textarea>
         </div>
 
 
-        <div class="col-2 mb-2">
-            <label for="name" class="form-label is-required">Costo del servicio:</label>
+        <div class="col-auto mb-3">
+            <label for="name" class="form-label is-required">Costo del servicio</label>
             <div class="input-group mb-0">
                 <span class="input-group-text bg-success">$</span>
                 <input type="number" class="form-control" id="cost" name="cost"
                     value="{{ $service->cost }}" min="0" placeholder="0" step="0.01" required />
             </div>
             <div class="form-text mb-2" id="basic-addon4">
-                Introduce el costo del servicio.
+                Costo del servicio a la empresa.
             </div>
         </div>
     </div>
-    <button id="form_service_button" type="summit" class="btn btn-primary mt-3">
+    <button id="form_service_button" type="summit" class="btn btn-primary my-3">
         {{ __('buttons.update') }}
     </button>
 </form>

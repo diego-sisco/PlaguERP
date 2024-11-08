@@ -80,6 +80,8 @@ class PagesController extends Controller
         'Diciembre'
     ];
 
+    private $size = 20;
+
     private function convertToUTC($date, $time)
     {
         $timezone = 'America/Mexico_City';
@@ -137,14 +139,16 @@ class PagesController extends Controller
         return view('dashboard.index');
     }
 
-    public function crm($section)
+    public function crm()
     {
+        /*
         $charts = [
             'customers' => (new GraphicController)->newCustomers(),
             'orders' => (new GraphicController)->orders(),
             'domestic' => (new GraphicController)->orderTypes(1),
             'comercial' => (new GraphicController)->orderTypes(2),
         ];
+
         $chartNames = [
             'Nuevos clientes',
             'Clientes agendados',
@@ -155,7 +159,14 @@ class PagesController extends Controller
         $frecuencies = OrderFrequency::all();
         $leads = Lead::all();
         $months = $this->months;
-        return view('dashboard.crm.index', compact('charts', 'chartNames', 'months', 'frecuencies', 'leads', 'section'));
+        */
+        return view('dashboard.crm.index');
+    }
+
+    public function crmOrders(string $status)
+    {
+        $orders = Order::where('status_id', $status)->orderBy('id', 'desc');
+        return view('dashboard.crm.', compact('customers', 'order_status', 'type'));
     }
 
 
@@ -167,38 +178,34 @@ class PagesController extends Controller
         return view('dashboard.rrhh.index', compact('users', 'files', 'section'));
     }
 
-    public function qualityOrders(string $status, $page)
-    {
-        $size = 20;
-        $max = Order::count() - ($size * ($page - 1));
-        $min = $max - $size;
-        $totalPages = ceil(Order::where('status_id', $status)->count() / $size);
+    public function qualityOrders(string $status)
+    {        
         $user = auth()->user();
-        $orders = Order::where('status_id', $status)->orderBy('id', 'desc');
+        $orders = Order::where('status_id', $status);
 
-        if ($user->work_department_id == 7) {
-            $orders = $orders->where('administrative_id', auth()->user()->id);
-        }
+        if($user->role_id == 1 && $user->work_department_id == 7) {
+            $customerIds = Customer::where('administrative_id', $user->id)->get()->pluck('id');
+            dd($customerIds);
+            $orders = $orders->where('customer_id', $customerIds);
+        } 
 
-        $orders = $orders->get();
+        $orders = $orders->paginate($this->size);
 
-        //->where('administrative_id', auth()->user()->id)
         return view(
             'dashboard.quality.orders',
-            compact('orders', 'status', 'page', 'totalPages')
+            compact('orders', 'status')
         );
     }
 
-    public function qualityCustomers($page)
+    public function qualityCustomers()
     {
         $totalPages = 0;
         return view(
             'dashboard.quality.customers',
-            compact('page', 'totalPages')
         );
     }
 
-    public function qualityControl($page)
+    public function qualityControl()
     {
         $totalPages = 0;
 
@@ -207,7 +214,7 @@ class PagesController extends Controller
 
         return view(
             'dashboard.quality.control',
-            compact('customers', 'users', 'page', 'totalPages')
+            compact('customers', 'users')
         );
     }
 

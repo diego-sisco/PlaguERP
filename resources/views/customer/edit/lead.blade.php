@@ -6,14 +6,6 @@
     <input type="hidden" name="lead_to_customer_id" id="lead-to-customer" value="">
     <input type="hidden" name="customer_url" id="customer_url" value="{{ route('customer.autocomplete') }}">
     <input type="hidden" name="status" id="status" value="{{$client->status}}">
-    
-    <div class="row mt-0 mb-3">
-        <div class="m-0">
-            <button type="button" class="btn btn-link btn-sm" data-bs-toggle="modal" data-bs-target="#leadtocustomerModal" >
-                Convertir a Cliente
-            </button>
-        </div>
-    </div>
 
     <div class="row mb-2">
         <div class="col-4">

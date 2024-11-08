@@ -60,7 +60,7 @@
                     </div>
                     <div class="row">
                         <span class="col fw-bold">Status:</span>
-                        <span class="col fw-normal">{{ $branch->status }}</span>
+                        <span class="col fw-normal">{{ $branch->status->name }}</span>
                     </div>
                     <div class="row">
                         <span class="col fw-bold">Código: </span>
@@ -116,13 +116,5 @@
                 @endif
             </div>
         </div>
-    </div>
-
-    <div class="data-container border rounded shadow p-3">
-        <div class="edit-title d-flex justify-content-start align-items-center gap-2 text-center">
-            <a href="{{ route('branch.index') }}" class="btn-primary p-0 fs-3"><i class="bi bi-arrow-left m-3"></i></a>
-            <h1 class="fs-2 fw-bold m-0">{{ __('branch.title.branch_data') }}</h1>
-        </div>
-
     </div>
 @endsection

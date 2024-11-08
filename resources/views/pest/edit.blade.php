@@ -10,7 +10,7 @@
             <!-- Header -->
             <div class="col-12 border-bottom pb-2">
                 <div class="row">
-                    <a href="{{ route('pest.index', ['page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i
+                    <a href="{{ route('pest.index') }}" class="col-auto btn-primary p-0 fs-3"><i
                             class="bi bi-arrow-left m-3"></i></a>
                     <h1 class="col-auto fs-2 fw-bold m-0">{{ __('pest.title.edit') }}</h1>
                 </div>

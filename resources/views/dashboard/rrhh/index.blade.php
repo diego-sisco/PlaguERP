@@ -29,7 +29,7 @@
                 <a href="{{ route('user.create', ['type' => 1]) }}" class="sidebar col-12 p-2 text-center">
                     Crear usuario
                 </a>
-                <a href="{{ route('dashboard.rrhh', ['section' => 1]) }}" class="sidebar col-12 p-2 text-center"> Usuarios pendientes
+                <a href="{{ route('rrhh', ['section' => 1]) }}" class="sidebar col-12 p-2 text-center"> Usuarios pendientes
                 </a>
                 <a class="sidebar col-12 p-2 text-center" data-bs-toggle="collapse" href="#collapseExample" role="button"
                     aria-expanded="false" aria-controls="collapseExample">
@@ -37,10 +37,10 @@
                 </a>
                 <div class="collapse" id="collapseExample" style="background-color: #495057;">
                     <div class="row">
-                        <a href="{{ route('dashboard.rrhh', ['section' => 2]) }}" class="sidebar col-12 p-2 text-center">
+                        <a href="{{ route('rrhh', ['section' => 2]) }}" class="sidebar col-12 p-2 text-center">
                             Pendientes
                         </a>
-                        <a href="{{ route('dashboard.rrhh', ['section' => 3]) }}" class="sidebar col-12 p-2 text-center">
+                        <a href="{{ route('rrhh', ['section' => 3]) }}" class="sidebar col-12 p-2 text-center">
                             Por expirar
                         </a>
                     </div>

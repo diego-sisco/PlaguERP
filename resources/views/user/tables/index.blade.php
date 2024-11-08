@@ -14,7 +14,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($users as $user)
+        @foreach ($users as $index => $user)
             <tr>
                 <th scope="row"> {{ $user->id }} </th>
                 <td> {{ $user->name }} </td>

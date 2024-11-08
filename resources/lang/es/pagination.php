@@ -7,7 +7,8 @@ return [
     'search' => 'Buscar',
     'back' => 'Regresar',
 
-    'navigation' => [
+    'nav' => [
+        'key' => 'Módulos',
         'users' => 'Usuarios',
         'roles' => 'Roles',
         'permissions' => 'Permisos',
@@ -17,10 +18,19 @@ return [
         'customers' => 'Clientes',
         'branches' => 'Sucursales',
         'orders' => 'Ordenes de servicio',
-        'daily_program' => "Programa del día",
         'schedule' => 'Cronograma',
-        'catalogs' => 'Catálogos',
         'contract' => 'Calendarios',
+        'control_points' => 'Puntos de control'
+    ],  
+
+    'dashboard' => [
+        'key' => 'Dashboard',
+        'crm' => 'CRM',
+        'planning' => 'Planificación',
+        'management' => 'Gestión y calidad',
+        'warehouse' => 'Almacén',
+        'rrhh' => 'RRHH',
+        'client_system' => 'Sistema de clientes'
     ],
 
     'reference_table' => [

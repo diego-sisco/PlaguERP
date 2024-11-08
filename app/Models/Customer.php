@@ -94,7 +94,8 @@ class Customer extends Model
         return $this->hasMany(CustomerReference::class, 'customer_id', 'id');
     }
 
-    public function files() {
+    public function files()
+    {
         return $this->hasMany(CustomerFile::class, 'customer_id', 'id');
     }
 
@@ -118,7 +119,15 @@ class Customer extends Model
         return $this->hasMany(Order::class, 'customer_id', 'id');
     }
 
-    public function properties() {
+    public function ordersPlaced()
+    {
+        return $this->orders()
+            ->whereIn('status_id', [3, 4, 5])->orderByDesc('completed_date');
+        //->whereNotNull('completed_date');
+    }
+
+    public function properties()
+    {
         return $this->hasManyThrough(
             Properties::class,
             CustomerProperties::class,
@@ -129,11 +138,18 @@ class Customer extends Model
         );
     }
 
-    public function branch() {
-        return $this->belongsTo(Branch::class,'branch_id', 'id');
+    public function branch()
+    {
+        return $this->belongsTo(Branch::class, 'branch_id', 'id');
     }
 
-    public function user() {
-        return $this->belongsTo(User::class,'administrative_id', 'id');
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'administrative_id', 'id');
+    }
+
+    public function trackings()
+    {
+        return $this->morphMany(ServiceTracking::class, 'model');
     }
 }

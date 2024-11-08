@@ -4,9 +4,9 @@ return [
     'tag' => 'Orden',
 
     'title' => [
-        'create' => 'Crear orden',
-        'edit' => 'Editar orden',
-        'show' => 'Ver orden',
+        'create' => 'Crear orden de servicio',
+        'edit' => 'Editar orden de servicio',
+        'show' => 'Ver orden de servicio',
         'find_service' => 'Buscar servicio(s)',
         'basic' => 'Datos generales',
         'additional' => 'Información adicional',

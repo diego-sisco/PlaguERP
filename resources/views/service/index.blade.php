@@ -4,31 +4,26 @@
         $time_types = ['Segundo(s)', 'Minuto(s)', 'Hora(s)'];
     @endphp
 
-    @if (!auth()->check())
-        <?php header('Location: /login');
-        exit(); ?>
-    @endif
+    <div class="container-fluid pt-3">
+        <div class="row justify-content-between">
+            <div class="col-auto mb-3">
+                @can('write_service')
+                    <a class="btn btn-primary" href="{{ route('service.create') }}">
+                        <i class="bi bi-plus-lg fw-bold"></i> {{ __('service.button.create') }}
+                    </a>
+                @endcan
+            </div>
 
-    <div class="row w-100 justify-content-between p-3 m-0 mb-3">
-        <div class="col-4">
-            @can('write_service')
-                <a class="btn btn-primary" href="{{ route('service.create') }}">
-                    <i class="bi bi-plus-lg fw-bold"></i> {{ __('service.button.create') }}
-                </a>
-            @endcan
-        </div>
-        <div class="col-4">
-            <div type="browser" class="row">
-                @include('service.browser')
+            <div class="col-4 mb-3">
+                <div type="browser" class="row mb-3">
+                    @include('service.browser')
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row m-0 p-3">
+        @include('messages.alert')
         <div class="table-responsive">
             @include('service.tables.index')
         </div>
-    </div>
-    <div class="row p-3 pt-0 m-0 justify-content-center">
-        @include('layouts.pagination.services')
+        {{ $services->links('pagination::bootstrap-5') }}
     </div>
 @endsection

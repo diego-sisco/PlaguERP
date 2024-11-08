@@ -17,12 +17,12 @@ class ProductCatalog extends Model
 
     protected $fillable = [
         'id',
-        'economic_id',
         'biocide_id',
         'purpose_id',
         'linebusiness_id',
         'presentation_id',
         'toxicity_categ_id',
+        'metric_id',
         'files_id',
         'image_path',
         'name',
@@ -31,7 +31,6 @@ class ProductCatalog extends Model
         'description',
         'execution_indications',
         'manufacturer',
-        'metric_id',
         'register_number',
         'validity_date',
         'active_ingredient',
@@ -39,27 +38,42 @@ class ProductCatalog extends Model
         'dosage',
         'safety_period',
         'residual_effect',
+        'purchase_price',
+        'selling_price',
+        'min_purchase_unit',
+        'mult_purchase',
+        'subaccount_purchases',
+        'subaccount_sales',
+        'supplier_name',
+        'supplier_phone',
+        'supplier_email',
         'is_obsolete',
         'is_toxic',
+        'is_selling'
     ];
 
-    public function lineBusiness() {
-        return $this->belongsTo(LineBusiness::class,'linebusiness_id');
+    public function lineBusiness()
+    {
+        return $this->belongsTo(LineBusiness::class, 'linebusiness_id');
     }
 
-    public function purpose() { 
-        return $this->belongsTo(Purpose::class,'purpose_id');
+    public function purpose()
+    {
+        return $this->belongsTo(Purpose::class, 'purpose_id');
     }
 
-    public function economicData() {
+    public function economicData()
+    {
         return $this->belongsTo(EconomicDataProduct::class, 'economic_data_id');
     }
 
-    public function applicationMethod() {
+    public function applicationMethod()
+    {
         return $this->belongsTo(ApplicationMethod::class, 'application_method_id');
     }
 
-    public function applicationMethods() {
+    public function applicationMethods()
+    {
         return $this->hasManyThrough(
             ApplicationMethod::class,        // El modelo intermedio (Method)
             Dosage::class,        // El modelo final al que deseas acceder (Dosage)
@@ -70,21 +84,26 @@ class ProductCatalog extends Model
         );
     }
 
-    public function hasAppMethod($appMethodId) {
+    public function hasAppMethod($appMethodId)
+    {
         return $this->applicationMethods->contains('id', $appMethodId);
     }
-    
-    public function presentation() {
+
+    public function presentation()
+    {
         return $this->belongsTo(Presentation::class, 'presentation_id');
     }
 
-    public function toxicityCategory() {
+    public function toxicityCategory()
+    {
         return $this->belongsTo(ToxicityCategories::class, 'toxicity_categ_id');
     }
-    public function orderProduct(){
+    public function orderProduct()
+    {
         return $this->hasOne(OrderProduct::class, 'product_id');
     }
-    public function pests() {
+    public function pests()
+    {
         return $this->hasManyThrough(
             PestCatalog::class,
             ProductPest::class,
@@ -100,12 +119,16 @@ class ProductCatalog extends Model
         return $this->pests->contains('id', $pestID);
     }
 
-    public function files () {
-        return $this->belongsTo(ProductFile::class,'files_id');
-    }
-
-    public function lot() {
+    public function lot()
+    {
         return $this->belongsTo(Lot::class, 'id', 'product_id');
     }
 
+    public function files() {
+        return $this->hasMany(ProductFile::class, 'product_id');
+    }
+
+    public function file($filenameId) {
+        return $this->files()->where('filename_id', $filenameId)->first();
+    }
 }

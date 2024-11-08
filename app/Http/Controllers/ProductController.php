@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Filenames;
 use App\Models\Metric;
 use App\Models\ProductInput;
 use App\Models\ProductCatalog;
@@ -28,7 +29,7 @@ class ProductController extends Controller
 
     private $files_path = 'products/files/';
 
-    private $size = 30;
+    private $size = 50;
 
     public function getImage(string $url)
     {
@@ -42,17 +43,10 @@ class ProductController extends Controller
         return response($file, 200)->header('Content-Type', $type);
     }
 
-    public function index(int $page): View
+    public function index(): View
     {
-        $products = ProductCatalog::orderBy('id', 'desc')->get();
-        $total = ceil($products->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $products = collect(array_slice($products->toArray(), $min, $this->size))->map(function ($product) {
-            return new ProductCatalog($product);
-        });
-
-        return view('product.index', compact('products', 'page', 'total'));
+        $products = ProductCatalog::orderBy('id', 'desc')->paginate($this->size);
+        return view('product.index', compact('products'));
     }
 
     public function create()
@@ -75,7 +69,6 @@ class ProductController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $url = null;
-        $files = ProductFile::create();
         $product = new ProductCatalog($request->all());
 
         if ($request->hasFile('image')) {
@@ -87,10 +80,9 @@ class ProductController extends Controller
             $filename = $product->name . '.' . $file->getClientOriginalExtension();
             $url = $this->images_path . $filename;
             Storage::disk('public')->put($url, file_get_contents($file));
+            $product->image_path = $url;
         }
 
-        $product->image_path = $url;
-        $product->files_id = $files->id;
         $product->save();
 
         $selected_pests = json_decode($request->input('pestSelected'));
@@ -114,14 +106,44 @@ class ProductController extends Controller
             }
         }
 
-        return redirect()->route('product.index', ['page' => 1]);
+        return redirect()->route('product.index');
+    }
+
+    public function storeFile(Request $request, string $id) {
+        $url = null;
+
+        $product = ProductCatalog::find($id);
+        $filename = Filenames::find($request->input('filename_id'));
+
+        if ($request->hasFile('file')) {
+            $request->validate([
+                'file' => 'required|file|mimes:jpeg,png,jpg,pdf|max:10000',
+            ]);
+
+            $file = $request->file('file');
+            $dir = $product->name . $product->id . '/';
+            $dir_filename = $filename->name . '.' . $file->getClientOriginalExtension();
+            $url = $this->files_path . $dir . $dir_filename;
+            Storage::disk('public')->put($url, file_get_contents($file));
+        }
+
+        ProductFile::updateOrCreate([
+            'product_id' => $product->id,
+            'filename_id' => $filename->id,
+        ], [
+            'path' => $url,
+            'expirated_at' => $request->input('expirated_at')
+        ]);
+
+        return back();
     }
 
     public function show(string $id, string $section): View
     {
         $product = ProductCatalog::find($id);
+        $filenames = Filenames::where('type', 'product')->get();
 
-        return view('product.show', compact('product', 'lineBs', 'appMethods', 'press', 'porps', 'biogyts', 'biogs', 'biotps', 'toxics', 'section'));
+        return view('product.show', compact('product', 'filenames', 'section'));
     }
 
     public function edit(string $id, string $section)
@@ -135,18 +157,21 @@ class ProductController extends Controller
         $presentations = Presentation::all();
         $toxics = ToxicityCategories::all();
         $metrics = Metric::all();
-
+        $filenames = Filenames::where('type', 'product')->get();
         $pest_categories = PestCategory::orderBy('category', 'asc')->get();
         $inputs = ProductInput::where('product_id', $id)->get();
 
         return view(
             'product.edit',
-            compact('product', 'line_business', 'application_methods', 'purposes', 'biocides', 'presentations', 'toxics', 'metrics', 'pest_categories', 'inputs', 'section')
+            compact('product', 'line_business', 'application_methods', 'purposes', 'biocides', 'presentations', 'toxics', 'metrics', 'pest_categories', 'inputs', 'filenames', 'section')
         );
     }
 
     public function update(Request $request, string $id, int $section)
     {
+        $appMethodSelected = json_decode($request->input('appMethodSelected'), true);
+        $pestSelected = json_decode($request->input('pestSelected'), true);
+
         $product = ProductCatalog::find($id);
         $product->fill($request->all());
 
@@ -159,14 +184,14 @@ class ProductController extends Controller
             $filename = $product->name . '.' . $file->getClientOriginalExtension();
             $url = $this->images_path . $filename;
             Storage::disk('public')->put($url, file_get_contents($file));
+            $product->image_path = $url;
         }
-        $product->image_path = $url;
+
         $product->save();
 
-        $appMethodSelected = json_decode($request->input('appMethodSelected'), true);
         if (!empty($appMethodSelected)) {
-            $appMethodServices = Dosage::where('prod_id', $id)->pluck('methd_id')->toArray();
-            $appMethodsToDelete = array_diff($appMethodServices, $appMethodSelected);
+            $appMethodProducts = Dosage::where('prod_id', $id)->pluck('methd_id')->toArray();
+            $appMethodsToDelete = array_diff($appMethodProducts, $appMethodSelected);
             Dosage::where('prod_id', $id)->whereIn('methd_id', $appMethodsToDelete)->delete();
 
             foreach ($appMethodSelected as $appMethodId) {
@@ -178,225 +203,67 @@ class ProductController extends Controller
         }
 
 
-
-        return back();
-        /*
-        if ($product) {
-
-            if ($section == 1) {
-                // Datos basicos
-                if ($request->hasFile('photo')) {
-                    $img = $request->file('photo');
-                    $extension = $img->getClientOriginalExtension(); // getting image extension
-                    $filename = 'P' . time() . '.' . $extension;
-                    $img->move($this->images_path, $filename);
-                    $img_path = $this->images_path . $filename;
-                    $product->photo = $img_path;
-                }
-
-                $product->name = $request->name;
-                $product->bussiness_name = $request->bussiness_name;
-                $product->bar_code = $request->bar_code;
-                $product->status = $request->status;
-                $product->obsolete = $request->obsolete;
-                $product->presentation_id = $request->presentation;
-                $product->linebuss_id = $request->lineB;
-                $product->description = $request->description;
-                $product->execution_indications = $request->indications_execution;
-                $product->metric = $request->metric;
-               
-            }
-
-            if ($section == 2) {
-                // Detalles tecnicos
-                $product->manufacturer = $request->manufacturer;
-                $product->register_number = $request->register_number;
-                $product->validity_date = $request->valid_date;
-                $product->active_ingredient = $request->activin;
-                $product->per_active_ingredient = $request->per_active_ingredient;
-                $product->dosage = $request->dosage;
-                $product->safety_period = $request->safety_period;
-                $product->residual_effect = $request->residual_effect;
-                $product->biocidesgyt_id = $request->biotps;
-                $product->purpose_id = $request->purpose;
-            }
-
-            if ($section == 3) {
-                $product->toxicity = $request->toxicity;
-                $product->toxicity_categ_id = $request->toxic;
-            }
-
-            if ($section == 4) {
-                $dataE = $product->economicData;
-                if ($dataE) {
-                    $dataE->purchase_price = $request->econ_price;
-                    $dataE->min_purchase_unit = $request->mult_purchase_unit;
-                    $dataE->mult_purchase = $request->mult_purchase;
-                    $dataE->supplier_id = $request->supplier_id;
-                    $opcion = $request->input('option');
-
-                    if ($opcion === 'show') {
-                        $dataE->selling = true;
-                    } elseif ($opcion === 'hide') {
-                        $dataE->selling = false;
-                    } else {
-                        $dataE->selling = null;
-                    }
-                    $dataE->selling_price = $request->selling_price;
-                    $dataE->subaccount_purchases = $request->subaccount_purchases;
-                    $dataE->subaccount_sales = $request->subaccount_sales;
-                    $dataE->save();
-                }
-            }
-            if ($section == 5) {
-                $success = null;
-                $error = null;
-                $warning = null;
-
-
-                $data = $request->all();
-                if (isset($data['files']) && isset($data['prod_id']) && isset($data['file_type'])) {
-                    $files = $data['files'];
-                    $id = $data['prod_id'];
-                    $type = $data['file_type'];
-                } else {
-                    $error = 'No se encontraron los archivos';
-                    return response()->json([
-                        'success' => $success,
-                        'error' => $error
-                    ]);
-                }
-
-                $productfile = ProductFile::where('product_id', $id)->first();
-
-                if ($productfile == null) {
-                    $error = 'No se encontró el producto';
-                    return response()->json([
-                        'success' => $success,
-                        'error' => $error
-                    ]);
-                }
-
-                if ($type == "rp_specification") {
-                    foreach ($files as $file) {
-                        $path = ProductController::setFile($file, $id, "rp_specification");
-                        $productfile->rp_specification = $path;
-                        $productfile->save();
-                    }
-                }
-
-                if ($type == "techical_specification") {
-                    foreach ($files as $file) {
-                        $path = ProductController::setFile($file, $id, "techical_specification");
-                        $productfile->techical_specification = $path;
-                        $productfile->save();
-                    }
-                }
-
-                if ($type == "segurity_specification") {
-                    foreach ($files as $file) {
-                        $path = ProductController::setFile($file, $id, "segurity_specification");
-                        $productfile->segurity_specification = $path;
-                        $productfile->save();
-                    }
-                }
-
-                if ($type == "register_specification") {
-                    foreach ($files as $file) {
-                        $path = ProductController::setFile($file, $id, "register_specification");
-                        $productfile->register_specification = $path;
-                        $productfile->save();
-                    }
-                }
-
-                if ($type == "sanitary_register") {
-                    foreach ($files as $file) {
-                        $path = ProductController::setFile($file, $id, "sanitary_register");
-                        $productfile->sanitary_register = $path;
-                        $productfile->save();
-                    }
-                }
-            }
-            if ($section == 6) {
-                $pestSelected = json_decode($request->input('pestSelected'), true);
-                $productPests = ProductPest::where('product_id', $id)->pluck('pest_id')->toArray();
-                if ($pestSelected != null) {
-                    $pestsToDelete = array_diff($productPests, $pestSelected);
-                    ProductPest::where('product_id', $id)->whereIn('pest_id', $pestsToDelete)->delete();
-                    if (!empty($pestSelected)) {
-                        foreach ($pestSelected as $pestId) {
-                            ProductPest::updateOrCreate(
-                                ['product_id' => $id, 'pest_id' => $pestId],
-                                ['product_id' => $id, 'pest_id' => $pestId]
-                            );
-                        }
-                    }
-                }
-            }
-            if ($section == 7) {
-                $productsunits = ProductUnit::where('product_id', $id)->get();
-                foreach ($productsunits as $pu) {
-                    if ($pu->measure_type == 'a' && $request->option_almacenaje) {
-                        $pu->update([
-                            'measure' => $request->option_almacenaje,
-                            'measure_unit' => $request->selectedOption_almacenaje,
-                            'unit_number' => $request->unidad_almacenaje
-                        ]);
-                    } elseif ($pu->measure_type == 'c' && $request->option_compra) {
-                        $pu->update([
-                            'measure' => $request->option_compra,
-                            'measure_unit' => $request->selectedOption_compra,
-                            'unit_number' => $request->unidad_compra
-                        ]);
-                    } elseif ($pu->measure_type == 'v' && $request->option_venta) {
-                        $pu->update([
-                            'measure' => $request->option_venta,
-                            'measure_unit' => $request->selectedOption_venta,
-                            'unit_number' => $request->unidad_venta
-                        ]);
-                    }
+        if ($pestSelected) {
+            $productPests = ProductPest::where('product_id', $id)->pluck('pest_id')->toArray();
+            $pestsToDelete = array_diff($productPests, $pestSelected);
+            ProductPest::where('product_id', $id)->whereIn('pest_id', $pestsToDelete)->delete();
+            if (!empty($pestSelected)) {
+                foreach ($pestSelected as $pestId) {
+                    ProductPest::updateOrCreate(
+                        ['product_id' => $id, 'pest_id' => $pestId],
+                        ['product_id' => $id, 'pest_id' => $pestId]
+                    );
                 }
             }
 
-            $product->save();
-        } else {
-            $error = 'No se encontro el producto';
         }
-
-        return redirect()->back();
-
-        if ($request->econom) {
-            $dataE = EconomicDataProduct::where('id', $product->economic_data_id)->first();
-
-            if ($dataE) {
-                $dataE->purchase_price = $request->econ_price;
-                $dataE->min_purchase_unit = $request->mult_purchase_unit;
-                $dataE->mult_purchase = $request->mult_purchase;
-                $dataE->supplier_id = $request->supplier_id;
-                $opcion = $request->input('option');
-
-                if ($opcion === 'show') {
-                    $dataE->selling = true;
-                } elseif ($opcion === 'hide') {
-                    $dataE->selling = false;
-                } else {
-                    $dataE->selling = null;
-                }
-                $dataE->selling_price = $request->selling_price;
-                $dataE->subaccount_purchases = $request->subaccount_purchases;
-                $dataE->subaccount_sales = $request->subaccount_sales;
-                $dataE->save();
-                $products = ProductCatalog::all();
-                return redirect()->route('product.index', compact('products', 'error', 'success', 'warning'));
-            }
-        } else {
-            $product_type = session()->get('product_type');
-        }*/
+        return back();
     }
+
+    public function downloadFile(string $id, string $file)
+	{
+		try {
+			$product_file = ProductFile::where('product_id', $id)->where('filename_id', $file)->first();
+
+			if (!$product_file) {
+				abort(404);
+			}
+
+			if (Storage::disk('public')->exists($product_file->path)) {
+				return Storage::disk('public')->download($product_file->path);
+			}
+			return response()->json(['error' => 'File not found.'], 404);
+		} catch (\Exception $e) {
+			return response()->json(['error' => 'An error occurred while downloading the file.'], 500);
+		}
+	}
+
+    public function destroyFile(string $id, string $file)
+    {
+        try {
+            $product_file = ProductFile::where('product_id', $id)->where('filename_id', $file)->first();
+    
+            if (!$product_file) {
+                return response()->json(['error' => 'File not found.'], 404);
+            }
+    
+            if (Storage::disk('public')->exists($product_file->path)) {
+                Storage::disk('public')->delete($product_file->path);
+            }
+
+            $product_file->delete();
+    
+            return back();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'An error occurred while deleting the file.'], 500);
+        }
+    }    
 
     public function input(Request $request, string $id)
     {
+        $inputId = $request->input('input_id');
         ProductInput::updateOrCreate([
+            'id' => $inputId,
             'product_id' => $id,
             'application_method_id' => $request->input('application_method_id')
         ], [
@@ -414,7 +281,7 @@ class ProductController extends Controller
         return back();
     }
 
-    public function search(Request $request, string $page)
+    public function search(Request $request)
     {
         if (empty($request->search)) {
             return redirect()->back()->with('error', trans('messages.no_results_found'));
@@ -426,58 +293,8 @@ class ProductController extends Controller
 
         $products = ProductCatalog::whereIn('presentation_id', $presentationIds)->orWhere('name', 'LIKE', $searchTerm)
             ->orderBy('id', 'desc')
-            ->get();
-
-        $total = ceil($products->count() / $this->size);
-        $min = ($page * $this->size) - $this->size;
-
-        $products = collect(array_slice($products->toArray(), $min, $this->size))->map(function ($product) {
-            return new ProductCatalog($product);
-        });
-
-        return view('product.index', compact('products', 'page', 'total'));
-    }
-
-    private function setFile($file, $id, $name)
-    {
-        $file_name = $name . '.' . $file->getClientOriginalExtension();
-        $path = $this->files_path . $id;
-        $file->storeAs($path, $file_name);
-        return $path . '/' . $file_name;
-    }
-
-    public function file_download(string $id, string $file)
-    {
-        $productfile = ProductFile::where('product_id', $id)->first();
-        if ($file == "rp_specification") {
-            return response()->download(storage_path('app/' . $productfile->rp_specification));
-        } else if ($file == "techical_specification") {
-            return response()->download(storage_path('app/' . $productfile->techical_specification));
-        } else if ($file == "segurity_specification") {
-            return response()->download(storage_path('app/' . $productfile->segurity_specification));
-        } else if ($file == "register_specification") {
-            return response()->download(storage_path('app/' . $productfile->register_specification));
-        } else if ($file == "sanitary_register") {
-            return response()->download(storage_path('app/' . $productfile->sanitary_register));
-        }
-    }
-
-    public function file_delete(string $id, string $file, string $section)
-    {
-        $productfile = ProductFile::where('product_id', $id)->first();
-        if ($file == "rp_specification") {
-            $productfile->rp_specification = null;
-        } else if ($file == "techical_specification") {
-            $productfile->techical_specification = null;
-        } else if ($file == "segurity_specification") {
-            $productfile->segurity_specification = null;
-        } else if ($file == "register_specification") {
-            $productfile->register_specification = null;
-        } else if ($file == "sanitary_register") {
-            $productfile->sanitary_register = null;
-        }
-        $productfile->save();
-        return redirect()->route('product.edit', ['id' => $id, 'section' => $section]);
+            ->paginate($this->size);
+        return view('product.index', compact('products'));
     }
 
     public function destroy(string $id)

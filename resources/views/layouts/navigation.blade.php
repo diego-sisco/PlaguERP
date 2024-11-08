@@ -16,18 +16,16 @@
                 </div>
                 <button class="btn btn-dark w-100">
                     <a class="btn btn-dark border-none rounded p-1 ps-2 text-start text-white w-100" aria-current="page"
-                        href="{{ route('user.index', ['type' => 1, 'page' => 1]) }}">Usuarios</a>
+                        href="{{ route('user.index', ['type' => 1]) }}">Usuarios</a>
                 </button>
             </div>
             <div class="w-100 d-flex flex-column">
-                <span
-                    class="btn btn-dark border  rounded p-1 ps-2 text-start text-warning fw-bold"
-                    href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+                <span class="btn btn-dark border  rounded p-1 ps-2 text-start text-warning fw-bold" href="#"
+                    role="button" data-bs-toggle="dropdown" aria-expanded="true">
                     <i class="bi bi-person-fill"></i> {{ auth()->user()->name }}
                 </span>
-                <button
-                    class="btn btn-dark border  rounded p-1 ps-2 text-start text-white"
-                    href="#" role="button" data-bs-toggle="dropdown" aria-expanded="true">
+                <button class="btn btn-dark border  rounded p-1 ps-2 text-start text-white" href="#"
+                    role="button" data-bs-toggle="dropdown" aria-expanded="true">
                     <i class="bi bi-box-arrow-right"></i> {{ __('pagination.button.logout') }}
                 </button>
             </div>
@@ -35,7 +33,8 @@
     </div>
 
     <!-- Logo del menú -->
-    <a href=" {{ !auth()->user()->hasRole('Cliente') ? Route('dashboard') : Route('client.index', ['section' => 1]) }}" class="navbar-brand
+    <a href=" {{ !auth()->user()->hasRole('Cliente') ? Route('dashboard') : Route('client.index', ['section' => 1]) }}"
+        class="navbar-brand
         img-width d-flex justify-content-center">
         <img src="{{ asset('images/logo.png') }}" alt="Logo" class="w-100 m-0">
     </a>
@@ -45,61 +44,101 @@
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle text-light" data-bs-toggle="dropdown" href="#" role="button"
                     aria-expanded="false">
-                    <i class="bi bi-grid-1x2-fill"></i> {{ __('pagination.navigation.catalogs') }}
+                    {{ __('pagination.dashboard.key') }}
                 </a>
                 <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-lg-end">
                     <li>
                         <a class="dropdown-item text-light" aria-current="page"
-                            href="{{ route('user.index', ['type' => 1, 'page' => 1]) }}">
-                            <i class="bi bi-person-fill"></i> {{ __('pagination.navigation.users') }}
+                            href="{{ route('crm.dashboard') }}">
+                            <i class="bi bi-people-fill"></i> {{ __('pagination.dashboard.crm') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-light" aria-current="page"
+                            href="{{ route('planning.schedule') }}">
+                            <i class="bi bi-calendar-fill"></i> {{ __('pagination.dashboard.planning') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-light" aria-current="page" {{ route('quality.orders', ['status' => 1, 'page' => 1]) }}>
+                            <i class="bi bi-gear-fill"></i> {{ __('pagination.dashboard.management') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-light" aria-current="page" href="{{ route('warehouse.index', ['is_active' => 1])}}">
+                            <i class="bi bi-box-fill"></i> {{ __('pagination.dashboard.warehouse') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-light" aria-current="page" href="{{ route('rrhh', ['section' => 1]) }}">
+                            <i class="bi bi-person-fill-gear"></i> {{ __('pagination.dashboard.rrhh') }}
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-light" aria-current="page" href="{{ route('client.index') }}">
+                            <i class="bi bi-person-workspace"></i> {{ __('pagination.dashboard.client_system') }}
+                        </a>
+                    </li>
+                </ul>
+            </li>
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle text-light" data-bs-toggle="dropdown" href="#" role="button"
+                    aria-expanded="false">
+                    {{ __('pagination.nav.key') }}
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-lg-end">
+                    <li>
+                        <a class="dropdown-item text-light" aria-current="page"
+                            href="{{ route('user.index', ['type' => 1])}}">
+                            <i class="bi bi-person-fill"></i> {{ __('pagination.nav.users') }}
                         </a>
                     </li>
 
                     <li>
                         <a class="dropdown-item text-light" aria-current="page"
                             href="{{ route('customer.index', ['type' => 1, 'page' => 1]) }}">
-                            <i class="bi bi-people-fill"></i> {{ __('pagination.navigation.customers') }}
+                            <i class="bi bi-people-fill"></i> {{ __('pagination.nav.customers') }}
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-light" aria-current="page"
-                            href="{{ route('service.index', ['page' => 1]) }}">
-                            <i class="bi bi-gear-fill"></i> {{ __('pagination.navigation.services') }}
+                            href="{{ route('service.index') }}">
+                            <i class="bi bi-gear-fill"></i> {{ __('pagination.nav.services') }}
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-light" aria-current="page"
-                            href="{{ route('product.index', ['type' => 1, 'page' => 1]) }}">
-                            <i class="bi bi-box-fill"></i> {{ __('pagination.navigation.products') }}
+                            href="{{ route('product.index') }}">
+                            <i class="bi bi-box-fill"></i> {{ __('pagination.nav.products') }}
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-light" aria-current="page"
-                            href="{{ route('pest.index', ['page' => 1]) }}">
-                            <i class="bi bi-bug-fill"></i> {{ __('pagination.navigation.pests') }}
+                            href="{{ route('pest.index') }}">
+                            <i class="bi bi-bug-fill"></i> {{ __('pagination.nav.pests') }}
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-light" aria-current="page"
-                            href="{{ route('contract.index', ['page' => 1]) }}">
-                            <i class="bi bi-calendar-fill"></i> {{ __('pagination.navigation.contract') }}
+                            href="{{ route('contract.index') }}">
+                            <i class="bi bi-calendar-fill"></i> {{ __('pagination.nav.contract') }}
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-light" aria-current="page"
-                            href="{{ route('order.index', ['page' => 1]) }}">
-                            <i class="bi bi-nut-fill"></i> {{ __('pagination.navigation.orders') }}
+                            href="{{ route('order.index') }}">
+                            <i class="bi bi-nut-fill"></i> {{ __('pagination.nav.orders') }}
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-light" aria-current="page"
-                            href="{{ route('point.index', ['page' => 1]) }}">
-                            <i class="bi bi-hand-index-fill"></i> Puntos de control
+                            href="{{ route('point.index') }}">
+                            <i class="bi bi-hand-index-fill"></i> {{ __('pagination.nav.control_points') }}
                         </a>
                     </li>
                     <li>
                         <a class="dropdown-item text-light" aria-current="page" href="{{ route('branch.index') }}">
-                            <i class="bi bi-globe-americas"></i> Delegaciones
+                            <i class="bi bi-globe-americas"></i> {{ __('pagination.nav.branches') }}
                         </a>
                     </li>
                 </ul>

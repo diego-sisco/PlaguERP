@@ -22,7 +22,7 @@ return [
         'role' => 'Rol',
         'department' => 'Departamento',
         'branch' => 'Sucursal',
-        'status' => 'Status',
+        'status' => 'Estado',
         'birthdate' => 'Fecha de nacimiento',
         'hiredate' => 'Fecha de contratación',
         'actions' => 'Acciones',

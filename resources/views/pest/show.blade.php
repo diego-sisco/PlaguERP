@@ -22,7 +22,7 @@
         <div class="col-1 m-0" style="background-color: #343a40;"> </div>
         <div class="col-11">
             <div class="row p-3 border-bottom">
-                <a href="{{ route('pest.index', ['page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i
+                <a href="{{ route('pest.index') }}" class="col-auto btn-primary p-0 fs-3"><i
                         class="bi bi-arrow-left m-3"></i></a>
                 <h1 class="col-auto fs-2 fw-bold m-0">{{ __('pest.title.show') }} </h1>
             </div>

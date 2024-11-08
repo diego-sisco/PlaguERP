@@ -19,7 +19,7 @@ return [
         'start_date' => 'Inicia en',
         'end_date' => 'Termina en',
         'created_by' => 'Creado por',
-        'status' => 'Status',
+        'status' => 'Estado',
         'service' => 'Servicio',
         'total' => 'Total',
         'period' => 'Periodo',

@@ -6,7 +6,7 @@
 @endif
 
 <div class="border rounded shadow m-3 p-2 bg-white">
-    <h1 class="fs-2 fw-bold m-0"><a href="{{ route('dashboard.crm', ['status' => 1, 'page' => 1 ]) }}"><i class="bi bi-arrow-left m-3"></i></a>Crea un reporte de los servicios</h1>
+    <h1 class="fs-2 fw-bold m-0"><a href="{{ route('crm', ['status' => 1, 'page' => 1 ]) }}"><i class="bi bi-arrow-left m-3"></i></a>Crea un reporte de los servicios</h1>
     <form class="form m-3" method="POST" action="{{ route('reportServs.create',['va'=>$va]) }}" enctype="multipart/form-data">
         @csrf
         <div style="color:red;" class="form-text" id="basic-addon4">Llena los campos requeridos</div>

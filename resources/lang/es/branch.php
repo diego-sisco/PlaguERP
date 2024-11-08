@@ -2,17 +2,15 @@
 
 return [
     'title' => [
-        'create_branch' => 'Crear Sucursal',
-        'edit_branch' => 'Editar Sucursal',
-        'show_branch' => 'Mostrar Sucursal',
-        'delete_branch' => 'Eliminar Sucursal',
-        'search_branch' => 'Buscar Sucursal',
-        'branch_data' => 'Datos de la Sucursal',
-        'branch_information' => 'Información de la Sucursal',
+        'create' => 'Crear sucursal',
+        'edit' => 'Editar sucursal',
+        'show' => 'Mostrar sucursal',
+        'delete' => 'Eliminar sucursal',
+        'search' => 'Buscar sucursal',
     ],
 
     'data' => [
-        'id' => 'ID',
+        'id' => 'Id',
         'name' => 'Nombre',
         'address' => 'Dirección',
         'phone' => 'Teléfono',

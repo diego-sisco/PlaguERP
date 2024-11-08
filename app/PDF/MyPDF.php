@@ -570,11 +570,12 @@ class MyPDF extends TCPDF
         $this->Image($path, $imgX, $y - $step, $img_width, $img_height, 'PNG');
         $imgX = $this->GetX() + $img_width + $step / 4;
 
-        $path = Storage::disk('public')->path('users/signatures/firma_0_ing_Jacobo.jpeg');
+        $path = Storage::disk('public')->path('users/signatures/firma_0_Jacobo.png');
         $this->SetXY(x: $imgX, y: $y);
         $this->Image($path, $imgX, $y - $step, $img_width, $img_height, 'PNG');
 
-        $user_id = $order->technicians()->first()->user_id;
+        $technician = $order->technicians()->first();
+        $user_id = $technician->user_id;
         $userfile = UserFile::where('user_id', $user_id)->where('filename_id', 15)->first();
         $path = !empty($userfile->path) ? Storage::disk('public')->path($userfile->path) : '';
 
@@ -591,13 +592,13 @@ class MyPDF extends TCPDF
         $this->SetXY($x, $y);
         $this->Cell($width, 5, $order->customer->name, 0, 0, 'C');
         $this->Cell($width, 5, 'JACOBO SAMUEL QUINTERO CURIEL', 0, 0, 'C');
-        $this->Cell($width, 5, 'Sede: ' . $order->customer->name, 0, 0, 'C');
+        $this->Cell($width, 5, $technician->user->name, 0, 0, 'C');
 
         $y = $this->GetY() + $step / 2;
         $this->SetXY($x, $y);
         $this->Cell($width, 5, 'RFC: ' . $order->customer->rfc, 0, 0, 'C');
         $this->Cell($width, 5, 'RFC: ' . 'QUCJ770110PP4', 0, 0, 'C');
-        $this->Cell($width, 5, 'RFC: ', 0, 0, 'C');
+        $this->Cell($width, 5, 'RFC: ' . $technician->rfc, 0, 0, 'C');
 
     }
 
