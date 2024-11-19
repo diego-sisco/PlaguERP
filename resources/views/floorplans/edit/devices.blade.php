@@ -121,9 +121,11 @@
             <table class="table text-center align-middle">
                 <thead>
                     <tr>
-                        <th scope="col">Color</th>
+                        <th class="col-1" scope="col">Color</th>
                         <th scope="col">Tipo</th>
-                        <th scope="col">Cant.</th>
+                        <th scope="col">Area</th>
+                        <th class="col-4" scope="col">Producto</th>
+                        <th scope="col">Cantidad</th>
                     </tr>
                 </thead>
                 <tbody id="table-body"> </tbody>
@@ -282,6 +284,23 @@
             return foundObject ? foundObject.name : null;
         }
 
+        function findZone(id) {
+            var area = '';
+            var foundPoint = points.find(item => item.pointID == id)
+            if (foundPoint) {
+                var foundArea = areaNames.find(item => item.id == foundPoint.areaID);
+                if (foundArea) {
+                    area = foundArea.name;
+                }
+            }
+            return area;
+        }
+
+        function findProduct(id) {
+            const foundPoint = points.find(item => item.pointID == id);
+            return foundPoint.productID ?? false;
+        }
+
         function verifyInputs(point_id, area_id, num_points) {
             if (isNumber(parseInt(point_id)) && isNumber(parseInt(area_id)) && isNumber(parseInt(num_points))) {
                 if (isGreaterThanZero(point_id) && isGreaterThanZero(area_id) && isGreaterThanZero(num_points)) {
@@ -394,10 +413,6 @@
             points.sort((a, b) => a.index - b.index);
         }
 
-        function sortPoints() {
-            points.sort((a, b) => a.index - b.index);
-        }
-
         function updatePoint() {
             var point = points.find(item => item.index == indexModal);
             var updatePoint = parseInt($('#update-control-point').val());
@@ -421,7 +436,7 @@
 
             if (point) {
                 point.pointID = updatePoint;
-                point.areaID = updateArea;
+                point.areaIconsoleD = updateArea;
                 point.productID = updateProduct;
                 color = findColor(updatePoint);
                 popoverElement.css('backgroundColor', color);
@@ -539,17 +554,25 @@
                 addedPoints.forEach(point => {
                     if (countPoints[point] != undefined && countPoints[point] != null) {
                         html += `
-                                <tr>
-                                    <!--td>
-                                        <p class="w-100 rounded m-0 p-0" style="height: 2em; background-color: ${findColor(point)}"></p>
-                                    </td-->
-                                    <td>
-                                        <input type="color" class="form-control border-secondary border-opacity-25" style="height: 2em;" value="${findColor(point)}" onchange="updateColor(this.value, ${point})">
-                                    </td>
-                                    <td>${findPointName(point)}</td>
-                                    <td>${countPoints[point]}</td>
-                                </tr>
-                            `;
+                            <tr>
+                                <!--td>
+                                    <p class="w-100 rounded m-0 p-0" style="height: 2em; background-color: ${findColor(point)}"></p>
+                                </td-->
+                                <td>
+                                    <input type="color" class="form-control border-secondary border-opacity-25" style="height: 2em;" value="${findColor(point)}" onchange="updateColor(this.value, ${point})">
+                                </td>
+                                <td>${findPointName(point)}</td>
+                                <td>${findAreaName(point)}</td>
+                                <td>
+                                    <select class="form-select" id="point${point}-product" onchange="setProducts(${point}, this.value)">
+                                        ${
+                                            productNames.map(item => `<option value="${item.id}" ${findProduct(point) == item.id ? 'selected' : ''}>${item.name}</option>`).join('')
+                                        }
+                                    </select>
+                                </td>
+                                <td>${countPoints[point]}</td>
+                            </tr>
+                        `;
                     } else {
                         delete countPoints[point];
                     }
@@ -564,7 +587,17 @@
                     point.color = newColor;
                 });
 
+            countPoints = {}
+
             setDevices(1);
+        }
+
+        function setProducts(point, value) {
+            var fetched_points = points.filter(item => item.pointID == point);
+            fetched_points.forEach(item => {
+                item.productID = parseInt(value);
+            });
+            setPoints();
         }
 
         function applyZoom() {
@@ -594,7 +627,7 @@
                     "X-CSRF-TOKEN": csrfToken,
                 },
                 success: function(response) {
-                    devices = respo1nse;
+                    devices = response;
                     points = [];
                     countPoints = {};
                     hasPoints = false;
@@ -621,6 +654,30 @@
                 });
                 hasPoints = true;
                 createLegend();
+            }
+        }
+
+        function setPoints() {
+            if (points.length > 0) {
+                aux_points = points;
+                points = [];
+                countPoints = {};
+                hasPoints = false;
+                container.innerHTML = '';
+                if (aux_points.length > 0) {
+                    aux_points.forEach(function(point) {
+                        pointID = point.pointID
+                        areaID = point.areaID;
+                        productID = point.productID
+                        color = point.color;
+                        index = point.index;
+                        createPoint(point.x, point.y, point.pointCount);
+                        setStoragePoint(pointID);
+                        countIndexs.push(point.index);
+                    });
+                    hasPoints = true;
+                    createLegend();
+                }
             }
         }
 
@@ -675,7 +732,6 @@
             // Editar punto
             if (e.target.classList.contains('popover-edit')) {
                 var index = extractId(e.target.id);
-                console.log(index);
                 var pointElement = document.getElementById('popoverPoint' + index);
                 var popover = bootstrap.Popover.getInstance(pointElement);
                 var point = points.find(item => item.index == index);

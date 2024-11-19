@@ -33,7 +33,7 @@
                                 <td>{{ $warehouse->name ?? 'N/A' }}</td>
                                 <td>{{ $movement->destinationWarehouse ? $movement->destinationWarehouse->name : 'N/A' }}</td>
                                 <td>
-                                    {{ $movement->product->name }}: {{ $movement->amount }} {{ $movement->product->metric }}
+                                    {{ $movement->product->name }} {{ $movement->amount }} {{ $movement->product->metric->value}}
                                 </td>
                                 <td>{{ $movement->user ? $movement->user->name : 'N/A' }}</td>
                                 <td>

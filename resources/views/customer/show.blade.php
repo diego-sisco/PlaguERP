@@ -30,12 +30,12 @@
             <div class="row">
                 <a class="sidebar col-12 p-2 text-center" data-bs-toggle="collapse" href="#collapseExample" role="button"
                     aria-expanded="false" aria-controls="collapseExample">
-                    Datos generales
+                    Datos
                 </a>
                 <div class="collapse" id="collapseExample" style="background-color: #495057;">
                     <div class="row">
                         <a href="{{ route('customer.show', ['id' => $customer->id, 'type' => $type, 'section' => 1]) }}"
-                            class="sidebar col-12 p-2 text-center">  y fiscales
+                            class="sidebar col-12 p-2 text-center">  Generales y fiscales
                         </a>
                         @if ($customer->service_type_id == 3)
                             <a href="{{ route('customer.show', ['id' => $customer->id, 'type' => $type, 'section' => 2]) }}"
@@ -69,7 +69,7 @@
                         </a>
                         <a href="{{ Route('customer.show', ['id' => $customer->id, 'type' => $type, 'section' => 7]) }}"
                             class="sidebar col-12 p-2 text-center">
-                            Zonas/Áreas
+                            Zonas
                         </a>
                         <a href="{{ Route('customer.show', ['id' => $customer->id, 'type' => $type, 'section' => 8]) }}"
                             class="sidebar col-12 p-2 text-center">
@@ -93,7 +93,7 @@
                     class="col-auto btn-primary p-0 fs-3">
                     <i class="bi bi-arrow-left m-3"></i>
                 </a>
-                <h1 class="col-auto fs-2 fw-bold m-0">{{ __('customer.title.show') }} </h1>
+                <h1 class="col-auto fs-2 m-0">{{ __('customer.title.show') }} <span class="fw-bold">[{{ $customer->name }}]</span> </h1>
             </div>
 
             <div class="row p-5 pt-3">

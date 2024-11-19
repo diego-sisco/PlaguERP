@@ -1,6 +1,7 @@
 <div class="modal fade" id="trackingModal" tabindex="-1" aria-labelledby="trackingModalLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <form class="modal-content" id="tracking-form" method="POST" action="{{ route('crm.tracking.store', ['type' => $type]) }}">
+        <form class="modal-content" id="tracking-form" method="POST"
+            action="{{ route('crm.tracking.store', ['type' => $type]) }}">
             @csrf
             <div class="modal-header">
                 <h5 class="modal-title" id="trackingModalLabel">Seguimiento</h5>
@@ -10,7 +11,8 @@
                 <div class="mb-3">
                     <label class="form-label">Cliente</label>
                     <input type="hidden" id="customer-id" name="model_id" value="">
-                    <input type="text" class="form-control" id="customer-name" name="customer_name" value="" disabled>
+                    <input type="text" class="form-control" id="customer-name" name="customer_name" value=""
+                        disabled>
                 </div>
                 <div class="mb-3">
                     <label class="form-label is-required">Servicio a programar</label>
@@ -51,7 +53,10 @@
         }*/
 
         services.forEach(item => {
-                $('#service').append(new Option(item.name, item.id));
-            });
+            const type = item.service_type_id == 1 ? 'Domestico' : (item.service_type_id == 2 ? 'Comercial' :
+                'Industrial');
+            const name = `[${type}] ${item.name}`;
+                $('#service').append(new Option(name, item.id));
+        });
     }
 </script>

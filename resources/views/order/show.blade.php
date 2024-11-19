@@ -43,7 +43,7 @@
             <div class="row p-3 border-bottom">
                 <a href="{{ route('order.index', ['page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i
                         class="bi bi-arrow-left m-3"></i></a>
-                <h1 class="col-auto fs-2 fw-bold m-0">Ver orden {{ $order->id }}
+                <h1 class="col-auto fs-2 fw-bold m-0">Ver orden de servicio {{ $order->id }}
                 </h1>
             </div>
 
@@ -51,47 +51,57 @@
                 @if ($section == 1)
                     <div class="row ">
                         <span class="col fw-bold">{{__('order.data.managed_by') }}:</span>
-                        <span class="col fw-normal"> {{ $order->administrative->user->name }}</span>
+                        <span class="col"> {{ $order->administrative->user->name }}</span>
                     </div>
                     <div class="row">
                         <span class="col fw-bold">{{__('order.data.customer') }}:</span>
-                        <span class="col fw-normal"> {{ $order->customer->name }}</span>
+                        <span class="col"> {{ $order->customer->name }}</span>
                     </div>
                     <div class="row">
                         <span class="col fw-bold">{{__('order.data.start_time') }}:</span>
-                        <span class="col fw-normal">{{ $order->start_time }}</span>
+                        <span class="col">{{ $order->start_time }}</span>
                     </div>
                     <div class="row">
                         <span class="col fw-bold">{{__('order.data.end_time') }}:</span>
-                        <span class="col fw-normal">{{ $order->end_time ?? '[...]' }}</span>
+                        <span class="col">{{ $order->end_time ?? 'S/A' }}</span>
                     </div>
                     <div class="row">
                         <span class="col fw-bold">{{__('order.data.created_at') }}:</span>
-                        <span class="col fw-normal"> {{ $order->created_at }}</span>
+                        <span class="col"> {{ $order->created_at }}</span>
                     </div>
                     <div class="row">
                         <span class="col fw-bold">{{__('order.data.programmed_date') }}:</span>
-                        <span class="col fw-normal"> {{ $order->programmed_date }}</span>
+                        <span class="col"> {{ $order->programmed_date }}</span>
                     </div>
                     <div class="row">
                         <span class="col fw-bold">{{__('order.data.completed_date') }}:</span>
-                        <span class="col fw-normal"> {{ $order->completed_date }}</span>
+                        <span class="col"> {{ $order->completed_date ?? 'S/A' }}</span>
                     </div>
                     <div class="row">
                         <span class="col fw-bold">{{__('order.data.status') }}:</span>
-                        <span class="col fw-bold"> {{ $order->status->name }}</span>
+                        <span class="col fw-bold 
+                                    {{ $order->status_id == 1 ? 'text-warning' : 
+                                       ($order->status_id == 2 || $order->status_id == 3 ? 'text-primary' : 
+                                       ($order->status_id == 4 || $order->status_id == 5 ? 'text-success' : 'text-danger')) }}"> {{ $order->status->name }}</span>
                     </div>
                     <div class="row">
                         <span class="col fw-bold">{{__('order.data.cost') }}:</span>
-                        <span class="col fw-bold">${{ $order->price }}</span>
+                        <span class="col">{{ $order->price ?? 'S/A' }}</span>
                     </div>
                 @endif
 
                 @if ($section == 2)
                     @foreach ($order->services as $i => $service)
-                        <div class="row">
+                        <d                 {{ $order->status_id == 1
+                            ? 'text-warning'
+                            : ($order->status_id == 2 || $order->status_id == 3
+                                ? 'text-primary'
+                                : ($order->status_id == 4 || $order->status_id == 5
+                                    ? 'text-success'
+                                    : 'text-danger')) }}">
+                                        {{ $order->status->name }}iv class="row">
                             <span class="col fw-bold">{{__('order.data.service') . ' ' . ($i + 1) }}:</span>
-                            <span class="col fw-normal"> {{ $service->name }}</span>
+                            <span class="col"> {{ $service->name }}</span>
                         </div>
                     @endforeach
                 @endif
@@ -100,7 +110,7 @@
                     @foreach ($order->technicians as $i => $technician)
                         <div class="row">
                             <span class="col fw-bold">{{__('order.data.technician') . ' ' . ($i + 1) }}:</span>
-                            <span class="col fw-normal"> {{ $technician->user->name }}</span>
+                            <span class="col"> {{ $technician->user->name }}</span>
                         </div>
                     @endforeach
                 @endif
@@ -108,15 +118,15 @@
                 @if ($section == 4)
                     <div class="row mb-2">
                         <span class="col fw-bold">{{__('order.data.execution') }}:</span>
-                        <span class="col fw-normal"> {!! nl2br(e($order->execution)) !!}</span>
+                        <span class="col"> {!! nl2br(e($order->execution)) !!}</span>
                     </div>
                     <div class="row mb-2">
                         <span class="col fw-bold">{{__('order.data.areas') }}:</span>
-                        <span class="col fw-normal"> {!! nl2br(e($order->areas)) !!}</span>
+                        <span class="col"> {!! nl2br(e($order->areas)) !!}</span>
                     </div>
                     <div class="row mb-2">
                         <span class="col fw-bold">{{__('order.data.comments') }}:</span>
-                        <span class="col fw-normal"> {!! nl2br(e($order->additional_comments)) !!}</span>
+                        <span class="col"> {!! nl2br(e($order->additional_comments)) !!}</span>
                     </div>
                 @endif
 

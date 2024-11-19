@@ -78,8 +78,8 @@ class RoleSeeder extends Seeder
 		}
 
 		// Crea el rol administrador para la definición de permisos
-		/*$role = SimpleRole::find(5);
-		$permission = Permission::find(19);
+		$role = SimpleRole::find(5);
+		$permission = Permission::find(13);
 		$client = Role::create([
 			'simple_role_id' => $role->id,
 			'name' => $role->name,
@@ -89,6 +89,6 @@ class RoleSeeder extends Seeder
 		]);
 
 		// Define los permisos para el cliente-usuario
-		$client->givePermissionTo($permission->name);*/
+		$client->givePermissionTo($permission->name);
 	}
 }

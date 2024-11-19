@@ -16,10 +16,8 @@ class OrderProduct extends Model
         'service_id',
         'product_id',
         'application_method_id',
+        'lot_id',
         'amount',
-        'lot',
-        'dosage',
-        'metric',
     ];
     
     public function product(){

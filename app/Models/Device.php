@@ -36,7 +36,6 @@ class Device extends Model
         return $this->belongsTo(ProductCatalog::class, 'product_id');
     }
 
-
     public function controlPoint()
     {
         return $this->belongsTo(ControlPoint::class, 'type_control_point_id');

@@ -239,7 +239,7 @@ class ServiceController extends Controller
         $service->save();
 
         $sql = 'UPDATE_SERVICE_' . $service->id;
-        PagesController::log('update', $changes, $sql);
+        //PagesController::log('update', $changes, $sql);
 
         return redirect()->back();
     }

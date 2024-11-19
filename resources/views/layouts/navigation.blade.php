@@ -60,7 +60,7 @@
                         </a>
                     </li>
                     <li>
-                        <a class="dropdown-item text-light" aria-current="page" {{ route('quality.orders', ['status' => 1, 'page' => 1]) }}>
+                        <a class="dropdown-item text-light" aria-current="page" href="{{ route('quality.orders', ['status' => 1]) }}">
                             <i class="bi bi-gear-fill"></i> {{ __('pagination.dashboard.management') }}
                         </a>
                     </li>

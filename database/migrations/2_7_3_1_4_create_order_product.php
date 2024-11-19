@@ -17,11 +17,8 @@ return new class extends Migration
             $table->foreignId('service_id')->nullable()->constrained('service')->onDelete('cascade');
             $table->foreignId('product_id')->nullable()->constrained('product_catalog')->onDelete('cascade');
             $table->foreignId('application_method_id')->nullable()->constrained('application_method')->onDelete('cascade');
+            $table->foreignId('lot_id')->nullable()->constrained('lot')->onDelete('cascade');
             $table->string('amount')->nullable();
-            $table->string('lot')->nullable();
-            $table->string('liters')->nullable();
-            $table->string('dosage')->nullable();
-            $table->string('metric')->nullable();
             $table->timestamps();
         });
     }

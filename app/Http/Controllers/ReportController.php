@@ -89,6 +89,7 @@ class ReportController extends Controller
         $incidents = json_decode($request->input('incidents'));
         $pests_found = json_decode($request->input('pests_found'));
         $is_changed = json_decode($request->input('is_changed'));
+        $lotId = json_decode($request->input('lot_id'));
         $reviews = [];
 
         try {
@@ -156,34 +157,35 @@ class ReportController extends Controller
                 ->where('product_id', $device->product_id)
                 ->where('service_id', $service->id)->first();
             $appMethod = $service->appMethods()->first();
-            $lot = Lot::where('product_id', $device->product->id)->where('amount', '>', 0)->first();
+            $lot = Lot::find($lotId);//where('product_id', $device->product->id)->where('amount', '>', 0)->first();
 
-            if ($order_product) {
-                if ($is_changed) {
-                    $order_product->application_method_id = $appMethod->id;
-                    $order_product->amount++;
-                    $order_product->save();
+            if($lot) {
+                if ($order_product) {
+                    if ($is_changed) {
+                        $order_product->application_method_id = $appMethod->id;
+                        $order_product->amount++;
+                        $order_product->save();
+                    } else {
+                        $order_product->amount--; // Decrementa el valor de amount
+                        $order_product->save();   // Guarda los cambios
+                    }
                 } else {
-                    $order_product->amount--; // Decrementa el valor de amount
-                    $order_product->save();   // Guarda los cambios
+                    OrderProduct::updateOrCreate(
+                        [
+                            'order_id' => $orderId,
+                            'product_id' => $device->product->id,
+                            'service_id' => $service->id,
+                        ],
+                        [
+                            'application_method_id' => $appMethod->id,
+                            'amount' => 1,
+                            'metric' => 'Unidades (Uds)',
+                            'lot' => $lot->id,
+                        ]
+                    );
                 }
-            } else {
-                OrderProduct::updateOrCreate(
-                    [
-                        'order_id' => $orderId,
-                        'product_id' => $device->product->id,
-                        'service_id' => $service->id,
-                    ],
-                    [
-                        'application_method_id' => $appMethod->id,
-                        'amount' => 1,
-                        'metric' => 'Unidades (Uds)',
-                        'lot' => $lot->id,
-                    ]
-                );
             }
-
-
+            
 
             return response()->json([
                 'success' => true,

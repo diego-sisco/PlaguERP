@@ -12,17 +12,20 @@
 
 <div class="col-1 m-0" style="background-color: #343a40;">
     <div class="row">
+        @role('SupervisorCalidad|AdministradorDireccion')
         <a href="{{ Route('quality.control') }}"
             class="sidebar col-12 p-2 text-center">
             Control de actividades
         </a>
+        @endrole
         <a href="{{ Route('quality.customers') }}"
             class="sidebar col-12 p-2 text-center">
             Gestión de clientes
         </a>
         <a class="sidebar col-12 p-2 text-center" data-bs-toggle="collapse" href="#collapseCustomers" role="button"
             aria-expanded="false" aria-controls="collapseCustomers">
-            Listado de ordenes
+            Ordenes de servicio
+
         </a>
         <div class="collapse" id="collapseCustomers" style="background-color: #495057;">
             <div class="row">

@@ -185,8 +185,7 @@ class PagesController extends Controller
 
         if($user->role_id == 1 && $user->work_department_id == 7) {
             $customerIds = Customer::where('administrative_id', $user->id)->get()->pluck('id');
-            dd($customerIds);
-            $orders = $orders->where('customer_id', $customerIds);
+            $orders = $orders->whereIn('customer_id', $customerIds);
         } 
 
         $orders = $orders->paginate($this->size);
@@ -200,8 +199,10 @@ class PagesController extends Controller
     public function qualityCustomers()
     {
         $totalPages = 0;
+        $customers = Customer::where('general_sedes','!=' , 0)->where('service_type_id', 3)->get();
         return view(
             'dashboard.quality.customers',
+            compact('customers')
         );
     }
 
@@ -223,8 +224,18 @@ class PagesController extends Controller
         $customer_id = $request->input('customer_id');
         $administrative_id = $request->input('user_id');
         $customer = Customer::find($customer_id);
-        $customer->administrative_id = $administrative_id;
-        $customer->save();
+
+        if($customer) {
+            $customer->administrative_id = $administrative_id;
+            $customer->save();
+
+            $sedes = Customer::where('general_sedes', $customer_id)->get();
+            foreach($sedes as $sede) {
+                $sede->administrative_id = $administrative_id;
+                $sede->save();
+            }
+        }
+        
         return back();
     }
 
@@ -275,13 +286,12 @@ class PagesController extends Controller
         if ($orders) {
             $daily_program = $this->getPlanningData($orders);
         }
-
         $startDate = Carbon::createFromFormat('Y-m-d', $startDate)->format('d/m/Y');
         $endDate = Carbon::createFromFormat('Y-m-d', $endDate)->format('d/m/Y');
         $date = $startDate . ' - ' . $endDate;
-
+        //dd($daily_program);
         $view = ($urlName == 'activities') ? 'dashboard.planning.activities' : 'dashboard.planning.schedule';
-        return view($view, compact('daily_program', 'date', 'technicians', 'business_lines', 'branches', 'service_types', 'order_services'));
+        return view($view, compact('daily_program', 'date', 'technicians', 'business_lines', 'branches', 'service_types', 'order_services', 'customers', 'status'));
     }
 
     public function filterPlanning(Request $request)

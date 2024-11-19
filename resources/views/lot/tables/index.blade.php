@@ -17,7 +17,7 @@
                 <td>{{ $lot->registration_number }}</td>
                 <td>{{ $lot->warehouse->name }}</td>
                 <td>{{ $lot->product->name }}</td>
-                <td>{{ $lot->amount }}</td>
+                <td>{{ $lot->amount }} {{ $lot->product->metric->value }}</td>
                 <td>{{ $lot->expiration_date }}</td>
                 <td>
                     <a href="{{ route('lot.edit', $lot->id) }}" class="btn btn-secondary btn-sm"><i

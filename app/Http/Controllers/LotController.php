@@ -17,7 +17,7 @@ class LotController extends Controller
     {
         $lots = Lot::all();
         $products = ProductCatalog::all();
-        $warehouses = Warehouse::where('receive_material', true)->where('active', true)->get();
+        $warehouses = Warehouse::where('allow_material_receipts', true)->where('is_active', true)->get();
         
         return view('lot.index', compact('lots', 'products','warehouses'));
     }
@@ -67,7 +67,7 @@ class LotController extends Controller
     {
         $lot = Lot::findOrFail($id);
         $products = ProductCatalog::all();
-        $warehouses = Warehouse::where('receive_material', true)->where('active', true)->get();
+        $warehouses = Warehouse::where('allow_material_receipts', true)->where('is_active', true)->get();
 
         return view('lot.edit', compact('lot','products', 'warehouses'));
     }

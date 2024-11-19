@@ -18,7 +18,7 @@
                                 <th scope="col-2" class="align-middle">Hora y fecha programada</th>
                                 <th scope="col-2" class="align-middle">Fecha realizada</th>
                                 <th scope="col-2" class="align-middle">Encargado</th>
-                                <th scope="col-2" class="align-middle">
+                                <th class="col" scope="col-2" class="align-middle">
                                     Cliente
                                     <div class="input-group input-group-sm">
                                         <input type="hidden" id="search-customer-url"
@@ -30,9 +30,9 @@
                                             onclick="getOrdersByCustomer()"><i class="bi bi-search"></i></button>
                                     </div>
                                 </th>
-                                <th scope="col-2" class="align-middle">Técnico</th>
-                                <th scope="col-1" class="align-middle">Status</th>
-                                <th scope="col-2" class="align-middle">{{ __('buttons.actions') }}</th>
+                                <th scope="col" class="align-middle">Técnico</th>
+                                <th scope="col" class="align-middle">Estado</th>
+                                <th scope="col" class="align-middle">{{ __('buttons.actions') }}</th>
                             </tr>
                         </thead>
                         <tbody id="table-body">
@@ -68,23 +68,17 @@
                                             <i class="bi bi-eye-fill"></i> {{ __('buttons.show') }}
                                         </a>
                                         @can('write_order')
-                                            <a class="btn btn-secondary btn-sm"
+                                            <a class="btn btn-secondary btn-sm mb-1"
                                                 href="{{ route('order.edit', ['id' => $order->id]) }}">
                                                 <i class="bi bi-pencil-square"></i> {{ __('buttons.edit') }}
                                             </a>
                                             @if ($status > 2 && $status < 6)
-                                                <a class="btn btn-dark btn-sm"
-                                                    href="{{ route('check.report', ['id' => $order->id]) }}">
+                                                <a class="btn btn-dark btn-sm mb-1"
+                                                    href="{{ route('report.review', ['id' => $order->id]) }}">
                                                     <i class="bi bi-file-pdf-fill"></i> Reporte
                                                 </a>
                                             @endif
                                         @endcan
-                                        @if ($status == 5)
-                                            {{-- <a class="btn btn-dark btn-sm"
-                                                    href="{{ route('order.report.create', ['id' => $order->id]) }}">
-                                                    <i class="bi bi-download"></i> Descargar
-                                                </a> --}}
-                                        @endif
                                     </td>
                                 </tr>
                             @endforeach

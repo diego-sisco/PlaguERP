@@ -230,7 +230,6 @@ class FloorPlansController extends Controller
                 $ds = Device::where('floorplan_id', $f->id)->where('version', $latestVersionNumber)
                     ->select('id', 'type_control_point_id', 'itemnumber')
                     ->get();
-                //dd($ds);
                 foreach ($ds as $d) {
                     $type = $d->type_control_point_id;
                     $filtered = array_filter($countDevices, function ($item) use ($type) {
@@ -251,6 +250,47 @@ class FloorPlansController extends Controller
 
         // Compacta las variables para pasarlas a la vista
         return view('floorplans.edit', compact('ctrlPoints', 'applications_areas', 'services', 'customer', 'devices', 'deviceRevisions', 'floorplan', 'products', 'countDevices', 'type', 'section'));
+    }
+
+    public function searchDevices(Request $request, string $floorplanId)
+    {
+        try {
+            $version = $request->input('version');
+            $pointId = $request->input('point');
+            $zoneId = $request->input('zone');
+
+            $devices = Device::where('version', $version)->where('floorplan_id', $floorplanId);
+
+            if ($pointId != "null") {
+                $devices = $devices->where('type_control_point_id', $pointId);
+            }
+            
+            if ($zoneId != "null") {
+                $devices = $devices->where('application_area_id', $zoneId);
+            }
+            
+            $devices = $devices->get();
+
+            $data = [];
+            foreach($devices as $device) {
+                $data[] = [
+                    'device_id' => $device->id,
+                    'nplan' => $device->nplan,
+                    'color' => $device->color,
+                    'type' => $device->controlPoint->name,
+                    'zone' => $device->applicationArea->name,
+                    'version' => $device->version,
+                ];
+            }
+            return response()->json([
+                'data' => $data
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'An error occurred while searching for devices.',
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     public function update(Request $request, string $id, int $section)
@@ -387,6 +427,7 @@ class FloorPlansController extends Controller
             'floorplan' => $floorplan,
         ]);
     }
+
     public function printQR(Request $request, string $id)
     {
         $selected_devices = json_decode($request->input('selected_devices'));
@@ -402,78 +443,84 @@ class FloorPlansController extends Controller
         $pdf = new TCPDF();
         $pdf->setPrintHeader(false);
 
-
-        // Obtiene el largo y anchoc de la página
-        $width = $pdf->getPageWidth();
-        $height = $pdf->getPageHeight();
         $margin = 5;
 
         // Establece el margen y agregar pagina
         $pdf->SetMargins($margin, $margin, $margin, $keepmargins = true);
+        $pdf->SetAutoPageBreak(true, $margin);
+
         $pdf->AddPage();
 
+        $width = $pdf->getPageWidth();
+        $height = $pdf->getPageHeight();
+
         // Calcula el ancho de las celdas
-        $cellWidth = ($width - ($margin * 4)) / 2; // Dividir el ancho de la página entre 2 celdas y 4 márgenes
-        $cellHeight = 60;
+        $cellWidth = ($width - $margin * 2) / 2;
+        $cellHeight = ($height - $margin * 2) / 7;
 
         // Posición inicial de X y Y
-        $y = $pdf->GetY();
-        $x = $pdf->GetX();
+        $startX = $pdf->GetX();
+        $startY = $pdf->GetY();
 
         //dd('width: ' . $width .' height: '. $height);
         //dd('x: ' . $x . ' y: ' . $y);
         //dd('Cell width: ' . $cellWidth .' height: '. $cellHeight);
 
+        $x = $startX;
+        $y = $startY;
         foreach ($devices as $device) {
+            if ($y + $cellHeight > $pdf->getPageHeight() - $margin) {
+                $pdf->AddPage(); // Agrega una nueva página
+                $x = $startX;
+                $y = $startY;
+            }
+
             // Ruta de la imagen
             $imagePath = public_path('images/logo.png');
 
             // Agrega la imagen al PDF
-            $pdf->Rect($x, $y, $cellWidth, $cellHeight, 'D');
-            $pdf->Image($imagePath, $x + 2, $y, 50, 15, 'png');
+            $pdf->Rect($x, $y, $cellWidth - ($margin * 3), $cellHeight - $margin, 'D');
+            $pdf->Image($imagePath, $x, $y, $cellWidth / 2, $cellHeight / 3, 'png');
 
-            // Define la posición para la multicelda debajo de la imagen del logo
-            $pdf->SetXY($x, $y + ($margin * 3.5));
-            $pdf->SetFontSize(12);
-            $pdf->MultiCell(45, 0, $floorplan->customer->name, 0, 'C', false);
+            //$y = $pdf->GetY() + $margin;
+            $stepY = $pdf->GetY() + ($margin * 2.5);
+            $pdf->setXY($x + $margin, $stepY);
 
-            $newY = $pdf->GetY() + $margin;
-            $pdf->SetXY($x, $newY);
-            $pdf->MultiCell(45, 0, $floorplan->filename, 0, 'C', false);
+            $pdf->SetFont('helvetica', 'B', 8); // 'B' para negrita            
+            $pdf->MultiCell($cellWidth / 2, 0, $floorplan->customer->name, 0, 'L', false);
+            $pdf->SetFont('helvetica', '', 8); // 'B' para negrita            
+            $pdf->Ln(2);
 
-            $newY = $pdf->GetY() + $margin;
-            $pdf->SetXY($x, $newY);
-            $pdf->SetFont('helvetica', 'B', 16);
-            $pdf->MultiCell(45, 0, $device->controlPoint->name . ' - ' . $device->nplan, 0, 'C', false);
-            $pdf->SetFont('helvetica', '', 12);
+            $stepY = $pdf->GetY();
+            $pdf->setXY($x + $margin, $stepY);
 
+            $pdf->MultiCell($cellWidth / 2, 0, $floorplan->filename, 0, 'L', false);
+            $pdf->Ln(1);
 
-            // Generar el nombre de archivo para el código QR
+            $stepY = $pdf->GetY();
+            $pdf->setXY($x + $margin, $stepY);
+
+            $pdf->SetFont('helvetica', 'B', 22); // 'B' para negrita            
+            $pdf->MultiCell($cellWidth / 2, 0, $device->controlPoint->name . ' #' . $device->nplan, 0, 'L', false);
+            $pdf->SetFont('helvetica', '', 10); // 'B' para negrita
+
             $qrFileName = 'qr_' . $device->id . '.png';
             $qrImagePath = public_path('qr_codes/' . $qrFileName);
+            QrCode::format('png')->size(500)->generate($device->id, $qrImagePath);
 
-            // Generar el código QR y guardar la imagen en el sistema de archivos
-            QrCode::format('png')->size(200)->generate($device->id, $qrImagePath);
+            $imgX = $x + $cellWidth / 2;
+            $imgY = $y + $margin / 2;
 
-            // Agrega la imagen del código QR al lado del logo
-            $pdf->Image($qrImagePath, $x + 48, $y + ($margin * 2.5), 44, 44, 'PNG');
-            $pdf->SetFontSize(12);
+            $pdf->Image($qrImagePath, $imgX, $imgY, $cellHeight - ($margin * 2), $cellHeight - ($margin * 2), 'PNG');
 
+            $x += $cellWidth;
 
-            // Mover la posición X para la siguiente celda
-            $x += $cellWidth + $margin * 2;
-
-            // Si ya se llegó al límite de 2 celdas por fila, reiniciar X y ajustar Y
-            if (($x + $cellWidth + $margin) > $width) {
-                $x = $margin;
-                $y += $cellHeight + $margin;
-
-                // Si ya se llegó al límite de 4 celdas por página, agregar nueva página
-                if (($y + $cellHeight + $margin) > $height) {
-                    $pdf->AddPage();
-                    $y = $margin;
-                }
+            if ($x + $cellWidth > $pdf->getPageWidth() - $margin) {
+                $x = $startX;
+                $y += $cellHeight;
             }
+
+            $pdf->setXY($x, $y);
         }
 
         // Cierra el documento PDF

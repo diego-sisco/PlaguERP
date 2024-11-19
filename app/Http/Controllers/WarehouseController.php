@@ -3,20 +3,27 @@
 namespace App\Http\Controllers;
 
 use App\Models\Branch;
-use App\Models\User;
+use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\Technician;
 use App\Models\Warehouse;
 use App\Models\MovementType;
 use App\Models\ProductCatalog;
 use App\Models\Lot;
+use App\Models\Service;
 use App\Models\WarehouseMovement;
 use App\Models\WarehouseMovementProduct;
+
 use Illuminate\Http\Request;
 use TCPDF;
 
 class WarehouseController extends Controller
 {
     private $states_route = 'datas/json/Mexico_states.json';
+
     private $cities_route = 'datas/json/Mexico_cities.json';
+
+    private $size = 50;
 
     private function createStock(string $id)
     {
@@ -45,7 +52,7 @@ class WarehouseController extends Controller
             } else {
                 $stocks[] = [
                     'product_id' => $input->product_id,
-                    'product_name' => $input->product->name, 
+                    'product_name' => $input->product->name,
                     'product_metric' => $input->product->metric,
                     'cant' => $input->amount
                 ];
@@ -55,39 +62,34 @@ class WarehouseController extends Controller
         return $stocks;
     }
 
-    public function index(int $is_active)
+    public function index()
     {
         $stocks = [];
-        $warehouses = Warehouse::where('active', $is_active)->get();
+        $warehouses = Warehouse::orderBy('technician_id')->get();
         $input_movements = MovementType::whereBetween('id', [1, 4])->get();
         $output_movements = MovementType::whereBetween('id', [5, 10])->get();
         $products = ProductCatalog::all();
+        $branches = Branch::all();
+        $technicians = Technician::all();
         $lots = Lot::all();
+
         foreach ($warehouses as $warehouse) {
             $stocks[] = [
                 'warehouse_id' => $warehouse->id,
                 'stock' => $this->createStock($warehouse->id)
             ];
         }
-        return view('warehouse.index', compact('warehouses', 'input_movements', 'output_movements', 'products', 'lots', 'stocks', 'is_active'));
-    }
-
-    public function create()
-    {
-        $branches = Branch::all();
-        $states = json_decode(file_get_contents(public_path($this->states_route)), true);
-        $cities = json_decode(file_get_contents(public_path($this->cities_route)), true);
-
-        return view('warehouse.create')->with(compact('branches', 'cities', 'states'));
+        return view('warehouse.index', compact('warehouses', 'input_movements', 'output_movements', 'products', 'lots', 'stocks', 'branches', 'technicians'));
     }
 
     public function store(Request $request)
     {
         //dd($request->all());
-        $warehouse = new Warehouse($request->except('_token'));
+        $warehouse = new Warehouse();
+        $warehouse->fill($request->all());
         $warehouse->save();
 
-        return redirect()->route('warehouse.index', ['is_active' => 1]);
+        return redirect()->route('warehouse.index');
     }
 
     public function storeMovement(Request $request)
@@ -101,7 +103,6 @@ class WarehouseController extends Controller
         } catch (\Exception $e) {
             session()->flash('error', 'Hubo un problema al agregar el movimiento: ' . $e->getMessage());
         }
-
         return back();
     }
 
@@ -138,7 +139,7 @@ class WarehouseController extends Controller
         $movements = WarehouseMovement::all();
         return view('warehouse.movements', compact('movements'));
     }
-
+    
     public function show(string $id)
     {
         $warehouse = Warehouse::findOrFail($id);

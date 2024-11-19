@@ -36,13 +36,50 @@
                             @foreach ($users as $user)
                                 @foreach ($customers as $customer)
                                     @if ($customer->user ? $customer->user->id == $user->id : false)
+                                        @php
+                                            $subdata = [];
+                                            foreach ($customer->sedes as $sede) {
+                                                $subdata[] = [
+                                                    'name' => $sede->name,
+                                                    'orders' => [
+                                                        [
+                                                            'status_id' => 1,
+                                                            'status_name' => 'Pendientes',
+                                                            'count' => $sede->countOrdersbyStatus(1),
+                                                        ],
+                                                        [
+                                                            'status_id' => 3,
+                                                            'status_name' => 'Finalizadas',
+                                                            'count' => $sede->countOrdersbyStatus(3),
+                                                        ],
+                                                        [
+                                                            'status_id' => 4,
+                                                            'status_name' => 'Aprobadas',
+                                                            'count' => $sede->countOrdersbyStatus(4),
+                                                        ],
+                                                    ],
+                                                ];
+                                            }
+                                            $data = [
+                                                'user' => $user->name,
+                                                'customer_matrix' => $customer->name,
+                                                'sedes' => $subdata,
+                                            ];
+                                            $data = json_encode($data);
+                                        @endphp
                                         <tr>
-                                            <th scope="row">{{$user->id}}</th>
+                                            <th scope="row">{{ $user->id }}</th>
                                             <td>{{ $user->name }}</td>
-                                            <td>{{$customer->id}}</td>
+                                            <td>{{ $customer->id }}</td>
                                             <td>{{ $customer->name }}</td>
                                             <td>{{ $customer->sedes->pluck('name')->implode(', ') }}</td>
                                             <td>
+                                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal"
+                                                    data-bs-target="#performanceModal"
+                                                    data-performance="{{ $data }}" onclick="setPerformance(this)">
+                                                    <i class="bi bi-lightning-charge-fill"></i>
+                                                    {{ __('buttons.performance') }}
+                                                </button>
                                                 <a href="{{ route('quality.control.destroy', ['customerId' => $customer->id]) }}"
                                                     class="btn btn-danger btn-sm"
                                                     onclick="return confirm('{{ __('messages.are_you_sure_delete') }}')">
@@ -64,4 +101,5 @@
     </div>
 
     @include('dashboard.quality.modals.control')
+    @include('dashboard.quality.modals.performance')
 @endsection

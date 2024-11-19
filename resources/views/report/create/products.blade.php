@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-12 mb-3">
-        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productModal" onclick="clearForm()"><i
+        <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#productModal" onclick="cleanForm()"><i
                 class="bi bi-plus-lg"></i> {{ __('buttons.add') }} </button>
     </div>
     <div class="col-12">
@@ -13,21 +13,29 @@
                     <th scope="col">Método de aplicación</th>
                     <th scope="col">Cantidad usada</th>
                     <th scope="col">Cantidad por ltrs aplicados</th>
-                    <th scope="col">Unidades</th>
                     <th scope="col">Lote</th>
                     <th scope="col">Acciones</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach ($order->products as $i => $order_product)
+                @php
+                    $data = [
+                        'product_id' => $order_product->product_id,
+                        'service_id' => $order_product->service_id,
+                        'application_method_id' => $order_product->application_method_id,
+                        'metric_id' => $order_product->metric_id,
+                        'amount' => $order_product->amount,
+                        'lot_id' => $order_product->lot_id,
+                    ]
+                @endphp
                     <tr>
                         <th scope="row">{{ $i + 1 }}</th>
                         <td>{{ $order_product->product->name ?? 'N/A' }}</td>
                         <td>{{ $order_product->service->name ?? 'N/A' }}</td>
                         <td>{{ $order_product->appMethod->name ?? 'N/A' }}</td>
-                        <td>{{ $order_product->amount ?? 'N/A' }}</td>
+                        <td>{{ $order_product->amount . ' ' . $order_product->product->metric->value  }}</td>
                         <td>{{ $order_product->dosage ? $order_product->dosage : ($order_product->product->dosage ? $order_product->product->dosage : 'N/A') }}</td>
-                        <td>{{ $order_product->metric ?? $order_product->product->metric }}</td>
                         <td>{{ $order_product->product->lot->lot_number ?? 'N/A' }}</td>
                         <td>
                             <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal"

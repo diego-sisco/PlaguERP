@@ -8,6 +8,7 @@ use App\Models\ApplicationMethodService;
 use App\Models\Customer;
 use App\Models\Device;
 
+use App\Models\Metric;
 use App\Models\Order;
 
 use App\Models\OrderService;
@@ -15,6 +16,7 @@ use App\Models\OrderStatus;
 use App\Models\OrderTechnician;
 use App\Models\PestCategory;
 
+use App\Models\ProductCatalog;
 use App\Models\Service;
 use App\Models\Technician;
 use App\Models\Contract;
@@ -34,7 +36,7 @@ class OrderController extends Controller
 
 	private $files_path = 'files/customers';
 	private $file_answers_path = 'datas/json/answers.json';
-	private $size = 100;
+	private $size = 50;
 
 	private function generateDate($date, $number, $frequency)
 	{
@@ -574,8 +576,9 @@ class OrderController extends Controller
 		$recommendations = Recommendations::all();
 		$application_methods = ApplicationMethod::all();
 		$lots = Lot::all();
+		$products = ProductCatalog::all();
 		$services = $order->services()->get();
-
+		$metrics = Metric::all();
 		$pests = $services->flatMap(function ($service) {
 			return $service->pests()->get();
 		})->unique('id')->values();
@@ -587,7 +590,9 @@ class OrderController extends Controller
 			'application_methods',
 			'pests',
 			'services',
-			'lots'
+			'products',	
+			'lots',
+			'metrics',
 		));
 	}
 }

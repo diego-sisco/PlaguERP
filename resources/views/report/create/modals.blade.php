@@ -4,12 +4,12 @@
             method="POST">
             @csrf
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="productModalLabel">Agregar producto</h1>
+                <h1 class="modal-title fs-5" id="productModalLabel">Producto</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label for="service-id" class="form-label is-required">Servicio relacionado: </label>
+                    <label for="service-id" class="form-label is-required">Servicio relacionado</label>
                     <select class="form-select" id="service-id" name="service_id" required>
                         @foreach ($services as $service)
                             <option value="{{ $service->id }}">{{ $service->name }}</option>
@@ -17,21 +17,7 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="product-id" class="form-label">Buscar producto: </label>
-                    <div class="input-group">
-                        <input type="text" class="form-control" id="product-search" name="product_search"
-                            placeholder="Example">
-                        <button class="btn btn-success" type="button"
-                            onclick="searchProduct()">{{ __('buttons.search') }}</button>
-                    </div>
-                </div>
-                <div class="mb-3">
-                    <label for="product-id" class="form-label is-required">Productos: </label>
-                    <select class="form-select" id="product-id" name="product_id" required>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="product-id" class="form-label is-required">Método de aplicación: </label>
+                    <label for="product-id" class="form-label is-required">Método de aplicación</label>
                     <select class="form-select" id="product-method-id" name="product_method_id" required>
                         @foreach ($application_methods as $method)
                             <option value="{{ $method->id }}">{{ $method->name }}</option>
@@ -39,26 +25,38 @@
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="product-amount" class="form-label is-required">Cantidad usada: </label>
-                    <input type="number" class="form-control" id="product-amount" name="product_amount"
-                        placeholder="0.00" min="0" step="0.01" required>
+                    <label for="product-id" class="form-label is-required">Producto</label>
+                    <select class="form-select" id="product-id" name="product_id" onchange="setMetric(this.value)"
+                        required>
+                        @foreach ($products as $product)
+                            <option value="{{ $product->id }}">{{ $product->name }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div class="mb-3">
-                    <label for="product-dosage" class="form-label">Dosificación (Por litro): </label>
-                    <input type="text" class="form-control" id="product-dosage" name="product_dosage"
-                        placeholder="10ml x Litro">
+                    <label for="product-amount" class="form-label is-required">Cantidad usada</label>
+                    <input type="number" class="form-control" id="amount" name="amount" placeholder="0.00"
+                        min="0" step="0.01" required>
                 </div>
                 <div class="mb-3">
-                    <label for="product-unit" class="form-label is-required">Unidades: </label>
-                    <select class="form-select" id="product-metric" name="product_metric" required>
-                        <option value="Mililitros (ml)">Mililitros (ml)</option>
-                        <option value="Unidades (Uds)">Unidades (Uds)</option>
+                    <label for="product-dosage" class="form-label">Dosificación (Por litro)</label>
+                    <input type="text" class="form-control" id="dosage" name="dosage" placeholder="10ml x Litro">
+                </div>
+                <div class="mb-3">
+                    <label for="product-unit" class="form-label">Unidades</label>
+                    <select class="form-select" id="metric" name="metric" disabled>
+                        @foreach ($metrics as $metric)
+                            <option value="{{ $metric->id }}">{{ $metric->value }}</option>
+                        @endforeach
                     </select>
                 </div>
                 <div class="mb-3">
                     <label for="product-unit" class="form-label is-required">Lote: </label>
-                    <select class="form-select" id="product-lot" name="product_lot" required>
-
+                    <select class="form-select" id="lot-id" name="lot_id" required>
+                        @foreach ($lots as $lot)
+                            <option value="{{ $lot->id }}">[ {{ $lot->registration_number }} ]
+                                {{ $lot->product->name }}</option>
+                        @endforeach
                     </select>
                 </div>
             </div>
@@ -72,84 +70,28 @@
 </div>
 
 <script>
-    const product_incidents = @json($order->products);
+    const products = @json($products);
     const lots = @json($lots);
     var products_found = [];
 
-    $(document).ready(function() {
-    })
-
-
-    function searchProduct() {
-        var formData = new FormData();
-        var product_search = $('#product-search').val();
-        var csrfToken = $('meta[name="csrf-token"]').attr("content");
-
-        formData.append('search', product_search);
-
-        $.ajax({
-            url: "{{ route('report.search.product') }}",
-            type: "POST",
-            data: formData,
-            contentType: false,
-            processData: false,
-            headers: {
-                "X-CSRF-TOKEN": csrfToken,
-            },
-            success: function(response) {
-                var data = response.data;
-                $('#product-id').empty();
-                data.products.forEach(elem => {
-                    $('#product-id').append(new Option(elem.name, elem.id));
-                });
-
-                $('#product-lot').empty();
-                data.lots.forEach(elem => {
-                    let product_name = data.products.find(item => item.id == elem.product_id).name;
-                    let lot_name = `[${elem.lot_number}] ${product_name}`;
-                    $('#product-lot').append(new Option(lot_name, elem.id));
-                });
-
-                products_found = data.products;
-            },
-            error: function(xhr, status, error) {
-                console.error("Error:", error);
-            },
-        });
-    }
-
-    function setProduct(id) {
-        $('#product-id').empty();
-        //$('#product-lot').empty();
-
-        let found_product = product_incidents.find(product => product.id == id);
-        let found_lots = lots.filter(lot => lot.product_id == id);
-        found_lots = found_lots.length > 0 ? found_lots : lots
-
+    function setMetric(productId) {
+        var found_product = products.find(item => item.id == productId);
         if (found_product) {
-            var product = found_product.product;
-            $('#service-id').val(found_product.service_id);
-            $('#product-id').append(new Option(product.name, product.id));
-            $('#product-method-id').val(found_product.application_method_id);
-            $('#product-amount').val(found_product.amount);
-            $('#product-dosage').val(found_product.dosage);
-            $('#product-metric').val(found_product.metric);
-        }
-
-        if (found_lots) {
-            found_lots.forEach(elem => {
-                let found_data = product_incidents.find(item => item.product_id == elem.product_id);
-                if(found_data) {
-                    let lot_name = `[${elem.lot_number}] ${found_data.product.name}`;
-                    $('#product-lot').append(new Option(lot_name, elem.id));
-                }
-            });
+            $('#metric').val(found_product.metric_id)
+            $('#dosage').val(found_product.dosage)
         }
     }
 
-    function clearForm() {
+    function setProduct(productId) {
+        var found_product = products.find(item => item.id == productId);
+        if (found_product) {
+            
+        }
+    }
+
+    function cleanForm() {
         $('#product-form').find('input[type="text"], input[type="email"], input[type="number"]').val('');
-        $('#product-form').find('select').val('');
-        //$('#product-form').find('input[type="checkbox"], input[type="radio"]').prop('checked', false);
+        $('#product-form').find('select').val(1);
+        $('#product-form').find('input[type="checkbox"], input[type="radio"]').prop('checked', false);
     }
 </script>

@@ -89,7 +89,7 @@ class AppController extends Controller
 
 	public function getOrders(int $id, string $date)
 	{
-		$devices = $questions = $floorplan = $pests = $products = $data = $orderData = $serviceData = $productData = $pestData = $appMethodData = [];
+		$orders = $devices = $questions = $floorplan = $pests = $products = $data = $orderData = $serviceData = $productData = $pestData = $appMethodData = [];
 		$version = 0;
 		$hasDevices = false;
 
@@ -131,7 +131,7 @@ class AppController extends Controller
 
 			// Obtener los productos para cada servicio
 			foreach ($services as $service) {
-				$products = $service->products(0)->select('id', 'name', 'description', 'execution_indications', 'metric', 'updated_at')->get();
+				$products = $service->products(0)->select('id', 'name', 'description', 'execution_indications', 'updated_at')->get();
 				$productData = array_merge($productData, $products->toArray());
 
 				$pests = $service->pests()->get(['pest_catalog.id', 'pest_catalog.name', 'pest_catalog.updated_at']);

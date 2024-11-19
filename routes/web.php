@@ -87,14 +87,19 @@ Route::prefix('crm')->name('crm.')->middleware('auth')->group(function () {
 });
 
 // CHARTS
-//Inventories
-Route::get('/warehouses/{is_active}', [WarehouseController::class, 'index'])->name('warehouse.index');
-Route::get('/warehouse/create', [WarehouseController::class, 'create'])->name('warehouse.create');
-Route::post('/warehouse/store', [WarehouseController::class, 'store'])->name('warehouse.store');
-Route::get('/warehouse/edit/{id}', [WarehouseController::class, 'edit'])->name('warehouse.edit');
-Route::put('/warehouse/update/{id}/', [WarehouseController::class, 'update'])->name('warehouse.update');
-Route::get('/warehouse/show/{id}', [WarehouseController::class, 'show'])->name('warehouse.show');
-Route::get('/warehouse/delete/{id}', [WarehouseController::class, 'delete'])->name('warehouse.delete');
+
+// Inventario/Almance
+Route::prefix('warehouses')
+    ->middleware('auth')
+    ->name('warehouse.')
+    ->group(function () {
+        Route::get('/', [WarehouseController::class, 'index'])->name('index');
+        Route::post('/store', [WarehouseController::class, 'store'])->name('store');
+        Route::get('/edit/{id}', [WarehouseController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}/', [WarehouseController::class, 'update'])->name('update');
+        Route::get('/show/{id}', [WarehouseController::class, 'show'])->name('show');
+        Route::get('/delete/{id}', [WarehouseController::class, 'delete'])->name('delete');
+    });
 
 Route::post('/warehouse/input', [WarehouseController::class, 'storeMovement'])->name('warehouse.input');
 Route::post('/warehouse/output', [WarehouseController::class, 'storeMovement'])->name('warehouse.output');
@@ -132,11 +137,18 @@ Route::get('/CRM/chart/ordertypes/{service_type}', [GraphicController::class, 'o
 Route::get('/CRM/chart/ordertypes/{service_type}/update', [GraphicController::class, 'refreshOrderTypes'])->name('crm.chart.ordertypes.refresh');
 
 // Client System
-Route::get('/clients', [ClientController::class, 'index'])->name('client.index');
+Route::prefix('clients')
+    ->middleware('auth')
+    ->name('client.')
+    ->group(function () {
+        Route::get('/', [ClientController::class, 'index'])->name('index');
+        Route::get('/reports/{section}', [ClientController::class, 'reports'])->name('reports.index');
+
+        Route::post('/reports/search', [ClientController::class, 'searchReport'])->name('report.search');
+    });
 Route::get('/clients/mip/{path}', [ClientController::class, 'mip'])->where('path', '.*')->name('client.mip.index');
 Route::get('/clients/system/{path}', [ClientController::class, 'directories'])->where('path', '.*')->name('client.system.index');
-Route::get('/clients/reports/{section}', [ClientController::class, 'reports'])->name('client.reports.index');
-Route::post('/cquiero verte en escenalient/directory/store', [ClientController::class, 'storeDirectory'])->name('client.directory.store');
+Route::post('/client/directory/store', [ClientController::class, 'storeDirectory'])->name('client.directory.store');
 Route::post('/client/file/store', [ClientController::class, 'storeFile'])->name('client.file.store');
 Route::post('/client/directory/update', [ClientController::class, 'updateDirectory'])->name('client.directory.update');
 Route::post('/client/directory/permissions', [ClientController::class, 'permissions'])->name('client.directory.permissions');
@@ -147,7 +159,8 @@ Route::get('/clients/file/download/{path}', [ClientController::class, 'downloadF
 Route::get('/client/directory/destroy/{path}', [ClientController::class, 'destroyDirectory'])->where('path', '.*')->name('client.directory.destroy');
 Route::get('/client/file/destroy/{path}', [ClientController::class, 'destroyFile'])->where('path', '.*')->name('client.file.destroy');
 
-Route::get('/client/report/search', [ClientController::class, 'searchReport'])->name('client.report.search');
+
+Route::post('/client/reports/signature/store', [ClientController::class, 'storeSignature'])->name('client.report.signature.store');
 Route::get('/client/report/search/backup', [ClientController::class, 'searchBackupReport'])->name('client.report.search.backup');
 
 Route::get('/report/customer/export/{va}', [ReportController::class, 'indexc'])->name('customersexport.index');
@@ -325,16 +338,20 @@ Route::prefix('branches')
 
 
 //RUTAS PARA GENERAR UN REPORTE
-Route::get('/report/review/{id}', [OrderController::class, 'checkReport'])->name('check.report');
-Route::get('/report/autoreview/{orderId}/{floorplanId}', [ReportController::class, 'autoreview'])->name('report.autoreview');
-Route::post('/report/store/{orderId}', [ReportController::class, 'store'])->name('report.store');
-Route::get('report/print/{orderId}', [ReportController::class, 'print'])->name('report.print');
-
-Route::post('/report/store/incidents/{orderId}', [ReportController::class, 'storeIncidents'])->name('report.store.incidents');
-Route::post('/report/store/dom/{id}/{optionChooser}', [OrderController::class, 'createReports'])->name('report.create');
-Route::post('/report/search/product', [ReportController::class, 'searchProduct'])->name('report.search.product');
-Route::post('/report/set/product/{orderId}', [ReportController::class, 'setProduct'])->name('report.set.product');
-Route::get('/report/destroy/product/{incidentId}', [ReportController::class, 'destroyProduct'])->name('report.destroy.product');
+Route::prefix('report')
+    ->name('report.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/review/{id}', [OrderController::class, 'checkReport'])->name('review');
+        Route::get('/autoreview/{orderId}/{floorplanId}', [ReportController::class, 'autoreview'])->name('autoreview');
+        Route::post('/store/{orderId}', [ReportController::class, 'store'])->name('store');
+        Route::get('/print/{orderId}', [ReportController::class, 'print'])->name('print');
+        Route::post('/store/incidents/{orderId}', [ReportController::class, 'storeIncidents'])->name('store.incidents');
+        Route::post('/store/dom/{id}/{optionChooser}', [OrderController::class, 'createReports'])->name('create');
+        Route::post('/search/product', [ReportController::class, 'searchProduct'])->name('search.product');
+        Route::post('/set/product/{orderId}', [ReportController::class, 'setProduct'])->name('set.product');
+        Route::get('/destroy/product/{incidentId}', [ReportController::class, 'destroyProduct'])->name('destroy.product');
+    });
 
 // Daily Program
 Route::get('/dailyprogram', [ScheduleController::class, 'index'])->name('dailyprogram.index');
@@ -384,5 +401,6 @@ Route::post('/ajax/control-points', [OrderController::class, 'getControlPoints']
 Route::post('/ajax/devices/{id}', [FloorPlansController::class, 'getDevicesVersion'])->name('ajax.devices');
 Route::post('/ajax/quality/search/orders/customer', [PagesController::class, 'getOrdersByCustomer'])->name('ajax.quality.search.customer');
 Route::get('/ajax/contract/service', [ContractController::class, 'getSelectData'])->name('ajax.contract.service');
+Route::post('/ajax/search/devices/{floorplan_id}', [FloorPlansController::class, 'searchDevices'])->name('ajax.search.devices');
 
 require __DIR__ . '/auth.php';

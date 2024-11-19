@@ -111,6 +111,10 @@ class Order extends Model
         );
     }
 
+    public function productsByService($serviceId) {
+        return $this->products()->where('service_id', $serviceId)->get();
+    }
+
     public function reportRecommendations()
     {
         return $this->hasMany(OrderRecommendation::class, 'order_id', 'id');

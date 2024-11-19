@@ -33,4 +33,9 @@ return [
     'stock' => 'Stock',
     'assign' => 'Asignar',
     'remove' => 'Quitar',
+    'performance' => 'Rendimiento',
+    'close' => 'Cerrar',
+    'open' => 'Abrir',
+    'signature' => 'Firmar',
+    'clear' => 'Limpiar'
 ];

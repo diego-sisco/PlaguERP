@@ -39,8 +39,6 @@
                                 <button class="btn btn-success btn-sm" type="submit"
                                     id="search-button">{{ __('buttons.search') }}</button>
                             </form>
-
-
                         </div>
                     </div>
 

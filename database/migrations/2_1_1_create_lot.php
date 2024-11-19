@@ -4,8 +4,6 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-use function Laravel\Prompts\table;
-
 return new class extends Migration
 {
     public function up(): void
@@ -16,6 +14,8 @@ return new class extends Migration
             $table->foreignId('warehouse_id')->constrained('warehouse')->onDelete('cascade');
             $table->string('registration_number');
             $table->date('expiration_date');
+            $table->date('start_date');
+            $table->date('end_date');
             $table->integer('amount');
             $table->timestamps();
         });

@@ -24,7 +24,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.1/Chart.min.js" charset="utf-8"></script>
 
 <!-- Full Calendar -->
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js" integrity="sha256-hk2Q9BXDSq54aGHbj6/T9up41uNJ5tLQw49s0HqWfPw=" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.14/index.global.min.js"
+    integrity="sha256-hk2Q9BXDSq54aGHbj6/T9up41uNJ5tLQw49s0HqWfPw=" crossorigin="anonymous"></script>
 
 <!-- Js PDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -32,9 +33,12 @@
 
 <!-- Summernote-->
 <link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
 
-    <!-- CSS -->
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<!-- CSS -->
+<script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+<!-- Signature Pad -->
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@2.3.2/dist/signature_pad.min.js"></script>

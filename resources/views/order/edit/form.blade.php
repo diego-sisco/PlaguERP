@@ -204,7 +204,7 @@
     <button type="button" class="btn btn-primary my-3 me-3"
         onclick="generateOrder()">{{ __('buttons.update') }}</button>
 
-    <a class="btn btn-dark" href="{{ route('check.report', ['id' => $order->id]) }}">
+    <a class="btn btn-dark" href="{{ route('report.review', ['id' => $order->id]) }}">
         <i class="bi bi-file-pdf-fill"></i> Reporte
     </a>
 </form>

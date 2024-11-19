@@ -16,6 +16,7 @@ use App\Models\OrderService;
 use App\Models\Service;
 use App\Models\UserCustomer;
 use App\Models\User;
+use Carbon\Carbon;
 
 class ClientController extends Controller
 {
@@ -23,6 +24,8 @@ class ClientController extends Controller
     private $mip_path = 'mip_directory/';
     private $reports_path = 'backups/reports/';
     private $dir_names = [];
+
+    private $size = 50;
 
     private $mip_directories = [
         'MIP',
@@ -80,14 +83,16 @@ class ClientController extends Controller
         return $breadcrump;
     }
 
-    private function flattenArray(array $array): array {
+    private function flattenArray(array $array): array
+    {
         return array_merge(...$array);
     }
 
-    private function uniqueArray($items) {
+    private function uniqueArray($items)
+    {
         $uniqueItems = array_unique(
             array_map(
-                function($item) {
+                function ($item) {
                     return serialize($item);
                 },
                 $items
@@ -95,7 +100,7 @@ class ClientController extends Controller
         );
 
         $uniqueItems = array_map(
-            function($item) {
+            function ($item) {
                 return unserialize($item);
             },
             $uniqueItems
@@ -109,19 +114,19 @@ class ClientController extends Controller
         $results = [];
         $date = str_replace("-", "", $date);
         foreach ($filesArray as $file) {
-                $fileParts = explode('_', $file['name']);
-                if (count($fileParts) == 3) {
-                    $fileDate = $fileParts[0];
-                    $fileId = explode('.', $fileParts[2])[0];
-                    $dateMatches = ($date == null || $fileDate == $date);
-                    $idMatches = ($id == null || $fileId == $id);
+            $fileParts = explode('_', $file['name']);
+            if (count($fileParts) == 3) {
+                $fileDate = $fileParts[0];
+                $fileId = explode('.', $fileParts[2])[0];
+                $dateMatches = ($date == null || $fileDate == $date);
+                $idMatches = ($id == null || $fileId == $id);
 
-                    if ($dateMatches && $idMatches) {
-                        $results[] = $file;
-                    }
+                if ($dateMatches && $idMatches) {
+                    $results[] = $file;
                 }
             }
-        
+        }
+
         return $results;
     }
     public function createMip(string $path)
@@ -172,9 +177,11 @@ class ClientController extends Controller
     public function reports(int $section)
     {
         $user = User::find(auth()->user()->id);
+        $sedes = Customer::where('general_sedes', '!=', 0)->get();
         $business_lines = LineBusiness::all();
+        $orders = [];
 
-        return view('client.report.index', compact('user', 'business_lines', 'section'));
+        return view('client.report.index', compact('orders', 'user', 'business_lines', 'sedes', 'section'));
     }
 
     public function mip(string $path)
@@ -194,10 +201,9 @@ class ClientController extends Controller
         return view('client.mip.index', compact('data', 'links'));
     }
 
-
     public function storeDirectory(Request $request)
     {
-        Storage::disk('public')->makeDirectory($request->input('path'). '/' . $request->input('name'));
+        Storage::disk('public')->makeDirectory($request->input('path') . '/' . $request->input('name'));
         return back();
     }
 
@@ -218,44 +224,88 @@ class ClientController extends Controller
             Storage::disk('public')->put($url, file_get_contents($file));
         }
 
-        return redirect()->back();
+        return back();
+    }
+
+    public function storeSignature(Request $request)
+    {
+        try {
+            $orderId = $request->input('order');
+            $base64 = $request->input('signature');
+            $name = $request->input('name');
+
+            list(, $base64) = explode(',', $base64);
+            $order = Order::find($orderId);
+
+            if (!$order) {
+                return back()->withErrors(['error' => 'Order not found']);
+            }
+
+            $order->customer_signature = $base64;
+            $order->signature_name =  $name;
+            $order->save();
+
+            $data = [
+                'order_id' => $orderId,
+                'signature_name' => $name,
+                'has_signature' => !empty($order->customer_signature),
+            ];
+
+            return response()->json(['data' => $data], 200);
+        } catch (\Exception $e) {
+        }
     }
 
     public function searchReport(Request $request)
     {
-        $orders = $services = $files = [];
-        $section = 1;
-        $business_lines = LineBusiness::all();
         $user = User::find(auth()->user()->id);
-        $sede = $request->input('sede');
+        $sedes = Customer::where('general_sedes', '!=', 0)->get();
+        $business_lines = LineBusiness::all();
+        $section = 1;
 
-        if ($request->service) {
-            $searchTerm = '%' . $request->service . '%';
-            $services = Service::where('business_line_id', $request->input('business_line'))->orWhere('name', 'LIKE', $searchTerm)->get();
-            $query = Order::whereIn('id', OrderService::whereIn('service_id', $services->pluck('id'))->get()->pluck('order_id'));
+        $order_id = $request->input('report'); //
+        $customer_id = $request->input('sede'); //
+        $serviceTerm = '%' . $request->input('service') . '%';
+        $date = $request->input('date');
+        $time = $request->input('time');
+        $business_line_id = $request->input('business_line');
+        $tracking_type = $request->input('tracking_type');
+
+        $serviceIds = Service::where('name', 'LIKE', $serviceTerm)->get()->pluck('id');
+        $orderServiceIds = OrderService::whereIn('service_id', $serviceIds)->get()->pluck('order_id');
+        $orderBusinessIds = OrderService::where(
+            'service_id',
+            Service::where('business_line_id', $business_line_id)->get()->pluck('id')->toArray()
+        )->get()->pluck('order_id');
+
+        [$startDate, $endDate] = array_map(function ($d) {
+            return Carbon::createFromFormat('d/m/Y', trim($d));
+        }, explode(' - ', $date));
+
+        $startDate = $startDate->format('Y-m-d');
+        $endDate = $endDate->format(format: 'Y-m-d');
+
+        $orders = Order::where('status_id', 5)->where('customer_id', $customer_id);
+
+        if($order_id) {
+            $orders = $orders->where('id', $order_id);
         } else {
-            $query = Order::where('id', $request->input('report_id'));
+            $orders = $orders->where(function ($query) use ($order_id, $orderServiceIds, $orderBusinessIds, $startDate, $endDate, $time) {
+                $query->whereBetween('programmed_date', [$startDate, $endDate])
+                    ->orWhere('id', $order_id)
+                    ->orWhereIn('id', $orderServiceIds)
+                    ->orWhereIn('id', $orderBusinessIds)
+                    ->orWhere('start_time', $time);
+            });
         }
 
-        if ($sede != null) {
-            $query = $query->orWhere('customer_id', $sede);
-        }
-
-        $orders = $query->orWhereDate('programmed_date', $request->input('date'))
-            ->orWhereTime('start_time', $request->input('time'))
-            ->where('status_id', 5)->get();
-
-        if ($orders->isEmpty()) {
-            $work_dept_id = auth()->user()->work_department_id;
-            if ($work_dept_id == 1 || $work_dept_id == 7) {
-                $orders = Order::all();
-            }
-        }
-        
-        return view('client.report.index', compact('user', 'orders', 'business_lines', 'section'));
+        $orders = $tracking_type ? $orders->whereNotNull('contract_id') : $orders->whereNull('contract_id');
+        $orders = $orders->orderByRaw('signature_name IS NULL DESC')->paginate($this->size);
+        return view('client.report.index', compact('user', 'orders', 'business_lines', 'sedes', 'section'));
     }
 
-    public function searchBackupReport(Request $request) {
+    public function searchBackupReport(Request $request)
+    {
         $business_lines = LineBusiness::all();
         $user = User::find(auth()->user()->id);
         $disk = Storage::disk('public');

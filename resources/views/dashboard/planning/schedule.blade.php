@@ -11,10 +11,9 @@
             <div class="col-12">
                 <div class="row justify-content-between mb-3">
                     <div class="col-auto">
-                        <form class="form input-group rounded"
-                            action="{{ route('planning.schedule') }}" method="GET">
+                        <form class="form input-group rounded" action="{{ route('planning.schedule') }}" method="GET">
                             <input type="text" class="form-control" id="date-range" name="date"
-                            value="{{ $date }}"/>
+                                value="{{ $date }}" />
                             <button class="btn btn-success btn-sm " type="submit" id="button-addon1">
                                 {{ __('buttons.search') }}
                             </button>
@@ -54,7 +53,7 @@
                                 $size = count($daily['activities']);
                             @endphp
                             <tr>
-                                <th class="text-center" scope="row" rowspan="{{ $size != 0 ? $size : 1 }}">
+                                <th class="text-center" scope="row" rowspan="{{ $size != 0 ? $size+1 : 1 }}">
                                     {{ $daily['hour'] }}
                                 </th>
                                 @if ($size == 1)
@@ -70,14 +69,14 @@
                                         </td>
                                         <td
                                             class="fw-bold 
-                                @if ($daily['activities'][$i]['status_id'] == 1 || $daily['activities'][$i]['status_id'] == 5) text-warning
-                                    @elseif ($daily['activities'][$i]['status_id'] == 2 || $daily['activities'][$i]['status_id'] == 3)
-                                        text-primary
-                                    @elseif ($daily['activities'][$i]['status_id'] == 4)
-                                        text-success
-                                    @else
-                                        text-danger @endif
-                                ">
+                                            {{ $daily['activities'][$i]['status_id'] == 1
+                                                ? 'text-warning'
+                                                : ($daily['activities'][$i]['status_id'] == 2 || $daily['activities'][$i]['status_id'] == 3 || $daily['activities'][$i]['status_id'] == 5
+                                                    ? 'text-primary'
+                                                    : ($daily['activities'][$i]['status_id'] == 4
+                                                        ? 'text-success'
+                                                        : 'text-danger')) }}
+                                        ">
                                             {{ $daily['activities'][$i]['status'] }}
                                         </td>
                                         <td>
@@ -93,7 +92,7 @@
                                             @endcan
                                             @can('write_order')
                                                 <a class="btn btn-dark btn-sm"
-                                                    href="{{ route('check.report', ['id' => $daily['activities'][$i]['id']]) }}">
+                                                    href="{{ route('report.review', ['id' => $daily['activities'][$i]['id']]) }}">
                                                     <i class="bi bi-file-pdf-fill"></i> {{ __('buttons.report') }}
                                                 </a>
                                             @endcan
@@ -104,45 +103,40 @@
                             @if ($size >= 2)
                                 @for ($i = 0; $i < $size; $i++)
                                     <tr>
-                                        @if ($i >= 1)
-                                            <td> </td>
-                                        @endif
-                                        <td> {{ $daily['activities'][$i]->id }} </td>
-                                        <td> {{ $daily['activities'][$i]->start_time }} </td>
-                                        <td> {{ $daily['activities'][$i]->programmed_date }} </td>
+                                        <td> <i class="bi bi-square-fill"
+                                            style="color: {{ $daily['activities'][$i]['service_type'] == 1 ? '#c0392b' : ($daily['activities'][$i]['service_type'] == 2 ? '#196f3d' : '#1f618d') }};"></i>
+                                    </td>
+                                        <td> {{ $daily['activities'][$i]['id'] }} </td>
+                                        <td> {{ $daily['activities'][$i]['start_time'] }} </td>
+                                        <td> {{ $daily['activities'][$i]['programmed_date'] }} </td>
                                         <td>
-                                            @foreach ($customers as $customer)
-                                                @if ($customer->id == $daily['activities'][$i]->customer_id)
-                                                    {{ $customer->name }}
-                                                @endif
-                                            @endforeach
+                                            {{ $daily['activities'][$i]['customer'] }}
                                         </td>
-                                        <td class="text-center">
-                                            @foreach ($status as $s)
-                                                @if ($s->id == $daily['activities'][$i]->status_id)
-                                                    <span
-                                                        @if ($s->id == 1) class="border border-2 border-warning rounded text-warning p-1" @endif>
-                                                        <i class="bi bi-exclamation-triangle-fill"></i>
-                                                        {{ $s->name }}
-                                                        <span>
-                                                @endif
-                                            @endforeach
+                                        <td
+                                            class="fw-bold 
+                                            {{ $daily['activities'][$i]['status_id'] == 1
+                                                ? 'text-warning'
+                                                : ($daily['activities'][$i]['status_id'] == 2 || $daily['activities'][$i]['status_id'] == 3 || $daily['activities'][$i]['status_id'] == 5
+                                                    ? 'text-primary'
+                                                    : ($daily['activities'][$i]['status_id'] == 4
+                                                        ? 'text-success'
+                                                        : 'text-danger')) }}
+                                        ">
+                                            {{ $daily['activities'][$i]['status'] }}
                                         </td>
                                         <td>
                                             <a class="btn btn-info btn-sm"
-                                                href="{{ route('order.show', ['id' => $daily['activities'][$i]->id, 'section' => 1]) }}">
+                                                href="{{ route('order.show', ['id' => $daily['activities'][$i]['id'], 'section' => 1]) }}">
                                                 <i class="bi bi-eye-fill"></i> {{ __('buttons.show') }}
                                             </a>
                                             @can('write_order')
                                                 <a class="btn btn-secondary btn-sm"
-                                                    href="{{ route('order.edit', $daily['activities'][$i]->id) }}">
+                                                    href="{{ route('order.edit', ['id' => $daily['activities'][$i]['id']]) }}">
                                                     <i class="bi bi-pencil-square"></i> {{ __('buttons.edit') }}
                                                 </a>
-                                            @endcan
-                                            @can('write_order')
                                                 <a class="btn btn-dark btn-sm"
-                                                    href="{{ route('check.report', $daily['activities'][$i]->id) }}">
-                                                    <i class="bi bi-clipboard-fill"></i> {{ __('buttons.report') }}
+                                                    href="{{ route('report.review', ['id' => $daily['activities'][$i]['id']]) }}">
+                                                    <i class="bi bi-file-pdf-fill"></i> {{ __('buttons.report') }}
                                                 </a>
                                             @endcan
                                         </td>

@@ -1,36 +1,29 @@
-@if(isset($orders) && empty($orders))
-<div class="alert alert-danger alert-dismissible" role="alert">
-    No se encontraron coincidencias
-    <button
-        type="button"
-        class="btn-close"
-        data-bs-dismiss="alert"
-        aria-label="Close"
-    ></button>
-</div>
-@endif
-
 <table class="table table-bordered text-center caption-top">
     <caption class="border bg-secondary-subtle p-2 fw-bold text-dark">
-        {{ __('order.navbar.new_reports') }}
+        Reportes
     </caption>
     <thead>
         <tr>
             <th scope="col">#</th>
+            <th scope="col">No</th>
             <th scope="col">Fecha</th>
             <th scope="col">Hora</th>
             <th scope="col">Localidad</th>
             <th scope="col">Línea de negocio</th>
             <th scope="col">Sede</th>
-            <th scope="col">Técnicos</th>
-            <th scope="col">No. Contrato</th>
-            <th scope="col">Servicios</th>
-            <th class="col" scope="col">{{ __('buttons.actions') }}</th>
+            <th scope="col">Técnico</th>
+            <th scope="col">Servicio(s)</th>
+            <th scope="col">Firmado por</th>
+            <th scope="col">{{ __('buttons.actions') }}</th>
         </tr>
     </thead>
     <tbody>
-        @if(isset($orders)) @foreach ($orders as $order)
+        @forelse ($orders as $index => $order)
+        @php
+            $technician = $order->technicians()->first();
+        @endphp
         <tr>
+            <th scope="row">{{ $index + 1 }}</th>
             <th scope="row">{{ $order->id }}</th>
             <td>
                 {{
@@ -45,25 +38,25 @@
             </td>
             <td>{{ $order->customer->name }}</td>
             <td>
-                @foreach ($order->technicians as $technician) {{
-                $technician->user->name }} @endforeach
+                {{$technician->user->name ?? 'S/A'}}
             </td>
-            <td>{{ $order->contract->id ?? 'S/N' }}</td>
             <td>
-                @foreach ($order->services as $service) {{ $service->name }}
-                @endforeach
+                {{ implode(', ', $order->services->pluck('name')->toArray()) }}
             </td>
-
+            <td class="fw-bold {{ $order->signature_name ? 'text-success' : 'text-danger' }}" id="order{{ $order->id }}-signature-name">{{ $order->signature_name ?? 'Sin firma' }}</td>
             <td>
-                <button class="btn btn-info btn-sm" onclick="#!">
+                <button type="button" class="btn btn-warning btn-sm mb-1" onclick="openModal({{$order->id}})">
+                    <i class="bi bi-pencil-fill"></i> {{ __('buttons.signature') }}
+                </button>
+                <a href="{{ route('report.print', ['orderId' => $order->id]) }}" class="btn btn-info btn-sm mb-1">
                     <i class="bi bi-eye-fill"></i> {{ __('buttons.show') }}
-                </button>
-
-                <button class="btn btn-success btn-sm" onclick="#!">
-                    <i class="bi bi-download"></i> {{ __('buttons.download') }}
-                </button>
+                </a>
             </td>
         </tr>
-        @endforeach @endif
+        @empty
+            <tr>
+                <td class="fw-bold text-danger" colspan="10">Sin coincidencias</td>
+            </tr>
+        @endforelse
     </tbody>
 </table>

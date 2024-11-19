@@ -24,14 +24,14 @@
                 </td>
                 <td
                     class="fw-bold 
-                        @if ($order->status_id == 1) text-warning
-                        @elseif ($order->status_id == 2 || $order->status_id == 3)
-                            text-primary
-                        @elseif ($order->status_id == 4 || $order->status_id == 5)
-                            text-success
-                        @else
-                            text-danger @endif">
-                    {{ $order->status->name }}
+                    {{ $order->status_id == 1
+                        ? 'text-warning'
+                        : ($order->status_id == 2 || $order->status_id == 3
+                            ? 'text-primary'
+                            : ($order->status_id == 4 || $order->status_id == 5
+                                ? 'text-success'
+                                : 'text-danger')) }}">
+                                    {{ $order->status->name }}
                 </td>
                 <td>
                     <a class="btn

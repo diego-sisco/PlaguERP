@@ -19,6 +19,8 @@ class Lot extends Model
         'registration_number',
         'expiration_date',
         'amount',
+        'start_date',
+        'end_date',
         'created_at',
         'updated_at',
     ];

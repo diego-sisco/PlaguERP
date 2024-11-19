@@ -131,4 +131,12 @@ class ProductCatalog extends Model
     public function file($filenameId) {
         return $this->files()->where('filename_id', $filenameId)->first();
     }
+
+    public function lots() {
+        return $this->hasMany(Lot::class, 'product_id', 'id');
+    }
+
+    public function metric() {
+        return $this->belongsTo(Metric::class, 'metric_id');
+    }
 }

@@ -32,8 +32,8 @@
                     <input type="date" class="form-control" id="output-date" name="date" required/>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label is-required">Observaciones</label>
-                    <textarea class="form-control" id="observations" name="observations" rows="4" required> </textarea>
+                    <label class="form-label">Observaciones</label>
+                    <textarea class="form-control" id="observations" name="observations" rows="4"> </textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label is-required">Producto</label>

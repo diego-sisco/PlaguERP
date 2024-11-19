@@ -16,15 +16,11 @@ return new class extends Migration
         Schema::create('warehouse', function (Blueprint $table) {
             $table->id();
             $table->foreignId('branch_id')->constrained('branch')->onDelete('cascade');
+            $table->foreignId('technician_id')->nullable()->constrained('technician')->onDelete('cascade');
             $table->string('name');
-            $table->boolean('receive_material')->default(true);
-            $table->boolean('active')->default(true);
-            $table->string('address')->nullable(); // Dirección
-            $table->integer('zip_code')->nullable(); // Código postal
-            $table->string('city')->nullable(); // Municipio
-            $table->string('state')->nullable(); // Estado/entidad
-            $table->string('phone')->nullable(); // Teléfono
             $table->text('observations')->nullable(); 
+            $table->boolean('allow_material_receipts');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }

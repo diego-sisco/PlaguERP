@@ -52,6 +52,8 @@ class Customer extends Model
         'updated_at'
     ];
 
+    private $size = 50;
+
     public function contracts()
     {
         return $this->hasMany(Contract::class, 'customer_id', 'id');
@@ -124,6 +126,14 @@ class Customer extends Model
         return $this->orders()
             ->whereIn('status_id', [3, 4, 5])->orderByDesc('completed_date');
         //->whereNotNull('completed_date');
+    }
+
+    public function countOrdersbyStatus($statusId) {
+        return $this->orders()->where('status_id', $statusId)->count();
+    }
+
+    public function ordersPaginate() {
+        return $this->orders()->orderBy('status_id', 'asc')->paginate($this->size);
     }
 
     public function properties()

@@ -75,7 +75,7 @@
                                         @endcan
                                         @if ($status == 3)
                                             <a class="btn btn-warning btn-sm"
-                                                href="{{ route('check.report', ['id' => $order->id]) }}">
+                                                href="{{ route('report.review', ['id' => $order->id]) }}">
                                                 <i class="bi bi-file-pdf-fill"></i> Reporte
                                             </a>
                                         @endif

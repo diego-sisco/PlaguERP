@@ -57,6 +57,10 @@ class PermissionSeeder extends Seeder {
 				'name' => 'write_system_client', // 12
 				'type' => 'w'
 			],
+			[
+				'name' => 'read_system_client', // 13
+				'type' => 'w'
+			],
 		];
 
 		$data = array_map(function ($permission) {

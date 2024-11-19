@@ -15,8 +15,8 @@ class CRMController extends Controller
     private $size = 100;
 
     public function index(string $type) {
-        $customers = $type ? Customer::where('service_type_id', '!=', 3)->where('general_sedes', 0)->paginate($this->size) : Lead::paginate($this->size);
-        $services = Service::where('service_type_id', '!=', 3)->get();
+        $customers = $type ? Customer::where('general_sedes', 0)->paginate($this->size) : Lead::paginate($this->size);
+        $services = Service::all();
         $customer_services = [];
         $order_status = OrderStatus::all();
         foreach($customers as $customer) {
@@ -24,7 +24,7 @@ class CRMController extends Controller
             foreach($orders as $order) {
                 $customer_services[] = [
                     'customer_id' => $customer->id,
-                    'services'  => $order->services()->select('service.id', 'service.name')->get()->toArray(),
+                    'services'  => $order->services()/*->select('service.id', 'service.name')*/->get()->toArray(),
                 ];
             }
         }        

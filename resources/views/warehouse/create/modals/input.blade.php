@@ -8,14 +8,14 @@
             </div>
             <div class="modal-body">
                 <div class="mb-3">
-                    <label class="form-label is-required">Almacen receptor</label>
+                    <label class="form-label is-required">Almacen de origen</label>
                     <input type="hidden" class="form-control" id="input-warehouse" name="warehouse_id"
                         value="" required/>
                     <input type="text" class="form-control" id="input-warehouse-text" name="warehouse_text"
                         value="" disabled/>
                 </div>
                 <div class="mb-3">
-                    <label class="form-label">Almacen de origen</label>
+                    <label class="form-label">Almacen destino</label>
                     <select class="form-select" id="input-destination-warehouse" name="destination_warehouse_id">
                     </select>
                 </div>

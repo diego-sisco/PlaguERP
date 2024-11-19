@@ -14,15 +14,10 @@ class Warehouse extends Model
     protected $fillable = [
         'id',
         'branch_id',
+        'technician_id',
         'name',
-        'receive_material',
-        'active',
-        'address',
-        'zip_code',
-        'city',
-        'country',
-        'state',
-        'phone',
+        'allow_material_receipts',
+        'is_active',
         'observations'
     ];
 
@@ -32,5 +27,9 @@ class Warehouse extends Model
 
     public function movements() {
         return $this->hasMany(WarehouseMovement::class,'warehouse_id', 'id');
+    }
+
+    public function technician() {
+        return $this->belongsTo(Technician::class, 'technician_id');
     }
 }

@@ -34,6 +34,7 @@
     @include('warehouse.create.modals.input')
     @include('warehouse.create.modals.output')
     @include('warehouse.create.modals.stock')
+    @include('warehouse.create.modals.form')
 
     <script>
         const warehouses = @json($warehouses);
