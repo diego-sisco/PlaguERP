@@ -1,0 +1,20 @@
+@extends('layouts.app')
+@section('content')
+    <div class="container-fluid">
+        <div class="row border-bottom p-3 mb-3">
+            <a href="{{ route('order.index', ['page' => 1]) }}" class="col-auto btn-primary p-0 fs-3"><i
+                    class="bi bi-arrow-left m-3"></i></a>
+            <h1 class="col-auto fs-2 fw-bold m-0">{{ __('order.title.create') }} </h1>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-11">
+                @include('order.create.form')
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ asset('js/customer.min.js') }}"></script>
+    <script src="{{ asset('js/service.min.js') }}"></script>
+    <script src="{{ asset('js/technician.min.js') }}"></script>
+    <script src="{{ asset('js/order/functions.min.js') }}"></script>
+@endsection
