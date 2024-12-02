@@ -72,7 +72,8 @@ export const Home = (props: any) => {
         //await cleanFile(file_paths.data.reviewDevices);
         //await cleanFile(file_paths.reports.chemicalApplications);
         //await cleanFile(file_paths.reports.devices);
-
+        
+        let reports: DevicesReport[] | ChemicalApplicationReport[];
         let orders: OrderType[] = await readFile(file_paths.orders);
         let reports_chemicalApplications: ChemicalApplicationReport[] = await readFile(
           file_paths.reports.chemicalApplications,
@@ -87,10 +88,11 @@ export const Home = (props: any) => {
           showToast('Conectado');
           try {
             if (reports_devices.length > 0) {
-              let reports: DevicesReport[] = reports_devices/*.filter(
+              reports = [];
+              reports = reports_devices.filter(
                 (report: DevicesReport) => !report.is_sending,
-              )*/;
-              const response = await setDevicesReports(reports);
+              );
+            const response = await setDevicesReports(reports);
               if (response == '200') {
                 reports.forEach((report: DevicesReport) => {
                   report.is_sending = true;
@@ -104,7 +106,8 @@ export const Home = (props: any) => {
             }
 
             if (reports_chemicalApplications.length > 0) {
-              let reports: ChemicalApplicationReport[] = reports_chemicalApplications.filter(
+              reports = [];
+              reports = reports_chemicalApplications.filter(
                 (report: ChemicalApplicationReport) => !report.is_sending,
               );
               const response = await setChemicalApplicationsReports(reports);

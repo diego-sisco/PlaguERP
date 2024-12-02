@@ -37,15 +37,13 @@ export const DeviceCheck = (props: any) => {
   const deviceID: number = props.deviceID;
   const serviceID: number = props.serviceID;
   const is_scanned = props.isScanned;
-
-  console.log(serviceID);
-
+  
   const [device, setDevice] = useState<DeviceType>();
   const [questions, setQuestions] = useState<QuestionType[]>([]);
   const [review, setReview] = useState<ReviewDevice>();
   const [observs, setObservs] = useState('');
   const [isChecked, setIsChecked] = useState<boolean>(false);
-
+  const [isChecked2, setIsChecked2] = useState<boolean>(false);
   const [pests, setPests] = useState<PestType[]>([]);
   const [pestModalVisible, setPestModalVisible] = useState<boolean>(false);
   const [selectedPests, setSelectedPests] = useState<AnswerType[]>([]);
@@ -89,12 +87,12 @@ export const DeviceCheck = (props: any) => {
                 review.order_id == orderID && review.device_id == deviceID,
             );
 
-
             if (found_review) {
               setReview(found_review);
               setObservs(found_review.observs);
               setSelectedPests(found_review.pests || []);
-              setIsChecked(found_review.product_change || false);
+              setIsChecked(found_review.is_product_change || false);
+              setIsChecked2(found_review.is_device_change || false);
             }
           }
         }
@@ -164,13 +162,13 @@ export const DeviceCheck = (props: any) => {
     };
 
     if (review) {
-      const found_question: AnswerType | undefined = review.questions.find(
+      const found_question: AnswerType | undefined = review.questions?.find(
         item => item.id == question_id,
       );
       if (found_question) {
         found_question.value = option;
       } else {
-        review.questions.push(new_question);
+        review.questions?.push(new_question);
       }
     } else {
       setReview({
@@ -180,7 +178,8 @@ export const DeviceCheck = (props: any) => {
         pests: selectedPests,
         is_checked: true,
         is_scanned,
-        product_change: isChecked,
+        is_product_change: isChecked,
+        is_device_change: isChecked2,
         observs: observs,
       });
     }
@@ -188,14 +187,21 @@ export const DeviceCheck = (props: any) => {
 
   const handleChecked = () => {
     if (review) {
-      review.product_change = !isChecked;
+      review.is_product_change = !isChecked;
     }
     setIsChecked(!isChecked);
   };
 
+  const handleChecked2 = () => {
+    if (review) {
+      review.is_device_change = !isChecked2;
+    }
+    setIsChecked2(!isChecked2);
+  };
+
   const handleAddPest = (newPests: AnswerType[]) => {
     setSelectedPests(newPests);
-    setPestModalVisible(false); // Cierra el modal después de agregar la plaga
+    setPestModalVisible(false);
   };
 
   return (
@@ -216,7 +222,7 @@ export const DeviceCheck = (props: any) => {
             (item: any) => item.id == question.question_option_id,
           );
           const options: any = answer?.options;
-          const found_review: AnswerType | undefined = review?.questions.find(
+          const found_review: AnswerType | undefined = review?.questions?.find(
             item => item.id == question.id,
           );
 
@@ -259,7 +265,7 @@ export const DeviceCheck = (props: any) => {
                     placeholder="Ingrese un número"
                     onChangeText={text => setAnswers(question.id, text)}
                     value={String(
-                      review?.questions.find(item => item.id == question.id)
+                      review?.questions?.find(item => item.id == question.id)
                         ?.value,
                     )}
                   />
@@ -291,6 +297,11 @@ export const DeviceCheck = (props: any) => {
         <View style={styles.checkbox}>
           <CheckBox isChecked={isChecked} onClick={handleChecked} />
           <Text style={styles.text}>Cambio de producto/cebo</Text>
+        </View>
+
+        <View style={styles.checkbox}>
+          <CheckBox isChecked={isChecked2} onClick={handleChecked2} />
+          <Text style={styles.text}>Cambio de dispositivo</Text>
         </View>
 
         <View style={styles.section}>

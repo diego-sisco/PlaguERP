@@ -39,51 +39,50 @@ export const Details = (props: any) => {
   };
 
   useEffect(() => {
-    const getData = async () => {
+    const fetchOrders = async () => {
       try {
-        setOrders(await readFile(file_paths.orders));
-
-        const order: OrderType | undefined = orders.find(
-          (item: OrderType) => item.id == orderID,
-        );
-
-        if (order?.hasDevices) {
-          const fetchedReports: DevicesReport[] = await readFile(
-            file_paths.data.reviewDevices,
-          );
-          if (fetchedReports) {
-            let review: DevicesReport | undefined = fetchedReports.find(
-              (item: DevicesReport) => item.orderID == orderID,
-            );
-            if (review) {
-              setComments(review.comments);
-              setRecomments(review.recs);
-              setTechObservation(review.tech_obs)
-            }
-          }
-        } else {
-          const fetchedReports: ChemicalApplicationReport[] = await readFile(
-            file_paths.data.reviewDevices,
-          );
-
-          if (fetchedReports) {
-            let review: ChemicalApplicationReport | undefined = fetchedReports.find(
-              (item: ChemicalApplicationReport) => item.orderID == orderID,
-            );
-            if (review) {
-              setComments(review.comments);
-              setRecomments(review.recs);
-              setTechObservation(review.tech_obs)
-            }
-          }
-        }
+        const ordersData = await readFile(file_paths.orders);
+        setOrders(ordersData);
       } catch (error) {
-        console.error('Error fetching data:', error);
+        console.error('Error fetching orders:', error);
       }
     };
-    getData();
-  }, [orderID]);
-
+  
+    fetchOrders();
+  }, []);
+  
+  useEffect(() => {
+    const fetchReports = async () => {
+      if (orders.length > 0) {
+        const order = orders.find((item: OrderType) => item.id == orderID);
+        if (order) {
+          try {
+            const reportsFile = order.hasDevices
+              ? file_paths.reports.devices
+              : file_paths.data.reviewDevices;
+  
+            const fetchedReports = await readFile(reportsFile);
+            const review = fetchedReports.find(
+              (item: any) => item.orderID == orderID,
+            );
+  
+            if (review) {
+              setComments(review.comments);
+              setRecomments(review.recs);
+              setTechObservation(review.tech_obs);
+              setSignatureName(review.signatureName ?? '');
+              setSignature(review.signature);
+            }
+          } catch (error) {
+            console.error('Error fetching reports:', error);
+          }
+        }
+      }
+    };
+  
+    fetchReports();
+  }, [orders]);
+  
   const completeReport = async (status: number) => {
     try {
       const currentDate = new Date();
@@ -99,7 +98,6 @@ export const Details = (props: any) => {
 
         if (order) {
           if (order.hasDevices) {
-            console.log('Devices');
             const fetchedReviews: ReviewDevice[] = await readFile(
               file_paths.data.reviewDevices,
             );
@@ -133,7 +131,6 @@ export const Details = (props: any) => {
 
             await writeFile(fetchedReports, file_paths.reports.devices);
           } else {
-            console.log('Chemical');
             let fetchedReports: ChemicalApplicationReport[] = await readFile(
               file_paths.reports.chemicalApplications,
             );
@@ -141,27 +138,23 @@ export const Details = (props: any) => {
             // Leer aplicaciones químicas del archivo
             let fetchedChemicalApplications: ChemicalApplication[] =
               await readFile(file_paths.data.chemicalApplications);
-            let pests: ServicePest[] = [];
-            let resources: Resource[] = [];
 
-            // Filtrar aplicaciones relacionadas con la orden actual
-            let foundedChemicalApplications: ChemicalApplication[] =
-              fetchedChemicalApplications.filter(
+            let foundedChemicalApplications: ChemicalApplication | undefined=
+              fetchedChemicalApplications.find(
                 (chemicalApp: ChemicalApplication) =>
                   chemicalApp.order_id == orderID,
               );
 
-            // Concatenar pests y resources en lugar de sobrescribir
-            foundedChemicalApplications.forEach(application => {
-              pests = [...pests, ...application.pests];
-              resources = [...resources, ...application.resources];
-            });
+            let pests: ServicePest[] | undefined =
+              foundedChemicalApplications?.pests;
+            let resources: Resource[] | undefined =
+              foundedChemicalApplications?.resources;
 
             let index: number = fetchedReports.findIndex(
               (report: ChemicalApplicationReport) => report.orderID == orderID,
             );
 
-            let report = {
+            let report: ChemicalApplicationReport = {
               orderID: orderID,
               recs: recomments,
               tech_obs: techObservation,
@@ -175,6 +168,8 @@ export const Details = (props: any) => {
               is_sending: false,
               user_id: user_id,
             };
+
+            //console.log('Report: ', JSON.stringify(report, null, 2));
 
             if (index != -1) {
               fetchedReports[index] = report;

@@ -8,7 +8,7 @@ type Authentication = {
 export async function loginAuth(data: Authentication) {
   try {
     const csrfToken = await getToken();
-    const response = await axiosInstance.post('/api/login/auth', data, {
+    const response = await axiosInstance.post('login/auth', data, {
       headers: {
         'X-CSRF-TOKEN': csrfToken,
       },

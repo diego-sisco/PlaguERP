@@ -10,8 +10,8 @@ export type ChemicalApplicationReport = {
   signatureName: string | null;
   completed_date: string | null;
   end_time: string | null;
-  resources: Resource[];
-  pests: ServicePest[];
+  resources: Resource[] | undefined;
+  pests: ServicePest[] | undefined;
   is_sending: boolean; 
   user_id: string | number | null;
 }

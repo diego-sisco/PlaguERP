@@ -4,7 +4,7 @@ import {axiosInstance} from '../helpers';
 export async function getOrders(date: string) {
   try {
     const id = await AsyncStorage.getItem('userID');
-    const url = '/api/order/getData/' + id + '/' + date;
+    const url = `order/getData/${id}/${date}`;
     const response = await axiosInstance.get(url);
     return response.data;
   } catch (error) {

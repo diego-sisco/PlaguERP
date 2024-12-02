@@ -56,13 +56,13 @@
 	{
 		"id": 10,
 		"type": "select",
-		"options": ["Muy mal", "Mal", "Regular", "Bien", "Perfecto"]
+		"options": ["Perfecto", "Bien", "Regular", "Mal", "Muy mal"]
 	},
 
 	{
 		"id": 11,
 		"type": "select",
-		"options": ["Nulo", "Bajo", "Medio", "Alto"]
+		"options": ["Alto", "Medio", "Bajo", "Nulo"]
 	},
 
 	{
@@ -86,7 +86,7 @@
 	{
 		"id": 15,
 		"type": "select",
-		"options": ["Huella", "Deposicion", "Restos comida", "Pelos", "Rata", "Raton", "No hay deteccion", "Cebo roido"]
+		"options": ["Huella", "Deposicion", "Restos comida", "Pelos", "Rata", "Raton", "Cebo roido", "No hay deteccion"]
 	},
 
 	{

@@ -65,7 +65,6 @@ export const Service = (props: any) => {
           setPests(
             fetchedPests.filter((pest: PestType) => pestIds.includes(pest.id)),
           );
-          console.log(pests);
           setProducts(fetchedProducts);
           setAppMethods(fetchedAppMethods);
 
@@ -126,23 +125,15 @@ export const Service = (props: any) => {
       file_paths.data.chemicalApplications,
     );
 
-    console.log(
-      'Fetched: ',
-      JSON.stringify(fetchedChemicalApplications, null, 2),
-    );
-
     if (fetchedChemicalApplications.length > 0) {
-      let foundedChemicalApplications: ChemicalApplication[] =
-        fetchedChemicalApplications.filter(
+      let foundedChemicalApplications: ChemicalApplication | undefined =
+        fetchedChemicalApplications.find(
           (chemicalApp: ChemicalApplication) => chemicalApp.order_id == orderID,
         );
+
       if (foundedChemicalApplications) {
-        foundedChemicalApplications.forEach(
-          (chemicalApp: ChemicalApplication) => {
-            chemicalApp.resources = selectedResources;
-            chemicalApp.pests = selectedPests;
-          },
-        );
+        foundedChemicalApplications.resources = selectedResources;
+        foundedChemicalApplications.pests = selectedPests;
       } else {
         fetchedChemicalApplications.push({
           order_id: orderID,
