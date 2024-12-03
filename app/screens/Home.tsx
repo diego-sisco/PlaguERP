@@ -68,6 +68,7 @@ export const Home = (props: any) => {
         //await cleanFile(file_paths.catalog.services);
         //await cleanFile(file_paths.catalog.pests);
         //await cleanFile(file_paths.catalog.products);
+        //await cleanFile(file_paths.catalog.devices);
         //await cleanFile(file_paths.data.chemicalApplications);
         //await cleanFile(file_paths.data.reviewDevices);
         //await cleanFile(file_paths.reports.chemicalApplications);

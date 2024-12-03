@@ -7,7 +7,10 @@ export type DeviceType = {
     number: number;
     area: string;
     version: number;
+    code: string;
     is_scanned: boolean;
+    is_product_changed: boolean;
+    is_device_changed: boolean;
     updated_at: number;
     questions: QuestionType[];
 };

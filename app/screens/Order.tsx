@@ -76,7 +76,7 @@ export const Order = (props: any) => {
   // Funcion para renderizar los botones
   const renderButtons = () => {
     const handleActivateOrder = async () => {
-      if (order && isBeforeOrEqualToday(order.programmed_date)) {
+      if (order /*&& isBeforeOrEqualToday(order.programmed_date)*/) {
         await updateStatus(order.id, 2);
         showToast('La orden está en curso');
       }
