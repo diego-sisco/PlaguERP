@@ -36,7 +36,7 @@
             <div class="row p-3 border-bottom">
                 <a href="{{ route('point.index') }}" class="col-auto btn-primary p-0 fs-3"><i
                         class="bi bi-arrow-left m-3"></i></a>
-                <h1 class="col-auto fs-2 fw-bold m-0">Ver punto de control [{{ $point->name . ' ' . $point->id }}]
+                <h1 class="col-auto fs-2 fw-bold m-0">Ver punto de control [{{ $point->id }}] {{ $point->name }}
                 </h1>
             </div>
             <div class="row p-5 pt-3">
@@ -64,11 +64,11 @@
                             </div>
                             <div class="row">
                                 <span class="col fw-bold">Línea de negocio: </span>
-                                <span class="col fw-normal">{{ $point->product->lineBusiness->name }}</span>
+                                <span class="col fw-normal">{{ $point->product->lineBusiness->name ?? 'N/A' }}</span>
                             </div>
                             <div class="row">
                                 <span class="col fw-bold">Finalidad: </span>
-                                <span class="col fw-normal">{{ $point->product->purpose->type }}</span>
+                                <span class="col fw-normal">{{ $point->product->purpose->type ?? 'N/A' }}</span>
                             </div>
                             <div class="row">
                                 <span class="col fw-bold">Nombre: </span>

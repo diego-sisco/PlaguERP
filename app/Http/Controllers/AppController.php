@@ -94,7 +94,7 @@ class AppController extends Controller
 
 	public function getOrders(int $id, string $date)
 	{
-		$orders = $devices = $questions = $floorplan = $pests = $products = $data = $orderData = $serviceData = $productData = $pestData = $appMethodData = [];
+		$orders = $devices = $questions = $floorplan = $pests = $products = $data = $orderData = $serviceData = $productData = $pestData = $appMethodData = $deviceIDs = [];
 		$version = 0;
 		$hasDevices = false;
 
@@ -146,14 +146,34 @@ class AppController extends Controller
 				$appMethodData = array_merge($appMethodData, $application_methods->toArray());
 
 				if ($order->customer->service_type_id != 1 && $service->prefix == 1) {
-					$floorplan = FloorPlans::where('service_id', $service->id)->where('customer_id', $customer->id)->first();
-					if ($floorplan) {
+					$floorplans = FloorPlans::where('service_id', $service->id)->where('customer_id', $customer->id)->get();
+
+					foreach ($floorplans as $floorplan) {
 						$version = $floorplan->version($order->programmed_date);
 						if ($version) {
-							$devices = Device::where('floorplan_id', $floorplan->id)->where('version', $version)->get();
-							$hasDevices = !empty($devices);
+							$devicesForFloorplan = Device::where('floorplan_id', $floorplan->id)
+								->where('version', $version)
+								->get();
+							$deviceIDs = array_merge($deviceIDs, $devicesForFloorplan->pluck('id')->toArray());
+							$devices = array_merge($devices, $devicesForFloorplan->all()); // Unir resultados en un array unidimensional
 						}
 					}
+
+					$hasDevices = !empty($devices);
+
+					/*if ($service->id == 3) {
+						dd(Device::whereIn('floorplan_id', [33, 34, 35])->count());
+						dd($devices);
+					}*/
+
+					/*$floorplan = FloorPlans::where('service_id', $service->id)->where('customer_id', $customer->id)->first();
+								   if ($floorplan) {
+									   $version = $floorplan->version($order->programmed_date);
+									   if ($version) {
+										   $devices = Device::where('floorplan_id', $floorplan->id)->where('version', $version)->get();
+										   $hasDevices = !empty($devices);
+									   }
+								   }*/
 				}
 
 				$serviceData[] = [
@@ -166,7 +186,7 @@ class AppController extends Controller
 					"productsID" => !empty($products) ? $products->pluck('id') : [],
 					"pestsID" => !empty($pests) ? $pests->pluck('id') : [],
 					"application_method_id" => !empty($products) ? $application_methods->pluck("id") : [],
-					"devicesID" => !empty($devices) ? $devices->pluck('id') : [],
+					"devicesID" => !empty($deviceIDs) ? $deviceIDs : [],
 				];
 			}
 
