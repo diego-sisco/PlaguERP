@@ -246,7 +246,7 @@
         var productID = 0;
         var index = 1;
         var hasPoints = false;
-        var count = 0;
+        var count = 1;
 
         function submitForm() {
             if (confirm('{{ __('messages.new_devices') }}')) {
@@ -333,7 +333,8 @@
             var pointX = x;
             var pointY = y;
             var code = data.find(item => item.id == pointID)?.code ?
-                `${data.find(item => item.id == pointID).code}-${count}` : null;
+                `${data.find(item => item.id == pointID).code}-${index}` : null;
+
             var pointElement = document.createElement('div');
 
             pointElement.style.left = (pointX - 5) + 'px';
@@ -345,23 +346,6 @@
             pointElement.style.backgroundColor = color;
             pointElement.style.textAlign = 'center';
             pointElement.addEventListener('mousedown', startDragging);
-
-            container.appendChild(pointElement);
-
-            /*var newPoint = {
-                index: index,
-                pointID: pointID,
-                areaID: areaID,
-                productID: productID,
-                pointCount: count,
-                x: pointX,
-                y: pointY,
-                color: color,
-                img_tamx: img_tamx,
-                img_tamy: img_tamy,
-                element: pointElement,
-                revisions: revisions
-            }*/
 
             var newPoint = {
                 index: index,
@@ -379,9 +363,7 @@
                 revisions: revisions
             }
 
-            points.push(newPoint);
-
-            var popover = new bootstrap.Popover(pointElement, {
+            new bootstrap.Popover(pointElement, {
                 container: 'body',
                 html: true,
                 title: `Punto de control ${count}`,
@@ -401,6 +383,9 @@
                     </div>`,
                 placement: 'right',
             });
+
+            points.push(newPoint);
+            container.appendChild(pointElement);
 
             sortPoints();
             setStoragePoint(parseInt(pointID));
@@ -437,7 +422,7 @@
         }
 
         function updatePoint() {
-            var point = points.find(item => item.index == indexModal);
+            var point = points.find(item => item.index == index);
             var updatePoint = parseInt($('#update-control-point').val());
             var updateArea = parseInt($('#update-area').val());
             var updateProduct = parseInt($('#update-product').val());
@@ -454,10 +439,10 @@
                     `<div><strong>${revision.answer}</strong> <small>${revision.updated_at}</small></div>`;
             });
 
-            let popoverElement = $('#popoverPoint' + indexModal);
-            let popover = bootstrap.Popover.getInstance(popoverElement);
-
             if (point) {
+                let popoverElement = $('#popoverPoint' + point.index);
+                let popover = bootstrap.Popover.getInstance(popoverElement);
+
                 point.pointID = updatePoint;
                 point.areaIconsoleD = updateArea;
                 point.productID = updateProduct;
@@ -472,20 +457,20 @@
                 popoverElement.popover({
                     container: 'body',
                     html: true,
-                    title: `Punto de control ${indexModal}`,
+                    title: `Punto de control ${index}`,
                     content: `  
                             <div class="row mb-3">
-                                <span id="span-edit-point-${indexModal}" class="col-12">Tipo: ${pointName} </span>
-                                <span id="span-edit-area-${indexModal}" class="col-12">Área: ${areaName} </span>
-                                <span id="span-edit-product-${indexModal}" class="col-12">Producto: ${productName} </span>
+                                <span id="span-edit-point-${index}" class="col-12">Tipo: ${pointName} </span>
+                                <span id="span-edit-area-${index}" class="col-12">Área: ${areaName} </span>
+                                <span id="span-edit-product-${index}" class="col-12">Producto: ${productName} </span>
                             </div>   
                             <div class="row mb-3">
                                 <div class="col-12"><strong>Revisiones:</strong></div>
                                 ${revisionsHtml}
                             </div>                         
                             <div class="d-flex flex-wrap justify-content-around">
-                                <a href="#!" class="btn btn-secondary btn-sm popover-edit" id="btn-edit-${indexModal}"> <i class="bi bi-pencil-square"></i> Editar</a>
-                                <a href="#!" class="btn btn-danger btn-sm popover-delete" id="btn-delete-${indexModal}"> <i class="bi bi-x"></i> Eliminar</a>
+                                <a href="#!" class="btn btn-secondary btn-sm popover-edit" id="btn-edit-${index}"> <i class="bi bi-pencil-square"></i> Editar</a>
+                                <a href="#!" class="btn btn-danger btn-sm popover-delete" id="btn-delete-${index}"> <i class="bi bi-x"></i> Eliminar</a>
                             </div>
                         `,
                     placement: 'right',
@@ -690,8 +675,9 @@
                     color = color_op ? findColor(pointID) : device.color;
                     createPoint(device.map_x, device.map_y, device.nplan);
                     setStoragePoint(pointID);
-                    countIndexs.push(index);
+                    //countIndexs.push(index);
                 });
+                index = countDevices;
                 count = devices.length;
                 hasPoints = true;
                 createLegend();
@@ -715,7 +701,7 @@
                         color = point.color;
                         createPoint(point.x, point.y, point.pointCount);
                         setStoragePoint(pointID);
-                        countIndexs.push(index);
+                        //countIndexs.push(index);
                     });
                 }
             }
@@ -732,22 +718,9 @@
             var offsetY = (event.clientY - rect.top) / zoomLevel;
             //var count = 0;
             if (numPoints > 0) {
-                /*const device = countDevices.find(d => d.type == pointID);
-                if (device) {
-                    count = ++device.count;
-                } else {
-                    if (!addedPoints.includes(parseInt(pointID))) {
-                        countDevices.push({
-                            type: pointID,
-                            count: 1,
-                        });
-                        count = 1;
-                    }*/
-                count++;
-                //}
-
-                index = countDevices.reduce((acc, p) => acc + p.count, 0);
-                countIndexs.push(count);
+                index = points.length > 0 ? ++index : ++countDevices;
+                count = points.length > 0 ? ++count : 1;
+                //countIndexs.push(count);
                 createPoint(offsetX, offsetY, count);
                 numPoints--;
                 $('#countPoints').text('Puntos restantes: ' + numPoints);
@@ -759,13 +732,14 @@
         document.addEventListener('click', function(e) {
             // Eliminar punto
             if (e.target.classList.contains('popover-delete')) {
+                console.log(e.target)
                 if (confirm("¿Estás seguro de eliminar el punto?")) {
-                    var index = extractId(e.target.id);
-                    var pointElement = document.getElementById('popoverPoint' + index);
+                    var pointIndex = extractId(e.target.id);
+                    var pointElement = document.getElementById('popoverPoint' + pointIndex);
                     if (pointElement) {
                         removePoint(pointElement);
                     }
-                    countIndexs = countIndexs.filter(item => item != index);
+                    //countIndexs = countIndexs.filter(item => item != index);
                     countPoints = {};
                     countLegend();
                     createLegend();
@@ -774,12 +748,12 @@
 
             // Editar punto
             if (e.target.classList.contains('popover-edit')) {
-                var index = extractId(e.target.id);
-                var pointElement = document.getElementById('popoverPoint' + index);
+                var pointIndex = extractId(e.target.id);
+                var pointElement = document.getElementById('popoverPoint' + pointIndex);
                 var popover = bootstrap.Popover.getInstance(pointElement);
-                var point = points.find(item => item.index == index);
+                var point = points.find(item => item.index == pointIndex);
 
-                indexModal = index;
+                indexModal = pointIndex;
 
                 if (popover) {
                     popover.hide();

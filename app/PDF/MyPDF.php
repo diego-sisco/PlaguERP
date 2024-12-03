@@ -328,31 +328,31 @@ class MyPDF extends TCPDF
                 $metric = $order_product->metric ? $order_product->metric : $order_product->product->metric;
 
                 // Imprimir los datos con MultiCell (esto ajustará el texto a múltiples líneas si es necesario)
-                $this->MultiCell($width_td, 6, $order_product->product->active_ingredient ?? 'N/A', 0, 'L', true);
+                $this->MultiCell($width_td, 6, $order_product->product->active_ingredient ?? '-', 0, 'L', true);
                 $this->SetXY($x + $width_td, $y); // Mover el cursor a la derecha para la siguiente celda
 
                 $x = $this->GetX(); // Actualizar la posición X después de mover
-                $this->MultiCell($width_td, 6, $order_product->product->register_number ?? 'N/A', 0, 'L', true);
+                $this->MultiCell($width_td, 6, $order_product->product->register_number ?? '-', 0, 'L', true);
                 $this->SetXY($x + $width_td, $y);
 
                 $x = $this->GetX();
-                $this->MultiCell($width_td, 6, $order_product->product->safety_period ?? 'N/A', 0, 'L', true);
+                $this->MultiCell($width_td, 6, $order_product->product->safety_period ?? '-', 0, 'L', true);
                 $this->SetXY($x + $width_td, $y);
 
                 $x = $this->GetX();
-                $this->MultiCell($width_td, 6, $order_product->appMethod->name ?? 'N/A', 0, 'L', true);
+                $this->MultiCell($width_td, 6, $order_product->appMethod->name ?? '-', 0, 'L', true);
                 $this->SetXY($x + $width_td, $y);
 
                 $x = $this->GetX();
-                $this->MultiCell($width_td, 6, $dosage ?? 'N/A', 0, 'L', true);
+                $this->MultiCell($width_td, 6, $dosage ?? '-', 0, 'L', true);
                 $this->SetXY($x + $width_td, $y);
 
                 $x = $this->GetX();
-                $this->MultiCell($width_td, 6, ($order_product->amount ?? 'N/A') . ' ' . ($metric->value ?? ''), 0, 'L', true);
+                $this->MultiCell($width_td, 6, ($order_product->amount ?? '-') . ' ' . ($metric->value ?? ''), 0, 'L', true);
                 $this->SetXY($x + $width_td, $y);
 
                 $x = $this->GetX();
-                $this->MultiCell($width_td, 6, $order_product->lot->registration_number ?? 'N/A', 0, 'L', true);
+                $this->MultiCell($width_td, 6, $order_product->lot->registration_number ?? '-', 0, 'L', true);
 
                 // Saltar a la siguiente fila
                 $this->Ln(2);
@@ -400,7 +400,7 @@ class MyPDF extends TCPDF
                 if (!$version) {
                     return;
                 }
-                $devices = $floorplan->devices($version)->get();
+                $devices = $floorplan->devices($version)->orderBy('itemnumber', 'asc')->get();
 
                 $y = $this->GetY();
                 $this->SetY($y);
@@ -466,19 +466,19 @@ class MyPDF extends TCPDF
                         $newX = $this->GetX() + $width_td;
 
                         $this->SetXY($newX, $y);
-                        $this->MultiCell($width_td, $step, $device->nplan, 0, 'C', true);
+                        $this->MultiCell($width_td, $step, $device->code, 0, 'C', true);
                         $newX = $newX + $width_td;
 
                         $this->SetXY($newX, $y);
                         $this->setFontSize($product_name ? 6 : 8);
-                        $product_name = !$product_name ? 'N/A' : $product_name;
+                        $product_name = !$product_name ? '-' : $product_name;
                         $this->MultiCell($width_td, $step, $product_name, 0, 'C', true);
                         $this->setFontSize(8);
                         $newX = $newX + $width_td;
 
                         $this->SetXY($newX, $y);
                         $this->setFontSize(!empty($reviews) ? 6 : 8);
-                        $this->MultiCell($width_td, $step, !empty($reviews) ? implode(', ', $reviews) : 'N/A', 0, 'C', true);
+                        $this->MultiCell($width_td, $step, !empty($reviews) ? implode(', ', $reviews) : '-', 0, 'C', true);
                         $this->setFontSize(8);
                         $newX = $newX + $width_td;
 
@@ -489,7 +489,7 @@ class MyPDF extends TCPDF
                                 ->first();
 
                             $this->SetXY($newX, $y); // Posición X para las respuestas
-                            $this->MultiCell($width_td, $step, $incident->answer ?? 'N/A', 0, 'C', true);
+                            $this->MultiCell($width_td, $step, $incident->answer ?? '-', 0, 'C', true);
 
                             $newX = $newX + $width_td;
                         }

@@ -63,9 +63,10 @@ class AppController extends Controller
 				'number' => $newDevice['nplan'],
 				'area' => ApplicationArea::find($newDevice['application_area_id'])->name,
 				'version' => $newDevice['version'],
-				'is_scanned' => $states->is_scanned,
-				'is_product_changed' => $states->is_product_changed,
-				'is_device_changed' => $states->is_device_changed,
+				'code' => $newDevice['code'],
+				'is_scanned' => $states->is_scanned ?? false,
+				'is_product_changed' => $states->is_product_changed ?? false,
+				'is_device_changed' => $states->is_device_changed ?? false,
 				'updated_at' => $newDevice['updated_at'],
 				'questions' => $questions,
 			];
@@ -106,7 +107,7 @@ class AppController extends Controller
 				$orderIds = OrderTechnician::where('technician_id', $tech->id)->pluck('order_id');
 				// Calcula la fecha actual y la fecha después de 3 días
 				$currentDate = date($date);
-				$threeDaysAfter = date('Y-m-d', strtotime($currentDate . ' +3 days'));
+				$threeDaysAfter = date('Y-m-d', strtotime($currentDate . ' +1 days'));
 				// Filtra las órdenes por fecha programada dentro del rango deseado
 				$orders = Order::whereIn('id', $orderIds)
 					->where('programmed_date', '>=', $currentDate)
@@ -115,7 +116,7 @@ class AppController extends Controller
 			} else {
 				// Calcula la fecha actual y la fecha después de 3 días
 				$currentDate = date($date);
-				$threeDaysAfter = date('Y-m-d', strtotime($currentDate . ' +3 days'));
+				$threeDaysAfter = date('Y-m-d', strtotime($currentDate . ' +1 days'));
 
 				// Filtra las órdenes por fecha programada dentro del rango deseado
 				$orders = Order::where('programmed_date', '>=', $currentDate)
@@ -125,7 +126,7 @@ class AppController extends Controller
 		}
 
 		// Ajustes para un nuevo JSON
-		foreach ($orders as $order) {
+		foreach ($orders as $i => $order) {
 			$hasDevices = false;
 			$products = [];
 			$pests = [];

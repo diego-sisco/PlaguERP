@@ -251,14 +251,12 @@ class FloorPlansController extends Controller
             $deviceRevisions[$device->id] = $revisions;
         }
 
-        $ctrlPoints = [];
-        $countDevices = [];
+        $ctrlPoints = ControlPoint::all();
         $product_names = [];
         $products = ProductCatalog::where('presentation_id', '!=', 1)->get();
 
-
+        /*$countDevices = [];
         if ($floorplan->service != null) {
-            $ctrlPoints = ControlPoint::all();
             $floorplans = Floorplans::where('customer_id', $customerID)->get();
             foreach ($floorplans as $f) {
                 $latestVersionNumber = $f->versions()->latest('version')->value('version');
@@ -281,7 +279,9 @@ class FloorPlansController extends Controller
                     }
                 }
             }
-        }
+        }*/
+        $lastDevice = Device::whereIn('floorplan_id', $floorplanIds)->get()->last();
+        $countDevices = !empty($lastDevice) ? $lastDevice->itemnumber : 0;
 
         // Compacta las variables para pasarlas a la vista
         return view('floorplans.edit', compact('ctrlPoints', 'applications_areas', 'services', 'customer', 'devices', 'deviceRevisions', 'floorplan', 'products', 'countDevices', 'type', 'section'));
@@ -549,7 +549,7 @@ class FloorPlansController extends Controller
             $imgX = $x + $cellWidth / 2;
             $imgY = $y + $margin / 2;
 
-            $pdf->Image($qrImagePath, $imgX, $imgY, $cellHeight - ($margin * 2), $cellHeight - ($margin * 2), 'PNG');
+            $pdf->Image('@' . $device->qr, $imgX, $imgY, $cellHeight - ($margin * 2), $cellHeight - ($margin * 2), 'PNG');
 
             $x += $cellWidth;
 

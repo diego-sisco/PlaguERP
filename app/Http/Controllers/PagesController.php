@@ -115,6 +115,7 @@ class PagesController extends Controller
                     $activities[] = [
                         'id' => $order->id,
                         'service_type' => $order->customer->service_type_id,
+                        'services' => $order->services->pluck('name')->toArray(),
                         'start_time' => Carbon::parse($order->start_time)->format('H:i'),
                         'programmed_date' => Carbon::parse($order->programmed_date)->format('d-m-Y'),
                         'address' => $order->customer->address . ', ' . $order->customer->city . ', ' . $order->customer->state,

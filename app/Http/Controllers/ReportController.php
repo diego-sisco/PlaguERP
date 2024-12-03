@@ -21,6 +21,8 @@ use App\PDF\MyPDF;
 use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Log;
+
 
 
 class ReportController extends Controller
@@ -95,11 +97,13 @@ class ReportController extends Controller
         $lotId = json_decode($request->input('lot_id'));
         $serviceId = json_decode($request->input('service_id'));
         $amount = json_decode($request->input('amount'));
+        $deviceId = json_decode($request->input('deviceId'));
         $reviews = [];
 
         try {
             $order = Order::find($orderId);
             $service = Service::find($serviceId);
+            $device = Device::find($deviceId);
 
             foreach ($incidents as $incident) {
                 OrderIncidents::updateOrCreate(
@@ -116,7 +120,6 @@ class ReportController extends Controller
             }
 
             $pest_ids = [];
-            $device = Device::find($pests_found->device_id);
             $pests = $pests_found->pests;
 
             $fetched_device = DeviceStates::where('device_id', $device->id)->where('order_id', $orderId)->first();
@@ -161,70 +164,52 @@ class ReportController extends Controller
             }
 
             $product = ProductCatalog::find($device->product_id);
-            $order_product = OrderProduct::where('order_id', $orderId)
-                ->where('product_id', $device->product_id)
+            $order_product = OrderProduct::where('order_id', $order->id)
+                ->where('product_id', $product->id)
                 ->where('service_id', $service->id)->first();
             $appMethod = $product->applicationMethods()->first();
 
-            if ($order_product) {
-                if ($is_product_changed) {
-                    $order_product->application_method_id = $appMethod->id;
-                    $order_product->amount++;
-                    $order_product->save();
-                } else {
-                    $order_product->amount--; // Decrementa el valor de amount
-                    $order_product->save();   // Guarda los cambios
-                }
-            } else {
-                OrderProduct::updateOrCreate(
+            if (!$order_product) {
+                $order_product = OrderProduct::create(
                     [
                         'order_id' => $orderId,
                         'service_id' => $service->id,
-                        'product_id' => $device->product->id,
-                    ],
-                    [
+                        'product_id' => $product->id,
                         'application_method_id' => $appMethod->id,
                         'lot_id' => $lotId,
-                        'amount' => $amount,
                     ]
                 );
             }
+            $order_product->amount = DeviceStates::where('order_id', $order->id)->where('is_product_changed', true)->count();
+            $order_product->save();
+
 
             $product = ProductCatalog::find($device->controlPoint->product->id);
-            $order_product = OrderProduct::where('order_id', $orderId)
-                ->where('product_id', $device->product_id)
+            $order_product = OrderProduct::where('order_id', $order->id)
+                ->where('product_id', $product->id)
                 ->where('service_id', $service->id)->first();
             $appMethod = $product->applicationMethods()->first();
-
-            if ($order_product) {
-                if ($is_product_changed) {
-                    $order_product->application_method_id = $appMethod->id;
-                    $order_product->amount++;
-                    $order_product->save();
-                } else {
-                    $order_product->amount--; // Decrementa el valor de amount
-                    $order_product->save();   // Guarda los cambios
-                }
-            } else {
-                OrderProduct::updateOrCreate(
+            if (!$order_product) {
+                $order_product = OrderProduct::create(
                     [
                         'order_id' => $orderId,
                         'service_id' => $service->id,
-                        'product_id' => $device->product->id,
-                    ],
-                    [
+                        'product_id' => $product->id,
                         'application_method_id' => $appMethod->id,
                         'lot_id' => $lotId,
                         'amount' => $amount,
                     ]
                 );
             }
+
+            $order_product->amount = DeviceStates::where('order_id', $order->id)->where('is_device_changed', true)->count();
+            $order_product->save();   // Guarda los cambios
 
             return response()->json([
                 'success' => true,
                 'message' => 'Incidencias guardadas correctamente.',
                 'reviews' => $reviews,
-                'is_changed' => $is_product_changed,
+                'is_changed' => $order_product,
             ]);
         } catch (\Exception $e) {
             return response()->json([

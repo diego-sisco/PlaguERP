@@ -10,7 +10,7 @@
     @foreach ($order->services as $service)
         @if ($service->prefix == 1)
             @foreach ($order->customer->floorplans as $floorplan)
-                @if (!$floorplan->versions->isEmpty())
+                @if (!$floorplan->versions->isEmpty() && $floorplan->service_id == $service->id)
                     @php $version = $floorplan->version($order->programmed_date); @endphp
                     <h5 class="border-bottom pb-1 mb-3 fw-bold">{{ $service->name }} [
                         Plano: {{ $floorplan->filename }} ]</h5>
@@ -49,7 +49,7 @@
                                         </td>
                                         <td class="align-middle">{{ $device->applicationArea->name }}</td>
                                         <td class="align-middle"><i
-                                                class="{{ $device->states($order->id)->is_scanned ? 'bi bi-check-circle-fill text-success' : 'bi bi-exclamation-triangle-fill text-warning' }}"></i>
+                                                class="{{ $device->states($order->id) && $device->states($order->id)->is_scanned ? 'bi bi-check-circle-fill text-success' : 'bi bi-exclamation-triangle-fill text-warning' }}"></i>
                                         </td>
                                         <td class="align-middle" id="status-device{{ $device->id }}"><i
                                                 class="{{ $order->incidents($device->id)->exists() ? 'bi bi-check-circle-fill text-success' : 'bi bi-exclamation-triangle-fill text-warning' }}"></i>
@@ -58,8 +58,8 @@
                                                 class="{{ $device->states($order->id) && $device->states($order->id)->is_product_changed ? 'bi bi-check-circle-fill text-success' : 'bi bi-exclamation-triangle-fill text-warning' }}"></i>
                                         </td>
                                         <td class="align-middle"><i
-                                            class="{{ $device->states($order->id) && $device->states($order->id)->is_device_changed ? 'bi bi-check-circle-fill text-success' : 'bi bi-exclamation-triangle-fill text-warning' }}"></i>
-                                    </td>
+                                                class="{{ $device->states($order->id) && $device->states($order->id)->is_device_changed ? 'bi bi-check-circle-fill text-success' : 'bi bi-exclamation-triangle-fill text-warning' }}"></i>
+                                        </td>
                                         <td class="align-middle" id="device{{ $device->id }}-pests-label">
                                             @php
                                                 $reviews = [];
@@ -139,18 +139,18 @@
                                                         </div>
                                                         <div class="mb-3">
                                                             <div
-                                                                class="d-flex justify-content-between align-items-baseline border-bottom">
+                                                                class="d-flex justify-content-between align-items-baseline border-bottom mb-2">
                                                                 <h5 class="pb-1 mb-2 fw-bold">Plagas: </h5>
                                                                 <button class="btn btn-success btn-sm" type="button"
                                                                     data-bs-toggle="collapse"
-                                                                    data-bs-target="#collapseAddProduct{{ $device->id }}"
+                                                                    data-bs-target="#collapsePest{{ $device->id }}"
                                                                     aria-expanded="false"
-                                                                    aria-controls="collapseAddProduct{{ $device->id }}">
+                                                                    aria-controls="collapsePest{{ $device->id }}">
                                                                     <i class="bi bi-plus-lg"></i>
                                                                     {{ __('buttons.add') }}</button>
                                                             </div>
                                                             <div class="collapse mb-3"
-                                                                id="collapseAddProduct{{ $device->id }}">
+                                                                id="collapsePest{{ $device->id }}">
                                                                 <div class="card card-body">
                                                                     <label class="form-label">Selecciona la
                                                                         plaga</label>
@@ -178,24 +178,21 @@
                                                                             'value' => $found_pest->total,
                                                                         ];
                                                                     @endphp
-                                                                    <div class="col-12 pe-0"
-                                                                        id="device{{ $device->id }}-pest{{ $found_pest->pest_id }}">
-                                                                        <div class="input-group mb-3">
-                                                                            <div class="input-group-text">
-                                                                                <input class="form-check-input mt-0"
-                                                                                    type="checkbox"
-                                                                                    value="{{ $found_pest->id }}"
-                                                                                    onchange="deletePest({{ $device->id }}, {{ $found_pest->pest_id }}, this.checked)"
-                                                                                    checked>
-                                                                            </div>
-                                                                            <span
-                                                                                class="input-group-text">{{ $found_pest->pest->name }}</span>
-                                                                            <input type="number" class="form-control"
-                                                                                id="device{{ $device->id }}-pest{{ $found_pest->pest_id }}-value"
-                                                                                value="{{ $found_pest->total }}"
-                                                                                oninput="setPestValue({{ $device->id }}, {{ $found_pest->pest_id }}, this.value)"
-                                                                                min="1">
+
+                                                                    <div class="input-group mb-3">
+                                                                        <div class="input-group-text">
+                                                                            <input class="form-check-input mt-0"
+                                                                                type="checkbox"
+                                                                                value="{{ $found_pest->id }}"
+                                                                                onchange="deletePest({{ $device->id }}, {{ $found_pest->pest_id }}, this.checked)"
+                                                                                checked>
                                                                         </div>
+                                                                        <span
+                                                                            class="input-group-text">{{ $found_pest->pest->name }}</span>
+                                                                        <input type="number" class="form-control"
+                                                                            value="{{ $found_pest->total }}"
+                                                                            oninput="setPestValue({{ $device->id }}, {{ $found_pest->pest_id }}, this.value)"
+                                                                            min="1">
                                                                     </div>
                                                                 @endforeach
                                                                 @php
@@ -209,60 +206,93 @@
                                                             </div>
                                                         </div>
 
+                                                        {{-- <div class="mb-3">
+                                                            <div
+                                                                class="d-flex justify-content-between align-items-baseline border-bottom mb-2">
+                                                                <h5 class="pb-1 mb-2 fw-bold">Productos:
+                                                                </h5>
+                                                                <button class="btn btn-success btn-sm" type="button"
+                                                                    data-bs-toggle="collapse"
+                                                                    data-bs-target="#collapseProduct{{ $device->id }}"
+                                                                    aria-expanded="false"
+                                                                    aria-controls="collapseProduct{{ $device->id }}">
+                                                                    <i class="bi bi-plus-lg"></i>
+                                                                    {{ __('buttons.add') }}</button>
+                                                            </div>
+                                                            <div class="collapse mb-3"
+                                                                id="collapseProduct{{ $device->id }}">
+                                                                <div class="card card-body">
+                                                                    <label class="form-label">Selecciona el producto y
+                                                                        lote</label>
+                                                                    @php
+                                                                        $fetchedLots = $device->product_id
+                                                                            ? $device->product->selectedLots(
+                                                                                $order->programmed_date,
+                                                                            )
+                                                                            : $lots;
+                                                                    @endphp
+                                                                    <div class="input-group">
+                                                                        <select class="form-select"
+                                                                            id="select-product{{ $device->id }}">
+                                                                            @foreach ($products as $product)
+                                                                                <option value="{{ $product->id }}"
+                                                                                    {{ $product->id == $device->product_id ? 'selected' : '' }}>
+                                                                                    {{ $product->name }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                        <select class="form-select"
+                                                                            id="select-lot{{ $device->id }}">
+                                                                            @foreach ($fetchedLots as $lot)
+                                                                                <option value="{{ $lot->id }}">
+                                                                                    [{{ $lot->registration_number }}]
+                                                                                    {{ $lot->product->name }}</option>
+                                                                            @endforeach
+                                                                        </select>
+                                                                        <button class="btn btn-primary btn-sm"
+                                                                            type="button"
+                                                                            onclick="setProduct({{ $device->id }})">{{ __('buttons.accept') }}</button>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="my-3"
+                                                                id="device{{ $device->id }}-products">
+
+                                                            </div>
+                                                        </div> --}}
+
                                                         <div class="mb-3">
-                                                            <h5 class="fw-bold border-bottom pb-2 mb-2">Producto:
-                                                            </h5>
-                                                            @php
-                                                                $fetchedLots = $device->product->selectedLots($order->programmed_date);
-                                                            @endphp
-                                                            <div class="input-group mb-3">
-                                                                <label class="input-group-text"
-                                                                    for="device{{$device->id}}-product-lot">{{ shortenText($device->product->name) }}</label>
-                                                                <select class="form-select" id="device{{$device->id}}-product-lot">
-                                                                    @foreach ($device->product->lots as $lot)
-                                                                        <option value="{{$lot->id}}" {{ $fetchedLots[0]->id == $lot->id ? 'selected' : '' }}>{{ $lot->registration_number }}
-                                                                        </option>
-                                                                    @endforeach
-                                                                </select>
-                                                                {{--<input type="number" class="form-control" id="device{{$device->id}}-product-count" placeholder="0" min="0"/>--}}
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        value="{{ $device->states($order->id)->is_product_changed ?? '0' }}"
-                                                                        id="device{{ $device->id }}-product-change"
-                                                                        {{ $device->states($order->id) && $device->states($order->id)->is_product_changed ? 'checked' : '' }}>
-                                                                    <label class="form-check-label"
-                                                                        for="flexCheckDefault">
-                                                                        Se realizo cambio de producto/cebo?
-                                                                    </label>
-                                                                </div>
-                                                            </div>
-
-                                                            <div class="mb-3">
-                                                                <div class="form-check">
-                                                                    <input class="form-check-input" type="checkbox"
-                                                                        value="{{ $device->states($order->id)->is_product_changed ?? '0' }}"
-                                                                        id="device{{ $device->id }}-device-change"
-                                                                        {{ $device->states($order->id) && $device->states($order->id)->is_device_changed ? 'checked' : '' }}>
-                                                                    <label class="form-check-label"
-                                                                        for="flexCheckDefault">
-                                                                        Se realizo cambio de dispositivo?
-                                                                    </label>
-                                                                </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    value="{{ $device->states($order->id)->is_product_changed ?? '0' }}"
+                                                                    id="device{{ $device->id }}-product-change"
+                                                                    {{ $device->states($order->id) && $device->states($order->id)->is_product_changed ? 'checked' : '' }}>
+                                                                <label class="form-check-label"
+                                                                    for="flexCheckDefault">
+                                                                    Se realizo cambio de producto/cebo?
+                                                                </label>
                                                             </div>
                                                         </div>
 
+                                                        <div class="mb-3">
+                                                            <div class="form-check">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    value="{{ $device->states($order->id)->is_product_changed ?? '0' }}"
+                                                                    id="device{{ $device->id }}-device-change"
+                                                                    {{ $device->states($order->id) && $device->states($order->id)->is_device_changed ? 'checked' : '' }}>
+                                                                <label class="form-check-label"
+                                                                    for="flexCheckDefault">
+                                                                    Se realizo cambio de dispositivo?
+                                                                </label>
+                                                            </div>
+                                                        </div>
                                                         <div class="mb-3">
                                                             <div class="form-floating">
                                                                 <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 150px">{{ $device->states($order->id)->observations ?? '' }}</textarea>
                                                                 <label for="floatingTextarea2">Observaciones</label>
                                                             </div>
                                                         </div>
-
-                                                        <input type="hidden" id="device{{$device->id}}-service" value="{{ $service->id }}"
-
+                                                        <input type="hidden" id="device{{ $device->id }}-service"
+                                                            value="{{ $service->id }}" </div>
                                                     </div>
                                                     <div class="modal-footer">
                                                         <button type="button" class="btn btn-primary"
@@ -282,10 +312,6 @@
                             </tbody>
                         </table>
                     </div>
-                @else
-                    <p class="text-danger fw-bold"> Como se trata de un control de plagas, no se encontraron planos ni
-                        dispositivos vinculados a la orden y el servicio. Por favor, asegúrate de que la información del
-                        cliente esté completa.</p>
                 @endif
             @endforeach
         @else
@@ -296,9 +322,16 @@
                 <div class="col-12 mb-3">
                     <textarea class="summernote" id="service{{ $service->id }}-details">
                             @if (empty($service->details($order->contract_id)))
-<b>Plagas a controlar: </b> @foreach ($order->pests as $index => $item) {{ $item->total . ' ' .  $item->pest->name . ($index < count($order->pests) - 1 ? ', ' : '')}} @endforeach<br/>
+<b>Plagas a controlar: </b> @foreach ($order->pests as $index => $item)
+{{ $item->total . ' ' . $item->pest->name . ($index < count($order->pests) - 1 ? ', ' : '') }}
+@endforeach
+<br/>
 <b>Tipo de servicio: </b>{{ $service->serviceType->name }}<br/>
-<b>Método de aplicación: </b>@foreach ($order->productsByService($service->id) as $item) {{ $item->appMethod->name }} @endforeach<br/>
+<b>Método de aplicación: </b>
+@foreach ($order->productsByService($service->id) as $item)
+{{ $item->appMethod->name }}
+@endforeach
+<br/>
 <b>Cantidad de litros aplicados: </b><br/>
 <b>Áreas de aplicación: </b>{{ $order->areas }}<br/><br/>
 <b>RECOMENDACIONES</b>
@@ -320,10 +353,9 @@
   <li>Respetar el tiempo de reentrada conforme a la etiqueta del producto a utilizar.</li>
   <li>Realizar recolección de plaga o limpieza necesaria al tipo de área.</li>
 </ul>
-
-                            @else
-                                {{ $service->details($order->contract_id)->details }}
-                            @endif
+@else
+{{ $service->details($order->contract_id)->details }}
+@endif
                         </textarea>
                 </div>
             </div>
@@ -349,7 +381,44 @@
         if (!pests_data[index].pests.some(item => item.id == pest_id)) {
             html +=
                 `
-            <div class="col-12 pe-0" id="device${device_id}-pest${pest_id}">
+            <div class="my-2" id="device${device_id}-pest${pest_id}">
+                <div class="input-group mb-3">
+                    <div class="input-group-text">
+                        <input class="form-check-input mt-0"
+                            type="checkbox"
+                            value="${pest.id}"
+                            onchange="deletePest(${device_id}, ${pest_id}, this.checked)"
+                            checked>
+                    </div>
+                    <span
+                        class="input-group-text">${pest.name}</span>
+                    <input type="number" class="form-control"
+                        value="1" min="1" oninput="setPestValue(${device_id}, ${pest_id}, this.value)">
+                </div>
+            </div>
+            `;
+
+            pests_data[index].pests.push({
+                id: pest_id,
+                value: 1
+            });
+            $(`#device${device_id}-pests`).html(html);
+
+        }
+    }
+
+    function setProduct(device_id) {
+        var product_id = parseInt($(`#select-product${device_id}`).val());
+        var lot_id = parseInt($(`#select-lot${device_id}`).val());
+
+        var html = $(`#device${device_id}-products`).html();
+
+        var index = product_data.findIndex(item => item.device_id == device_id);
+
+        if (!product_data[index].pests.some(item => item.id == pest_id)) {
+            html +=
+                `
+            <div class="my-2" id="device${device_id}-pest${pest_id}">
                 <div class="input-group mb-3">
                     <div class="input-group-text">
                         <input class="form-check-input mt-0"
@@ -433,6 +502,7 @@
         var count = $(`#device${device_id}-product-count`).val();
         var fetched_pests = pests_data.find(item => item.device_id == device_id);
 
+        formData.append('deviceId', JSON.stringify(device_id))
         formData.append('incidents', JSON.stringify(incidents));
         formData.append('pests_found', JSON.stringify(fetched_pests))
         formData.append('is_product_changed', JSON.stringify(is_product_changed))
@@ -453,6 +523,7 @@
                 "X-CSRF-TOKEN": csrfToken,
             },
             success: function(response) {
+                console.log(response)
                 if (response.success) {
                     /*$('#status-device' + device_id).html(
                         '<i class="bi bi-check-circle-fill text-success"></i>');

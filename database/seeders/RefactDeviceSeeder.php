@@ -30,7 +30,7 @@ class RefactDeviceSeeder extends Seeder
             if($aux != $device->floorplan_id){
                 $index = 1;
             }
-            $code = $device->code ?? (ControlPoint::find($device->type_control_point_id)->code . '-' . $count);
+            $code = /*$device->code ?? (*/ControlPoint::find($device->type_control_point_id)->code . '-' . $count/*)*/;
             $deviceCreated = Device::create([
                 'id' => $count,
                 'type_control_point_id' => $device->type_control_point_id,

@@ -43,6 +43,7 @@
                             <th scope="col">Hora programada</th>
                             <th scope="col">Fecha programada</th>
                             <th scope="col">Cliente(s)</th>
+                            <th scope="col">Servicio(s)</th>
                             <th scope="col">Status</th>
                             <th scope="col">Acciones</th>
                         </tr>
@@ -53,11 +54,13 @@
                                 $size = count($daily['activities']);
                             @endphp
                             <tr>
-                                <th class="text-center" scope="row" rowspan="{{ $size != 0 ? $size+1 : 1 }}">
+                                
+                                <th class="text-center" scope="row" rowspan="{{ $size == 0 || $size == 1 ? 1 : $size+1 }}">
                                     {{ $daily['hour'] }}
                                 </th>
                                 @if ($size == 1)
                                     @for ($i = 0; $i < $size; $i++)
+                                    
                                         <td> <i class="bi bi-square-fill"
                                                 style="color: {{ $daily['activities'][$i]['service_type'] == 1 ? '#c0392b' : ($daily['activities'][$i]['service_type'] == 2 ? '#196f3d' : '#1f618d') }};"></i>
                                         </td>
@@ -66,6 +69,9 @@
                                         <td> {{ $daily['activities'][$i]['programmed_date'] }} </td>
                                         <td>
                                             {{ $daily['activities'][$i]['customer'] }}
+                                        </td>
+                                        <td>
+                                            <p class="list-group-item">{{ implode(', ', $daily['activities'][$i]['services']) }}</li>
                                         </td>
                                         <td
                                             class="fw-bold 
@@ -105,12 +111,15 @@
                                     <tr>
                                         <td> <i class="bi bi-square-fill"
                                             style="color: {{ $daily['activities'][$i]['service_type'] == 1 ? '#c0392b' : ($daily['activities'][$i]['service_type'] == 2 ? '#196f3d' : '#1f618d') }};"></i>
-                                    </td>
+                                        </td>
                                         <td> {{ $daily['activities'][$i]['id'] }} </td>
                                         <td> {{ $daily['activities'][$i]['start_time'] }} </td>
                                         <td> {{ $daily['activities'][$i]['programmed_date'] }} </td>
                                         <td>
                                             {{ $daily['activities'][$i]['customer'] }}
+                                        </td>
+                                        <td>
+                                            <p class="list-group-item">{{ implode(', ', $daily['activities'][$i]['services']) }}</li>
                                         </td>
                                         <td
                                             class="fw-bold 

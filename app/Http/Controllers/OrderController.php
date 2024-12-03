@@ -584,18 +584,6 @@ class OrderController extends Controller
 			return $service->pests()->get();
 		})->unique('id')->values();
 
-
-		$order_products = $order->products()->get();
-		if($order_products) {
-			foreach($order_products as $order_product) {
-				if($order_product->service->prefix == 1) {
-					$states = DeviceStates::where('order_id', $order->id)->where('is_product_changed', true)->get();
-					$order_product->amount = count($states);
-					$order_product->save();
-				}
-			}
-		}
-
 		return view('report.create', compact(
 			'order',
 			'answers',
