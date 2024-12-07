@@ -148,7 +148,7 @@
             </div>
         </div>
 
-        <div id="image-container" class="w-100 border" style="position: relative; overflow-y: auto;">
+        <div id="image-container" class="w-100 border p-3" style="position: relative; overflow-y: auto;">
             <img id="zoom-image" class="w-100" src="{{ route('image.show', ['filename' => $floorplan->path]) }}"
                 alt="Plano" style="transition: transform 0.3s ease; transform-origin: 0 0;">
             <div id="points-container" style="position: absolute; top: 0; left: 0;"></div>
@@ -209,6 +209,8 @@
                             @endforeach
                         </select>
                     </div>
+
+                    <input type="hidden" id="editPointIndex" value="" />
                 </div>
             </div>
             <div class="modal-footer">
@@ -225,6 +227,7 @@
         var data = @json($ctrlPoints);
         var devices = @json($devices);
         var countDevices = @json($countDevices);
+        var count = @json($nplan);
         var pointNames = @json($pointNames);
         var areaNames = @json($areaNames);
         var productNames = @json($productNames);
@@ -246,7 +249,6 @@
         var productID = 0;
         var index = 1;
         var hasPoints = false;
-        var count = 1;
 
         function submitForm() {
             if (confirm('{{ __('messages.new_devices') }}')) {
@@ -292,8 +294,8 @@
                 '';
         }
 
-        function findProduct(id) {
-            const foundPoint = points.find(item => item.pointID == id);
+        function findProduct(point_id, area_id) {
+            const foundPoint = points.find(item => item.pointID == point_id && item.areaID == area_id);
             return foundPoint.productID ?? false;
         }
 
@@ -349,8 +351,8 @@
 
             var newPoint = {
                 index: index,
-                pointID: pointID,
-                areaID: areaID,
+                pointID: parseInt(pointID),
+                areaID: parseInt(areaID),
                 productID: productID,
                 pointCount: count,
                 x: pointX,
@@ -388,7 +390,7 @@
             container.appendChild(pointElement);
 
             sortPoints();
-            setStoragePoint(parseInt(pointID));
+            setStoragePoint(parseInt(pointID), parseInt(areaID));
             incrementCount(pointID);
             createLegend();
             applyZoom();
@@ -411,9 +413,13 @@
             }
         }
 
-        function setStoragePoint(point) {
-            if (!addedPoints.includes(point)) {
-                addedPoints.push(point);
+        function setStoragePoint(point, area) {
+            const foundPoint = addedPoints.find(item => item.pointID == point && item.areaID == area);
+            if (!foundPoint) {
+                addedPoints.push({
+                    'pointID': point,
+                    'areaID': area
+                });
             }
         }
 
@@ -422,7 +428,8 @@
         }
 
         function updatePoint() {
-            var point = points.find(item => item.index == index);
+            var pointIndex = $('#editPointIndex').val();
+            var point = points.find(item => item.index == pointIndex);
             var updatePoint = parseInt($('#update-control-point').val());
             var updateArea = parseInt($('#update-area').val());
             var updateProduct = parseInt($('#update-product').val());
@@ -444,7 +451,7 @@
                 let popover = bootstrap.Popover.getInstance(popoverElement);
 
                 point.pointID = updatePoint;
-                point.areaIconsoleD = updateArea;
+                point.areaID = updateArea;
                 point.productID = updateProduct;
                 color = findColor(updatePoint);
                 popoverElement.css('backgroundColor', color);
@@ -457,27 +464,28 @@
                 popoverElement.popover({
                     container: 'body',
                     html: true,
-                    title: `Punto de control ${index}`,
+                    title: `Punto de control ${point.index}`,
                     content: `  
                             <div class="row mb-3">
-                                <span id="span-edit-point-${index}" class="col-12">Tipo: ${pointName} </span>
-                                <span id="span-edit-area-${index}" class="col-12">Área: ${areaName} </span>
-                                <span id="span-edit-product-${index}" class="col-12">Producto: ${productName} </span>
+                                <span id="span-edit-point-${point.index}" class="col-12">Tipo: ${pointName} </span>
+                                <span id="span-edit-area-${point.index}" class="col-12">Área: ${areaName} </span>
+                                <span id="span-edit-product-${point.index}" class="col-12">Producto: ${productName} </span>
                             </div>   
                             <div class="row mb-3">
                                 <div class="col-12"><strong>Revisiones:</strong></div>
                                 ${revisionsHtml}
                             </div>                         
                             <div class="d-flex flex-wrap justify-content-around">
-                                <a href="#!" class="btn btn-secondary btn-sm popover-edit" id="btn-edit-${index}"> <i class="bi bi-pencil-square"></i> Editar</a>
-                                <a href="#!" class="btn btn-danger btn-sm popover-delete" id="btn-delete-${index}"> <i class="bi bi-x"></i> Eliminar</a>
+                                <a href="#!" class="btn btn-secondary btn-sm popover-edit" id="btn-edit-${point.index}"> <i class="bi bi-pencil-square"></i> Editar</a>
+                                <a href="#!" class="btn btn-danger btn-sm popover-delete" id="btn-delete-${point.index}"> <i class="bi bi-x"></i> Eliminar</a>
                             </div>
                         `,
                     placement: 'right',
                 });
 
-                countPoints = {};
-                countLegend();
+                //countPoints = {};
+                //countLegend();
+
                 createLegend();
             }
 
@@ -559,67 +567,118 @@
         function createLegend() {
             var html = '';
             if (addedPoints.length > 0) {
+                console.log('addP: ', addedPoints)
+                console.log('P: ', addedPoints)
                 addedPoints.forEach(point => {
-                    if (countPoints[point] != undefined && countPoints[point] != null) {
+                    var count = points.filter(item => item.pointID == point.pointID && item.areaID == point.areaID)
+                        .length;
+                    if (count > 0) {
                         html += `
                             <tr>
-                                <!--td>
-                                    <p class="w-100 rounded m-0 p-0" style="height: 2em; background-color: ${findColor(point)}"></p>
-                                </td-->
                                 <td>
-                                    <input type="color" class="form-control border-secondary border-opacity-25" style="height: 2em;" value="${findColor(point)}" onchange="updateColor(this.value, ${point})">
+                                    <input type="color" class="form-control border-secondary border-opacity-25" style="height: 2em;" value="${findColorLegend(point.pointID, point.areaID)}" onchange="updateColor(this.value, ${point.pointID}, ${point.areaID})">
                                 </td>
-                                <td>${findPointName(point)}</td>
-                                <td class="fw-bold text-primary">${findCode(point)}</td>
+                                <td>${findPointName(point.pointID)}</td>
+                                <td class="fw-bold text-primary">${findCode(point.pointID)}</td>
                                 <td>
-                                    <select class="form-select" id="point${point}-area" onchange="setArea(${point}, this.value)">
+                                    <select class="form-select" onchange="setArea(${point.pointID}, ${point.areaID}, this.value)">
                                     ${
-                                        areaNames.map(item => `<option value="${item.id}" ${findArea(point) == item.id ? 'selected' : ''}>${item.name}</option>`).join('')
+                                        areaNames.map(item => `<option value="${item.id}" ${point.areaID == item.id ? 'selected' : ''}>${item.name}</option>`).join('')
                                     }
                                     </select>    
                                 </td>
                                 <td>
-                                    <select class="form-select" id="point${point}-product" onchange="setProduct(${point}, this.value)">
+                                    <select class="form-select" onchange="setProduct(${point.pointID}, ${point.areaID}, this.value)">
                                         <option>Sin producto</option>
                                         ${
-                                            productNames.map(item => `<option value="${item.id}" ${findProduct(point) == item.id ? 'selected' : ''}>${item.name}</option>`).join('')
+                                            productNames.map(item => `<option value="${item.id}" ${findProduct(point.pointID, point.areaID) == item.id ? 'selected' : ''}>${item.name}</option>`).join('')
                                         }
                                     </select>
                                 </td>
-                                <td>${countPoints[point]}</td>
+                                <td>${count}</td>
                             </tr>
                         `;
-                    } else {
-                        delete countPoints[point];
                     }
                 });
             }
+
             $('#table-body').html(html);
         }
 
-        function updateColor(newColor, point_id) {
-            points.filter(point => point.pointID == point_id)
+        function findColorLegend(point_id, area_id) {
+            var found_points = points.filter(point => point.pointID == point_id && point.areaID == area_id);
+            if (found_points.length <= 0) {
+                found_points = points.filter(point => point.pointID == point_id)
+            }
+
+            return found_points[0].color;
+        }
+
+        function updateColor(newColor, point_id, area_id) {
+            points.filter(point => point.pointID == point_id && point.areaID == area_id)
                 .forEach(point => {
                     point.color = newColor;
                 });
-
             setPoints();
         }
 
-        function setProduct(point, value) {
-            points.filter(item => item.pointID == point).forEach(item => {
+        function setProduct(point_id, area_id, value) {
+            points.filter(item => item.pointID == point_id && item.areaID == area_id).forEach(item => {
                 item.productID = parseInt(value);
             });
-            setPoints();
+
+            points.forEach(point => {
+                $('#editPointIndex').val(point.index);
+                $('#update-control-point').val(point.pointID);
+                $('#update-area').val(point.areaID);
+                $('#update-product').val(point.productID);
+                updatePoint();
+            })
         }
 
-        function setArea(point, value) {
-            console.log(point);
-            var fetched_points = points.filter(item => item.pointID == point);
-            fetched_points.forEach(item => {
-                item.areaID = parseInt(value);
+        function setArea(point_id, area_id, value) {
+            const newAreaID = parseInt(value);
+
+            // Actualizar el área en `points` si coincide el `pointID` y `areaID`
+            points.forEach(item => {
+                if (item.pointID == point_id && item.areaID == area_id) {
+                    item.areaID = newAreaID;
+                }
             });
-            setPoints();
+
+            // Actualizar o agregar el punto en `addedPoints`
+            const index = addedPoints.findIndex(
+                addedPoint => addedPoint.pointID == point_id && addedPoint.areaID == area_id
+            );
+
+            if (index !== -1) {
+                // Si ya existe, actualizar `areaID` si es diferente
+                if (addedPoints[index].areaID !== newAreaID) {
+                    addedPoints[index].areaID = newAreaID;
+                }
+            } else {
+                // Si no existe, agregarlo
+                addedPoints.push({
+                    pointID: point_id,
+                    areaID: newAreaID
+                });
+            }
+
+            // Eliminar duplicados en `addedPoints` (prevención extra)
+            addedPoints = Array.from(new Set(addedPoints.map(JSON.stringify))).map(
+                JSON.parse
+            );
+
+            // Actualizar elementos DOM solo una vez
+            if (points.length > 0) {
+                points.forEach(point => {
+                    $('#editPointIndex').val(point.index);
+                    $('#update-control-point').val(point.pointID);
+                    $('#update-area').val(point.areaID);
+                    $('#update-product').val(point.productID);
+                    updatePoint();
+                });
+            }
         }
 
         function applyZoom() {
@@ -652,7 +711,6 @@
                 },
                 success: function(response) {
                     devices = response;
-                    console.log(response)
                     points = [];
                     countPoints = {};
                     hasPoints = false;
@@ -674,11 +732,11 @@
                     index = parseInt(device.itemnumber);
                     color = color_op ? findColor(pointID) : device.color;
                     createPoint(device.map_x, device.map_y, device.nplan);
-                    setStoragePoint(pointID);
+                    setStoragePoint(pointID, areaID);
                     //countIndexs.push(index);
                 });
                 index = countDevices;
-                count = devices.length;
+                //count = devices.length;
                 hasPoints = true;
                 createLegend();
             }
@@ -686,25 +744,12 @@
 
         function setPoints() {
             if (points.length > 0) {
-                aux_points = points;
-                points = [];
-                countPoints = {};
-                hasPoints = false;
-                container.innerHTML = '';
-                $('#table-body').empty();
-                if (aux_points.length > 0) {
-                    aux_points.forEach(function(point) {
-                        pointID = parseInt(point.pointID);
-                        areaID = parseInt(point.areaID);
-                        productID = parseInt(point.productID);
-                        index = parseInt(point.index);
-                        color = point.color;
-                        createPoint(point.x, point.y, point.pointCount);
-                        setStoragePoint(pointID);
-                        //countIndexs.push(index);
-                    });
-                }
+                points.forEach(point => {
+                    point.element.style.backgroundColor = point.color;
+                });
             }
+            hasPoints = true;
+            createLegend();
         }
 
         zoomRange.addEventListener('input', function() {
@@ -719,8 +764,7 @@
             //var count = 0;
             if (numPoints > 0) {
                 index = points.length > 0 ? ++index : ++countDevices;
-                count = points.length > 0 ? ++count : 1;
-                //countIndexs.push(count);
+                count++;
                 createPoint(offsetX, offsetY, count);
                 numPoints--;
                 $('#countPoints').text('Puntos restantes: ' + numPoints);
@@ -732,7 +776,6 @@
         document.addEventListener('click', function(e) {
             // Eliminar punto
             if (e.target.classList.contains('popover-delete')) {
-                console.log(e.target)
                 if (confirm("¿Estás seguro de eliminar el punto?")) {
                     var pointIndex = extractId(e.target.id);
                     var pointElement = document.getElementById('popoverPoint' + pointIndex);
@@ -740,8 +783,10 @@
                         removePoint(pointElement);
                     }
                     //countIndexs = countIndexs.filter(item => item != index);
-                    countPoints = {};
-                    countLegend();
+                    //countPoints = {};
+                    //countLegend();
+                    index--;
+                    count--;
                     createLegend();
                 }
             }
@@ -765,7 +810,8 @@
                     $(`#update-product option[value="${point.productID}"]`).prop('selected', true);
                 }
 
-                $('#editPointModalLabel').text(`Punto de control ${index}`)
+                $('#editPointModalLabel').text(`Punto de control ${point.pointCount}`)
+                $('#editPointIndex').val(pointIndex);
                 $('#editPointModal').modal('show');
             }
         });
@@ -786,8 +832,6 @@
             if (img.complete) {
                 img.onload();
             }
-
-            console.log(data);
         });
     </script>
 @endif

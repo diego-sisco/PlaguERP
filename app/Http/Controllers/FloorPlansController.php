@@ -200,37 +200,7 @@ class FloorPlansController extends Controller
         $floorplan = FloorPlans::findOrFail($id);
         $customer = Customer::find($customerID);
         $floorplanIds = $customer->floorplans()->get()->pluck('id');
-        $count = 1;
-        /*foreach ($floorplanIds as $floorplanId) {
-            $devices = Device::where('floorplan_id', $floorplanId)->get();
-            foreach ($devices as $i => $device) {
-                $index = $i + 1;
-                $code = $device->code ?? ControlPoint::find($device->type_control_point_id)->code . '-' . $count;
-                $data[] = [
-                    'id' => $count,
-                    'type_control_point_id' => $device->type_control_point_id,
-                    'floorplan_id' => $floorplanId,
-                    'application_area_id' => $device->application_area_id,
-                    'product_id' => $device->product_id,
-                    'qr' => QrCode::format('png')->size(200)->generate($code),
-                    'itemnumber' => $count,
-                    'nplan' => $index,
-                    'version' => 1,
-                    'latitude' => null,
-                    'longitude' => null,
-                    'map_x' => $device->map_x,
-                    'map_y' => $device->map_y,
-                    'img_tamx' => $device->img_tamx,
-                    'img_tamy' => $device->img_tamy,
-                    'color' => $device->color,
-                    'code' => $code,
-                    'created_at' => $device->created_at,
-                    'updated_at' => now(),
-                ];
-                $count++;
-            }
-
-        }*/
+        $nplan = $count = 0;
 
         $latestVersionNumber = $floorplan->versions()->latest('version')->value('version');
         $customer = Customer::findOrFail($customerID);
@@ -254,37 +224,17 @@ class FloorPlansController extends Controller
         $ctrlPoints = ControlPoint::all();
         $product_names = [];
         $products = ProductCatalog::where('presentation_id', '!=', 1)->get();
-
-        /*$countDevices = [];
-        if ($floorplan->service != null) {
-            $floorplans = Floorplans::where('customer_id', $customerID)->get();
-            foreach ($floorplans as $f) {
-                $latestVersionNumber = $f->versions()->latest('version')->value('version');
-                $ds = Device::where('floorplan_id', $f->id)->where('version', $latestVersionNumber)
-                    ->select('id', 'type_control_point_id', 'itemnumber')
-                    ->get();
-                foreach ($ds as $d) {
-                    $type = $d->type_control_point_id;
-                    $filtered = array_filter($countDevices, function ($item) use ($type) {
-                        return $item['type'] == $type;
-                    });
-                    if ($filtered) {
-                        $key = key($filtered);
-                        $countDevices[$key]['count']++;
-                    } else {
-                        $countDevices[] = [
-                            'type' => $type,
-                            'count' => 1,
-                        ];
-                    }
-                }
-            }
-        }*/
         $lastDevice = Device::whereIn('floorplan_id', $floorplanIds)->get()->last();
         $countDevices = !empty($lastDevice) ? $lastDevice->itemnumber : 0;
 
+        $floorplansByService = Floorplans::where('service_id', $floorplan->service_id)->where('customer_id', $customerID)->get();
+
+        foreach($floorplansByService as $floorplanByService) {
+            $latestVersionNumber = $floorplanByService->versions()->latest('version')->value('version');
+            $nplan = Device::where('floorplan_id', $floorplanByService->id)->where('version', $latestVersionNumber)->get()->last()->nplan ?? 0;
+        }
         // Compacta las variables para pasarlas a la vista
-        return view('floorplans.edit', compact('ctrlPoints', 'applications_areas', 'services', 'customer', 'devices', 'deviceRevisions', 'floorplan', 'products', 'countDevices', 'type', 'section'));
+        return view('floorplans.edit', compact('ctrlPoints', 'applications_areas', 'services', 'customer', 'devices', 'deviceRevisions', 'floorplan', 'products', 'countDevices', 'nplan', 'type', 'section'));
     }
 
     public function searchDevices(Request $request, string $floorplanId)

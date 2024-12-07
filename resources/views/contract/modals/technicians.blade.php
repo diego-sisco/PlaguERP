@@ -1,6 +1,6 @@
 <div class="modal fade" id="technicianModal{{ $contract->id }}" tabindex="-1" aria-labelledby="technicianModalLabel"
     aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-scrollable">
         <form class="modal-content" method="POST" action="{{ Route('contract.update.technicians', ['id' => $contract->id]) }}" enctype="multipart/form-data">
             @csrf
             <div class="modal-header">

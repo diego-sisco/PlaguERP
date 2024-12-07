@@ -56,17 +56,16 @@
         </div>
     </div>
 
-    <div class="row mb-3">
-        <h5 class="border-bottom pb-1 fw-bold"> {{ __('order.data.customer') }}: </h5>
-        <div class="col-12 p-2 pb-0">
-            <ul id="customer-select">
-                <li class="text-break fw-bold">Nombre: <span class="fw-normal text-primary"> {{ $customer->name }}
-                    </span></li>
-                <li class="text-break fw-bold">Teléfono: <span class="fw-normal"> {{ $customer->phone }} </span></li>
-                <li class="text-break fw-bold">Dirección: <span class="fw-normal"> {{ $customer->address }} </span>
-                </li>
-            </ul>
+    <div class="alert alert-success" role="alert">
+        <div class="d-flex justify-content-between">
+            <h4 class="alert-heading">Cliente seleccionado</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" onclick="deleteCustomer()"></button>
         </div>
+        <ul>
+            <li class="text-break fw-bold">Cliente: <span class="fw-normal">{{ $customer->name }}</span></li>
+            <li class="text-break fw-bold">Teléfono: <span class="fw-normal">{{ $customer->phone }}</span></li>
+            <li class="text-break fw-bold">Dirección: <span class="fw-normal">{{ $customer->address }}</span></li>
+        </ul>
     </div>
 
     <div class="row mb-2">

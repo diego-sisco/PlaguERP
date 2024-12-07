@@ -6,7 +6,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-primary"
-                    onclick="submitContract()">{{ __('buttons.store') }}</button>
+                data-bs-dismiss="modal" onclick="showServices()">{{ __('buttons.store') }}</button>
                 <button type="button" class="btn btn-danger"
                     data-bs-dismiss="modal">{{ __('buttons.cancel') }}</button>
             </div>

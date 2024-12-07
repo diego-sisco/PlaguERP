@@ -3,6 +3,7 @@
 return [
     'title' => [
         'create' => 'Crear calendario',
+        'edit' => 'Editar calendario',
         'show' => 'Ver calendario',
         'duration' => 'Duración del contrato',
         'set_customer' => 'Seleccionar cliente',

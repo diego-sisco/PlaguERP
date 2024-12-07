@@ -1,4 +1,14 @@
-<form id="contract-form" class="form" method="POST" action="{{ route('contract.store') }}" enctype="multipart/form-data">
+@php
+    foreach ($services as $service) {
+        $selected_services[] = [
+            'id' => $service->id,
+            'name' => $service->name,
+            'type' => [$service->serviceType->name],
+            'line' => [$service->businessLine->name],
+        ];
+    }
+@endphp
+<form id="contract-form" class="form" method="POST" action="{{ route('contract.update', ['id' => $contract->id]) }}" enctype="multipart/form-data">
     @csrf
 
     <input type="hidden" name="url_customer" id="url-customer" value="{{ route('order.search.customer') }}" />
@@ -55,6 +65,22 @@
             <div class="col-12" id="customer-select"></div>
         </div>
 
+        <div class="alert alert-success" role="alert">
+            <div class="d-flex justify-content-between">
+                <h4 class="alert-heading">Cliente seleccionado</h4>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"
+                    onclick="deleteCustomer()"></button>
+            </div>
+            <ul>
+                <li class="text-break fw-bold">Cliente: <span class="fw-normal">{{ $contract->customer->name }}</span>
+                </li>
+                <li class="text-break fw-bold">Teléfono: <span
+                        class="fw-normal">{{ $contract->customer->phone }}</span></li>
+                <li class="text-break fw-bold">Dirección: <span
+                        class="fw-normal">{{ $contract->customer->address }}</span></li>
+            </ul>
+        </div>
+
         <div class="row mb-3" id="select-contract">
             <h5 class="border-bottom pb-1 fw-bold">
                 {{ __('contract.title.associate_contract') }}
@@ -66,6 +92,12 @@
             <div class="col-3 mb-3">
                 <select class="form-select" id="contract" name="contract_id">
                     <option value="0" selected>Sin contrato</option>
+                    @forelse ($contracts as $c)
+                        <option value="{{ $c->id }}">Contrato {{ $contract->id }} ({{ $contract->startdate }}
+                            - {{ $contract->enddate }}</option>
+                    @empty
+                        <option value="0" selected>Sin contrato</option>
+                    @endforelse
                 </select>
             </div>
         </div>
@@ -82,7 +114,7 @@
                     {{ __('contract.data.start_date') }}
                 </label>
                 <input type="date" class="form-control border-secondary border-opacity-25" name="startdate"
-                    id="startdate" oninput="set_endDate()" required />
+                    id="startdate" value="{{ $contract->startdate }}" oninput="set_endDate()" required />
             </div>
 
             <div class="col-3 mb-3">
@@ -90,7 +122,7 @@
                     {{ __('contract.data.end_date') }}
                 </label>
                 <input type="date" class="form-control border-secondary border-opacity-25" name="enddate"
-                    id="enddate" />
+                    id="enddate" value="{{ $contract->enddate }}" />
             </div>
         </div>
 
@@ -182,7 +214,8 @@
                             <div class="form-check">
                                 <input class="technician form-check-input me-1" type="checkbox"
                                     value="{{ $technician->id }}" id="technician-{{ $technician->id }}"
-                                    onchange="setTechnician()" />
+                                    onchange="setTechnician()"
+                                    {{ $contract->hasTechnician($technician->id) ? 'checked' : '' }} />
                                 <label class="form-check-label" for="technician-{{ $technician->id }}">
                                     {{ $technician->user->name }}
                                 </label>
@@ -196,17 +229,37 @@
     <button type="button" class="btn btn-primary my-3" onclick="submitContract()">
         {{ __('buttons.update') }}
     </button>
-    <input type="hidden" id="customer-id" name="customer_id" value="0" />
+    <input type="hidden" id="customer-id" name="customer_id" value="{{ $contract->customer_id }}" />
     <input type="hidden" id="contract-data" name="contract_data" value="[]" />
-    <input type="hidden" name="technicians" id="technicians" value="[]" />
-
-    @include('contract.modals.preview') @include('contract.modals.service')
+    <input type="hidden" name="technicians" id="technicians"
+        value="{{ json_encode($contract->technicians->pluck('id')->toArray()) }}" />
 </form>
 
 <script>
     var execution_frecuencies = @json($exec_frecuencies);
     var contracts = @json($contracts);
-    var orders = [];
+    var contract_services = @json($contract->services);
+    var orders = @json($orders);
 
+    const stored_services = @json($selected_services);
     const new_client_account = false;
+
+    $(document).ready(function() {
+        showStoreService();
+    });
+
+    function showStoreService() {
+        stored_services.forEach(service => {
+            selected_services.push({
+                id: service.id,
+                name: service.name,
+                type: service.type,
+                line: service.line,
+                cost: service.cost,
+            });
+        });
+
+        createServicesList()
+    }
+
 </script>

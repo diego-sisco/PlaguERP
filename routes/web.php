@@ -386,8 +386,8 @@ Route::get('/contracts', [ContractController::class, 'index'])->name('contract.i
 Route::get('/contract/create', [ContractController::class, 'create'])->name('contract.create');
 Route::post('/contract/store', [ContractController::class, 'store'])->name('contract.store');
 Route::get('/contract/show/{id}/{section}', [ContractController::class, 'show'])->name('contract.show');
-Route::get('/contract/edit', [ContractController::class, 'edit'])->name('contract.edit');
-Route::post('/contract/update', [ContractController::class, 'update'])->name('contract.update');
+Route::get('/contract/edit/{id}', [ContractController::class, 'edit'])->name('contract.edit');
+Route::post('/contract/update/{id}', [ContractController::class, 'update'])->name('contract.update');
 Route::get('/contract/destroy/{id}', [ContractController::class, 'destroy'])->name('contract.destroy');
 Route::get('/contract/search', [ContractController::class, 'search'])->name('contract.search');
 Route::get('/contract/upload', [ContractController::class, ''])->name('contract.upload');
