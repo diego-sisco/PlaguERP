@@ -20,7 +20,7 @@ use App\Models\OrderTechnician;
 use App\Models\ContractService;
 use App\Models\Administrative;
 use App\Models\Contract_File;
-use App\Models\Directory;
+use App\Models\Service;
 
 
 class ContractController extends Controller
@@ -28,11 +28,23 @@ class ContractController extends Controller
     private static $files_path = 'files/';
 
     private $mip_directories = [
-        'MIP', 'Contrato de servicio', 'Justificación', 'Datos de la empresa', 'Certificación MIP',
-        'Plano de ubicación de dispositivos', 'Responsabilidades', 'Plago objeto',
-        'Calendarización de actividades', 'Descripción de actividades POEs', 'Métodos preventivos',
-        'Métodos correctivos', 'Información de plaguicidas', 'Reportes', 'Gráficas de tendencias',
-        'Señaléticas', 'Pago seguro'
+        'MIP',
+        'Contrato de servicio',
+        'Justificación',
+        'Datos de la empresa',
+        'Certificación MIP',
+        'Plano de ubicación de dispositivos',
+        'Responsabilidades',
+        'Plago objeto',
+        'Calendarización de actividades',
+        'Descripción de actividades POEs',
+        'Métodos preventivos',
+        'Métodos correctivos',
+        'Información de plaguicidas',
+        'Reportes',
+        'Gráficas de tendencias',
+        'Señaléticas',
+        'Pago seguro'
     ];
 
     private $size = 50;
@@ -53,21 +65,19 @@ class ContractController extends Controller
 
     public function create(): View
     {
-        $days = Day::all();
         $technicians = Technician::all();
         $exec_frecuencies = ExecFrequency::all();
-        $contracts = Contract::all(); 
-        $pest_categories = PestCategory::orderBy('category', 'asc')->get();
-        $application_methods = ApplicationMethod::orderBy('name', 'asc')->get();
+        $contracts = Contract::all();
+
 
         return view(
             'contract.create',
             compact(
                 'exec_frecuencies',
-                'application_methods',
-                'pest_categories',
+                //'application_methods',
+                //'pest_categories',
                 'technicians',
-                'days',
+                //'days',
                 'contracts',
             )
         );
@@ -80,7 +90,7 @@ class ContractController extends Controller
         $contract_id = $request->input('contract_id');
 
 
-        if($contract_id == 0) {
+        if ($contract_id == 0) {
             $contract = Contract::create([
                 'customer_id' => $request->input('customer_id'),
                 'user_id' => auth()->user()->id,
@@ -92,7 +102,7 @@ class ContractController extends Controller
         } else {
             $contract = Contract::find($contract_id);
         }
-        
+
         if ($selected_technicians[count($selected_technicians) - 1] == 0) {
             $technicians = Technician::all();
             foreach ($technicians as $tech) {
@@ -109,31 +119,6 @@ class ContractController extends Controller
                 ]);
             }
         }
-
-        /*$root_directory = Directory::where('customer_id', $contract->customer->id)->first();
-
-        if ($root_directory) {
-            $directory = Directory::create([
-                'user_id' => auth()->user()->id,
-                'customer_id' => $root_directory->customer_id,
-                'name' => 'Periodo ' . $contract->startdate . ' - ' . $contract->enddate,
-                'root_id' => $root_directory->root_id,
-                'father_id' => $root_directory->id,
-                'created_at' => now(),
-            ]);
-
-            foreach ($this->mip_directories as $dir_name) {
-                Directory::insert([
-                    'user_id' => auth()->user()->id,
-                    'customer_id' => $directory->customer_id,
-                    'root_id' => $directory->root_id,
-                    'father_id' => $directory->id,
-                    'name' => $dir_name,
-                    'created_at' => now(),
-                ]);
-            }
-        }*/
-
 
         foreach ($contract_data as $data) {
             $countOrders = 0;
@@ -252,7 +237,7 @@ class ContractController extends Controller
 
             foreach ($techniciansDelete as $technicianId) {
                 ContractTechnician::where('contract_id', $id)
-                    ->where('technician_id', $technicianId)
+                    ->where('technician_i  d', $technicianId)
                     ->delete();
             }
         }
@@ -289,9 +274,166 @@ class ContractController extends Controller
 
         return redirect()->back();
     }
+
+    public function edit(string $id)
+    {
+        $orders = [];
+        $contract = Contract::find($id);
+        $services = Service::whereIn('id', $contract->services()->get()->pluck('service_id'))->get();
+
+        foreach ($services as $service) {
+            $orders[] = [
+                'service_id' => $service->id,
+                'orders' => Order::whereIn(
+                    'id',
+                    OrderService::where('service_id', $service->id)
+                        ->get()->pluck('order_id')
+                )
+                    ->where('customer_id', $contract->customer_id)
+                    ->get()
+            ];
+        }
+
+        $technicians = Technician::all();
+        $exec_frecuencies = ExecFrequency::all();
+        $contracts = Contract::where('customer_id', $contract->customer_id)->where('id', '!=', $contract->id)->get();
+
+        return view(
+            'contract.edit',
+            compact(
+                'contract',
+                'services',
+                'orders',
+                'technicians',
+                'exec_frecuencies',
+                'contracts'
+            )
+        );
+    }
+
     public function update(Request $request, string $id)
     {
+        $contract_data = json_decode($request->input('contract_data'));
+        $selected_technicians = json_decode($request->input('technicians'));
+        $contract = Contract::find($id);
+
+        //Eliminar los servicios ligados a la orden
+        $serviceIds = array_map(function ($item) {
+            return $item->id;
+        }, $contract_data);
+
+        $contract_services = ContractService::where('contract_id', $contract->id)->get();
+        $contract_services_delete = array_diff($contract_services->pluck('service_id')->toArray(), $serviceIds);
+
+        if ($contract_services_delete) {
+            $order_services = OrderService::whereIn('service_id', $contract_services_delete)->get();
+            ContractService::where('contract_id', $contract->id)->whereIn('service_id', $contract_services_delete)->delete();
+            Order::where('contract_id', $contract->id)->whereIn('id', $order_services->pluck('order_id'))->delete();
+        }
+
+        // Control de técnicos
+        $contract_technicians = ContractTechnician::where('contract_id', $contract->id)->get();
+        if ($contract_technicians->isNotEmpty()) {
+            $contract_technicians_delete = array_diff($contract_technicians->pluck('technician_id')->toArray(), $selected_technicians);
+            $selected_technicians = array_diff($selected_technicians, $contract_technicians->pluck('technician_id')->toArray());
+            ContractTechnician::where('contract_id', $contract->id)->whereIn('technician_id', $contract_technicians_delete)->delete();
+            foreach ($selected_technicians as $id) {
+                ContractTechnician::insert([
+                    'technician_id' => $id,
+                    'contract_id' => $contract->id,
+                ]);
+            }
+        } else {
+            foreach ($selected_technicians as $id) {
+                ContractTechnician::insert([
+                    'technician_id' => $id,
+                    'contract_id' => $contract->id,
+                ]);
+            }
+        }
+
+        // Control de las ordenes de servicio
+        foreach ($contract_data as $data) {
+            $countOrders = 0;
+            $orders = Order::where('contract_id', $contract->id)->get();
+            $order_services = OrderService::whereIn('order_id', $orders->pluck('id'))->where('service_id', $data->id)->get();
+            $orders = Order::whereIn('id', $order_services->pluck('order_id'))->get();
+            $topeId = $orders->count();
+            $topeDate = count($data->dates);
+
+            if ($topeId > $topeDate && $topeDate != 0) {
+                while ($topeId > $topeDate) {
+                    Order::whereIn('id', $order_services->pluck('order_id'))->get()->last()->delete();
+                    $orders = Order::whereIn('id', $order_services->pluck('order_id'))->get();
+                    $topeId = $orders->count();
+                }
+            }
+
+            foreach ($data->dates as $date) {
+                if (isset($date)) {
+                    if ($countOrders < $topeId) {
+                        $order = Order::find($orders[$countOrders]->id);
+                        $order->programmed_date = $date;
+                        $order->save();
+                    } else {
+                        $order = Order::create([
+                            'administrative_id' => Administrative::where('user_id', auth()->user()->id)->first()->id,
+                            'customer_id' => $contract->customer_id,
+                            'contract_id' => $contract->id,
+                            'status_id' => '1',
+                            'start_time' => '00:00',
+                            'programmed_date' => $date,
+                        ]);
+
+                        OrderService::insert([
+                            'order_id' => $order->id,
+                            'service_id' => $data->id,
+                        ]);
+                    }
+                    $countOrders++;
+                }
+            }
+
+            $orders = Order::where('contract_id', $contract->id)->get();
+            $contract_technicians = ContractTechnician::where('contract_id', $contract->id)->get();
+            $order_technicians = OrderTechnician::whereIn('order_id', $orders->pluck('id'))->get();
+
+            if ($order_technicians->isEmpty()) {
+                foreach ($orders as $order) {
+                    foreach ($contract_technicians->pluck('technician_id')->toArray() as $technician_id) {
+                        OrderTechnician::insert([
+                            'order_id' => $order->id,
+                            'technician_id' => $technician_id
+                        ]);
+                    }
+                }
+            } else {
+                $order_technicians_delete =  array_unique(array_diff($order_technicians->pluck('technician_id')->toArray(), $contract_technicians->pluck('technician_id')->toArray()));
+                $order_technicians_insert =  array_unique(array_diff($contract_technicians->pluck('technician_id')->toArray(), $order_technicians->pluck('technician_id')->toArray()));
+                OrderTechnician::whereIn('technician_id', $order_technicians_delete)->whereIn('order_id', $orders->pluck('id'))->delete();
+
+                foreach ($orders as $order) {
+                    foreach ($order_technicians_insert as $technician_id) {
+                        OrderTechnician::insert([
+                            'order_id' => $order->id,
+                            'technician_id' => $technician_id
+                        ]);
+                    }
+                }
+            }
+
+            $contract_service = ContractService::where('contract_id', $contract->id)->where('service_id', $data->id)->first();
+            $contract_service->execution_frequency_id = $data->frequency;
+            if ($countOrders > 0) {
+                $contract_service->total = $countOrders;
+            }
+            $contract_service->updated_at = now();
+            $contract_service->save();
+        }
+
+        return back();
     }
+    
     public function destroy(Request $request, int $id)
     {
         $contract = Contract::find($id);
@@ -308,7 +450,7 @@ class ContractController extends Controller
 
     private static function setFile($file, $id)
     {
-        $file_name =  $file->getClientOriginalExtension();
+        $file_name = $file->getClientOriginalExtension();
         $path = ContractController::$files_path . $id;
         $file->storeAs($path, $file_name);
         return $path . '/' . $file_name;
@@ -333,7 +475,7 @@ class ContractController extends Controller
         $contractfile->save();
         return redirect()->action([ContractController::class, 'index'], ['page' => 1]);
     }
-    
+
     public function contract_downolad(string $id)
     {
 

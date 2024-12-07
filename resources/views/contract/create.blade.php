@@ -14,6 +14,9 @@
         <div class="row justify-content-center">
             <div class="col-11">
                 @include('contract.create.form')
+                @include('contract.modals.edit-service')
+                @include('contract.modals.preview') 
+                @include('contract.modals.service')
             </div>
         </div>
     </div>

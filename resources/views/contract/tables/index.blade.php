@@ -33,13 +33,16 @@
                         <i class="bi bi-eye-fill"></i> {{ __('buttons.show') }}
                     </a>
                     @can('write_order')
-                        <button class="btn btn-secondary btn-sm" data-bs-toggle="modal"
-                            data-bs-target="#technicianModal{{ $contract->id }}">
-                            <i class="bi bi-person-fill-gear"></i> {{ __('contract.title.technicians') }}
-                        </button>
-                        <!--a href="#" class="btn btn-dark btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#fileModal{{ $contract->id }}"><i class="bi bi-file-earmark-pdf"></i>
-                                {{ __('contract.title.contract') }}</a-->
+                        <a href="{{ route('contract.edit', ['id' => $contract->id]) }}" class="btn btn-secondary btn-sm">
+                            <i class="bi bi-pencil-square"></i> {{ __('buttons.edit') }}
+                        </a>
+                        <!--button class="btn btn-secondary btn-sm" data-bs-toggle="modal"
+                                data-bs-target="#technicianModal{{ $contract->id }}">
+                                <i class="bi bi-person-fill-gear"></i> {{ __('contract.title.technicians') }}
+                            </button>
+                            <a href="#" class="btn btn-dark btn-sm" data-bs-toggle="modal"
+                                    data-bs-target="#fileModal{{ $contract->id }}"><i class="bi bi-file-earmark-pdf"></i>
+                                    {{ __('contract.title.contract') }}</a-->
                         <a href="{{ route('contract.destroy', ['id' => $contract->id]) }}" class="btn btn-danger btn-sm"
                             onclick="return confirm('{{ __('messages.are_you_sure_delete') }}')">
                             <i class="bi bi-trash-fill"></i> {{ __('buttons.delete') }}

@@ -17,7 +17,8 @@
     <div class="row p-3 border-bottom">
         <a href="{{ Route('customer.edit', ['id' => $floorplan->customer->id, 'type' => $type, 'section' => 8]) }}"
             class="col-auto btn-primary p-0 fs-3"><i class="bi bi-arrow-left m-3"></i></a>
-        <h1 class="col-auto fs-2 fw-bold m-0">{{ __('customer.floorplan.title.print') }} [{{ $floorplan->customer->name }}]</h1>
+        <h1 class="col-auto fs-2 fw-bold m-0">{{ __('customer.floorplan.title.print') }} [{{ $floorplan->customer->name }}]
+        </h1>
     </div>
 
     <div class="container pt-3">
@@ -97,24 +98,61 @@
                     x: device.img_tamx,
                     y: device.img_tamy,
                 });
-                createPoint(device.map_x, device.map_y, device.itemnumber, device.nplan, device.img_tamx, device.img_tamy);
+                createPoint(device.map_x, device.map_y, device.itemnumber, device.nplan, device.img_tamx, device
+                    .img_tamy);
             });
         }
 
         $(document).ready(function() {
             img.onload = function() {
-                console.log(`x: ${img.width}, y: ${img.height}`);
-                const width = img.width;
-                if (width > 1500 || width < 799) {
+                console.log(`Original dimensions - x: ${img.width}, y: ${img.height}`);
+
+                var width = img.width;
+
+                /*const pageWidthMm = 210; // A4 width in mm
+                const pageHeightMm = 297; // A4 height in mm
+                const mmToPoints = 2.83465; // Conversion factor from mm to points
+
+                // Convert A4 dimensions to points
+                const pageWidthPoints = pageWidthMm * mmToPoints;
+                const pageHeightPoints = pageHeightMm * mmToPoints;
+
+                // Calculate the scale to fit the image within A4 dimensions
+                const widthScale = pageWidthPoints / img.width;
+                const heightScale = pageHeightPoints / img.height;
+                const scale = Math.min(widthScale, heightScale);
+
+                // Calculate new dimensions maintaining aspect ratio
+                const resizedWidth = img.width * scale;
+                const resizedHeight = img.height * scale;
+
+                console.log(
+                    `Resized dimensions - x: ${resizedWidth.toFixed(2)}, y: ${resizedHeight.toFixed(2)}`);
+
+                // Apply new dimensions to the image
+                img.style.width = `${resizedWidth}px`;
+                img.style.height = `${resizedHeight}px`;
+
+                // Apply additional logic based on specific conditions
+                if (resizedWidth < 800) {
                     img.style.width = '800px';
-                }
-
-                if (width > 1700) {
+                } else if (resizedWidth > 1200 && resizedWidth <= 1700) {
+                    img.style.width = '1200px';
+                } else if (resizedWidth > 1700) {
                     img.style.width = '1000px';
-                    isImgLong = true;
+                    isImgLong = true; // Preserving your condition
+                }*/
+
+                if (width < 800) {
+                    img.style.width = '800px';
+                } else if (width > 1200 && width <= 1700) {
+                    img.style.width = '1200px';
+                } else if (width > 1700) {
+                    img.style.width = '1000px';
+                    isImgLong = true; // Preserving your condition
                 }
 
-                setDevices();
+                setDevices(); // Call any additional logic
             };
 
             if (img.complete) {
@@ -185,7 +223,7 @@
             if (!checkSize()) {
                 alert('No hay puntos seleccionados o los puntos no corresponden')
                 return;
-            } 
+            }
 
             const originalWidth = sizes[0].x;
             const originalHeight = sizes[0].y;
