@@ -38,7 +38,8 @@ return [
         'ine_credential' => 'Copia de credencial de INE (respresentante legal)',
         'incorporation_file' => 'Copia del acta constitutiva',
         'fiscal_file' => 'Constancia de situación fiscal (mes en curso)',
-        'manual_file' => 'Manual de portal del cliente'
+        'manual_file' => 'Manual de portal del cliente',
+        'expire_date' => 'Fecha de expiración del documento:'
     ],
     'customer_table' => [
         'type_ref' => 'Tipo de referencia',

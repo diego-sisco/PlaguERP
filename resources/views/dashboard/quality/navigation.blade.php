@@ -22,7 +22,7 @@
             class="sidebar col-12 p-2 text-center">
             Gestión de clientes
         </a>
-        <a class="sidebar col-12 p-2 text-center" data-bs-toggle="collapse" href="#collapseCustomers" role="button"
+        <!-- <a class="sidebar col-12 p-2 text-center" data-bs-toggle="collapse" href="#collapseCustomers" role="button"
             aria-expanded="false" aria-controls="collapseCustomers">
             Ordenes de servicio
 
@@ -50,7 +50,7 @@
                     Canceladas
                 </a>
             </div>
-        </div>
+        </div> -->
 
     </div>
 </div>

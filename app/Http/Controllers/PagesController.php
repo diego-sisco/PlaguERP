@@ -197,10 +197,112 @@ class PagesController extends Controller
         );
     }
 
+    public function qualityGeneralByCustomer(string $customerId, string $section, string $status)
+    {
+        $customer = Customer::find($customerId);
+        $zones = [];
+        $floorplans = [];
+        $deviceSummary = [];
+        $orders = [];
+
+        switch($section)
+        {
+            case 1:
+                $orders = Order::where('status_id', $status);
+                $orders = $orders->where('customer_id', $customerId);
+                $orders = $orders->paginate($this->size);
+                
+                break;
+            case 2:
+                $i = 0;
+                foreach($customer->floorplans as $floorplan)
+                {
+                    $devicesCount = $floorplan->devices($floorplan->versions->pluck('version')->first())->get()->count();
+                    $floorplans[$i] = [
+                        'id' => $floorplan->id,
+                        'name' => $floorplan->filename,
+                        'service' => $floorplan->service?->name,
+                        'deviceCount' => $devicesCount,
+                        'version' => $floorplan->versions->pluck('version')->first() ? $floorplan->versions->pluck('version')->first() : "Sin versión",
+                    ];
+                    $i++;
+                }
+                break;                    
+            case 3:
+                $i = 0;
+                foreach($customer->applicationAreas as $zone)
+                {
+                    $deviceByArea = 0;
+                    foreach($customer->floorplans as $floorplan)
+                    {
+                        foreach ($floorplan->devices($floorplan->versions->pluck('version')->first())->get() as $device) {
+                            if($device->application_area_id == $zone->id)
+                            {
+                                $deviceByArea++;
+                            }
+                        }  
+                    }
+                    $zones[$i] = [
+                        'id' => $zone->id,
+                        'name' => $zone->name,
+                        'zonetype' => $zone->zoneType?->name ,
+                        'm2' => $zone->m2,
+                        'deviceCount' => $deviceByArea,
+                    ];
+                    $i++;
+                }
+                break;
+            case 4:
+                foreach ($customer->floorplans as $floorplan) {
+                    foreach ($floorplan->devices($floorplan->versions->pluck('version')->first())->get() as $device) {
+                        $deviceId = $device->controlPoint->id;
+                        if (!isset($deviceSummary[$deviceId])) {
+                            $deviceSummary[$deviceId] = [
+                                'id' => $deviceId,
+                                'name' => $device->controlPoint->name,
+                                'count' => 0,
+                                'code' => $device->controlPoint->code,
+                                'floorplans' => [],
+                                'zones' => [],
+                            ];
+                        }
+
+                        $deviceSummary[$deviceId]['count']++;
+                        
+                        // Agrega los dispositivos que no se han agregado
+                        if (!in_array($device->applicationArea->name, $deviceSummary[$deviceId]['zones'])) {
+                            $deviceSummary[$deviceId]['zones'][] = $device->applicationArea->name;
+                        }
+                        // Agrega los planos que no se han agregado
+                        if (!in_array($floorplan->filename, $deviceSummary[$deviceId]['floorplans'])) {
+                            $deviceSummary[$deviceId]['floorplans'][] = $floorplan->filename;
+                        }
+
+                    }
+                }
+                break;
+        }
+
+        return view(
+            'dashboard.quality.show.general',
+            compact('orders', 'deviceSummary', 'floorplans', 'zones', 'status', 'customerId', 'section')
+        );
+
+    }
+
+
     public function qualityCustomers()
     {
+        $user = auth()->user();
+
         $totalPages = 0;
-        $customers = Customer::where('general_sedes','!=' , 0)->where('service_type_id', 3)->get();
+        if($user->role_id == 4)
+        {
+            $customers = Customer::where('general_sedes','!=' , 0)->where('service_type_id', 3)->get();
+        }else{
+            $customers = Customer::where('administrative_id', $user->id)->where('general_sedes','!=' , 0)->where('service_type_id', 3)->get();
+        }
+        
         return view(
             'dashboard.quality.customers',
             compact('customers')

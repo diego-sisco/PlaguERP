@@ -75,7 +75,9 @@ Route::prefix('quality')->name('quality.')->middleware('auth')->group(function (
     Route::post('/control/store', [PagesController::class, 'qualityControlStore'])->name('control.store');
     Route::get('/control/destroy/{customerId}', [PagesController::class, 'qualityControlDestroy'])->name('control.destroy');
     Route::get('/customers', [PagesController::class, 'qualityCustomers'])->name('customers');
+    Route::get('/customer/{id}', [CustomerController::class, 'showCustomerDetails'])->name('customer.detail');
     Route::get('/orders/{status}', [PagesController::class, 'qualityOrders'])->name('orders');
+    Route::get('/customer/{customerId}/{section}/{status}', [PagesController::class, 'qualityGeneralByCustomer'])->name('customer.details.general');
 });
 
 // CRM

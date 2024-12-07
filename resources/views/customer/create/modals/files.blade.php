@@ -20,6 +20,16 @@
                         <input type="hidden" name="customer->id" name="customer->id" value="{{ $customer->id }}">
                         <input accept=".png, .jpg, .jpeg, .pdf" type="file" name="file" required>
                     </div>
+
+                    <div class="col m-3">
+                        <label for="expirated_date" class="form-label">
+                            {{ __('customer.customerfiles.expire_date') }}
+                        </label>
+                        <div class="col-5">
+                            <input type="date" class="form-control border-secondary border-opacity-25" name="expirated_date"
+                            id="expirated_date" />
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

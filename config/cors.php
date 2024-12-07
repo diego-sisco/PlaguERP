@@ -20,7 +20,7 @@ return [
     'allowed_methods' => ['*'],
 
     'allowed_origins' => [
-        'http://192.168.1.113:8000'
+        'http://192.168.1.73:8000'
         //'http://10.0.0.15:8000'
         //'http://192.168.219.245:8000/'
         //'https://ratatouille.japi.space/'
