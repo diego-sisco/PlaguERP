@@ -476,6 +476,8 @@ Route::prefix('ajax')
         Route::post('/control-points', [OrderController::class, 'getControlPoints'])->name('devices.points');
         Route::post('/devices/{id}', [FloorPlansController::class, 'getDevicesVersion'])->name('devices');
         Route::post('/quality/search/orders/customer', [PagesController::class, 'getOrdersByCustomer'])->name('quality.search.customer');
+        Route::post('/quality/search/orders/date', [QualityController::class, 'getOrdersByDate'])->name('quality.search.date');
+
         Route::get('/contract/service', [ContractController::class, 'getSelectData'])->name('contract.service');
         Route::post('/search/devices/{floorplan_id}', [FloorPlansController::class, 'searchDevices'])->name('search.devices');
     });

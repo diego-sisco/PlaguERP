@@ -23,7 +23,7 @@
                 <div class="input-group input-group-sm">
                     <input type="hidden" id="search-customer-url"
                         value="{{ route('ajax.quality.search.customer') }}">
-                    <input type="text" class="form-control" id="search-customer"
+                    <input type="time" class="form-control" id="search-customer"
                         placeholder="Filtrar por hora programada" aria-label="Recipient's username"
                         aria-describedby="button-addon2" name="search">
                     <button class="btn btn-primary" type="button" id="button-addon2"
@@ -33,12 +33,12 @@
             <th scope="col">{{ __('order.data.programmed_date') }}
                 <div class="input-group input-group-sm">
                     <input type="hidden" id="search-customer-url"
-                        value="{{ route('ajax.quality.search.customer') }}">
-                    <input type="text" class="form-control" id="search-customer"
+                        value="{{ route('ajax.quality.search.date') }}">
+                    <input type="date" class="form-control" id="search-date"
                         placeholder="Filtrar por fecha programada" aria-label="Recipient's username"
                         aria-describedby="button-addon2" name="search">
                     <button class="btn btn-primary" type="button" id="button-addon2"
-                        onclick="getOrdersByCustomer()"><i class="bi bi-search"></i></button>
+                        onclick="getOrdersByDate()"><i class="bi bi-search"></i></button>
                 </div>
             </th>
             <th scope="col">{{ __('order.data.service') }}
@@ -114,3 +114,64 @@
         @endforeach
     </tbody>
 </table>
+
+
+<script>
+    const csrfToken = $('meta[name="csrf-token"]').attr("content");
+
+    window.onload = function () {
+        token();
+    }
+    function token() {
+        console.log(csrfToken);
+    }
+
+    const orders = @json($orders);
+
+    function getOrdersByDate() {
+        const formData = new FormData();
+        const csrfToken = $('meta[name="csrf-token"]').attr("content");
+        const search = $("#search-date").val();
+        var url = $("#search-customer-url").val();
+        var html = '';
+
+        console.log(search);
+        formData.append("search", search);
+
+        $.ajax({
+            url: url,
+            type: "POST",
+            data: formData,
+            contentType: false,
+            processData: false,
+            headers: {
+                "X-CSRF-TOKEN": csrfToken,
+            },
+            success: function(response) {
+                const ordersFound = response.orders;
+                console.log(ordersFound);
+                if (ordersFound.length > 0) {
+                    orders.forEach(order => {
+                        if (ordersFound.indexOf(order.id) == -1) {
+                            $('#order-' + order.id).hide();
+                        } else {
+                            if ($('#order-' + order.id).is(':hidden')) {
+                                $('#order-' + order.id).show()
+                            }
+                        }
+                    });
+                } else {
+                    orders.forEach(order => {
+                        if ($('#order-' + order.id).is(':hidden')) {
+                            $('#order-' + order.id).show()
+                        }
+                    });
+                }
+            },
+            error: function(error) {
+                console.error(error);
+            },
+        });
+    }
+
+</script>
