@@ -19,10 +19,6 @@
                             <th scope="col"> {{ __('customer.data.name') }} </th>
                             <th scope="col"> {{ __('customer.data.type') }}</th>
                             <th scope="col">{{ __('customer.data.origin') }}</th>
-                            <th scope="col"> Pendientes </th>
-                            <th scope="col"> Finalizados </th>
-                            <th scope="col"> Verificadas </th>
-                            <th scope="col"> Aprobadas </th>
                             <th scope="col"> {{ __('buttons.actions') }} </th>
                         </tr>
                     </thead>
@@ -35,7 +31,7 @@
                                 <td>{{ $customer->serviceType->name }}</td>
                                 <td>{{ isset($customer->matrix->name) ? $customer->matrix->name : 'Matriz/Unico' }}
                                 </td>
-                                <td class="fw-bold text-danger">
+                                <!-- <td class="fw-bold text-danger">
                                     {{ $customer->countOrdersbyStatus(1) }}
                                 </td>
                                 <td class="fw-bold text-info">
@@ -46,9 +42,9 @@
                                 </td>
                                 <td class="fw-bold text-success">
                                     {{ $customer->countOrdersbyStatus(5) }}
-                                </td>
+                                </td> -->
                                 <td>
-                                    <a href="{{ route('customer.show', ['id' => $customer->id, 'type' => 1, 'section' => 1]) }}"
+                                    <a href="{{ route('quality.customer.detail', ['id' => $customer->id]) }}"
                                         class="btn btn-info btn-sm mb-1">
                                         <i class="bi bi-eye-fill"></i> {{ __('buttons.show') }}
                                     </a>

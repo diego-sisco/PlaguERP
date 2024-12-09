@@ -1,23 +1,76 @@
 @php
-    $page = $orders->currentPage();
-    
-    @endphp
+    $offset = ($orders->currentPage() - 1) * $orders->perPage();
+@endphp
+
 <table class="table table-bordered text-center">
     <thead>
         <tr>
             <th scope="col">#</th>
-            <th scope="col">{{ __('order.data.customer') }}</th>
-            <th scope="col">{{ __('order.data.start_time') }}</th>
-            <th scope="col">{{ __('order.data.programmed_date') }}</th>
-            <th scope="col">{{ __('order.data.service') }}</th>
-            <th scope="col">{{ __('order.data.status') }}</th>
+            <th scope="col">ID</th>
+            <th scope="col">
+                {{ __('order.data.customer') }}
+                <div class="input-group input-group-sm">
+                    <input type="hidden" id="search-customer-url"
+                        value="{{ route('ajax.quality.search.customer') }}">
+                    <input type="text" class="form-control" id="search-customer"
+                        placeholder="Filtrar por cliente" aria-label="Recipient's username"
+                        aria-describedby="button-addon2" name="search">
+                    <button class="btn btn-primary" type="button" id="button-addon2"
+                        onclick="getOrdersByCustomer()"><i class="bi bi-search"></i></button>
+                </div>
+            </th>
+            <th scope="col">{{ __('order.data.start_time') }}
+                <div class="input-group input-group-sm">
+                    <input type="hidden" id="search-customer-url"
+                        value="{{ route('ajax.quality.search.customer') }}">
+                    <input type="text" class="form-control" id="search-customer"
+                        placeholder="Filtrar por hora programada" aria-label="Recipient's username"
+                        aria-describedby="button-addon2" name="search">
+                    <button class="btn btn-primary" type="button" id="button-addon2"
+                        onclick="getOrdersByCustomer()"><i class="bi bi-search"></i></button>
+                </div>
+            </th>
+            <th scope="col">{{ __('order.data.programmed_date') }}
+                <div class="input-group input-group-sm">
+                    <input type="hidden" id="search-customer-url"
+                        value="{{ route('ajax.quality.search.customer') }}">
+                    <input type="text" class="form-control" id="search-customer"
+                        placeholder="Filtrar por fecha programada" aria-label="Recipient's username"
+                        aria-describedby="button-addon2" name="search">
+                    <button class="btn btn-primary" type="button" id="button-addon2"
+                        onclick="getOrdersByCustomer()"><i class="bi bi-search"></i></button>
+                </div>
+            </th>
+            <th scope="col">{{ __('order.data.service') }}
+                <div class="input-group input-group-sm">
+                    <input type="hidden" id="search-customer-url"
+                        value="{{ route('ajax.quality.search.customer') }}">
+                    <input type="text" class="form-control" id="search-customer"
+                        placeholder="Filtrar por servicio" aria-label="Recipient's username"
+                        aria-describedby="button-addon2" name="search">
+                    <button class="btn btn-primary" type="button" id="button-addon2"
+                        onclick="getOrdersByCustomer()"><i class="bi bi-search"></i></button>
+                </div>
+            </th>
+            <th scope="col">{{ __('order.data.status') }}
+                <div class="input-group input-group-sm">
+                    <input type="hidden" id="search-customer-url"
+                        value="{{ route('ajax.quality.search.customer') }}">
+                    <input type="text" class="form-control" id="search-customer"
+                        placeholder="Filtrar cliente" aria-label="Recipient's username"
+                        aria-describedby="button-addon2" name="search">
+                    <button class="btn btn-primary" type="button" id="button-addon2"
+                        onclick="getOrdersByCustomer()"><i class="bi bi-search"></i></button>
+                </div>
+            </th>
             <th scope="col">{{ __('buttons.actions') }}</th>
         </tr>
     </thead>
     <tbody>
-        @foreach ($orders as $order)
+        @foreach ($orders as $index => $order)
             <tr>
-                <th scope="row">{{ $order->id }}</th>
+                <th scope="row">{{ $offset + $index + 1 }}</th>
+                <td>{{ $order->id }}</td>
                 <td>{{ $order->customer->name }}</td>
                 <td>{{ $order->start_time }}</td>
                 <td>{{ $order->programmed_date }}</td>

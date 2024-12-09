@@ -128,6 +128,13 @@ class Customer extends Model
         //->whereNotNull('completed_date');
     }
 
+    public function ordersPending()
+    {
+        return $this->orders()
+            ->where('status_id', 1);
+        //->whereNotNull('completed_date');
+    }
+
     public function countOrdersbyStatus($statusId) {
         return $this->orders()->where('status_id', $statusId)->count();
     }

@@ -2,6 +2,7 @@
     <thead>
         <tr>
             <th scope="col">#</th>
+            <th scope="col">ID</th>
             <th scope="col">{{ __('user.data.name') }}</th>
             <th scope="col">{{ __('user.data.email') }}</th>
             @if ($type == 1)
@@ -16,6 +17,7 @@
     <tbody>
         @foreach ($users as $index => $user)
             <tr>
+                <th scope="row">{{++$index}}</th>
                 <th scope="row"> {{ $user->id }} </th>
                 <td> {{ $user->name }} </td>
                 <td> {{ $user->email }} </td>

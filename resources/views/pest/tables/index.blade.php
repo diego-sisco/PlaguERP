@@ -2,6 +2,7 @@
     <thead>
         <tr>
             <th scope="col">#</th>
+            <th scope="col">ID</th>
             <th scope="col">{{ __('pest.data.name') }} </th>
             <th scope="col">{{ __('pest.data.code') }} </th>
             <th scope="col">{{ __('pest.data.category') }} </th>
@@ -10,8 +11,9 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($pests as $pest)
+        @forelse ($pests as $index => $pest)
             <tr class="text-center">
+                <th scope="row">{{ ++$index }}</th>
                 <td class="text-center">{{-- <img src="{{ asset($pest->image) }}" class="w-25"> --}} {{ $pest->id }} </td>
                 <td class="text-center">{{ $pest->name }}</td>
                 <td>{{ $pest->pest_code }}</td>

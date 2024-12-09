@@ -1,4 +1,7 @@
 <table class="table table-bordered text-center">
+    @php
+        $offset = ($customers->currentPage() - 1) * $customers->perPage();
+    @endphp
     <thead>
         <tr>
             <th scope="col">#</th>
@@ -19,7 +22,7 @@
     <tbody>
         @foreach ($customers as $index => $customer)
             <tr>
-                <th scope="row">{{ ++$index }}</th>
+                <th scope="row">{{ $offset + $index + 1 }}</th>
                 <td>{{ $customer->id }}</td>
                 <td>{{ $customer->name }}</td>
                 <td>{{ $customer->phone }}</td>

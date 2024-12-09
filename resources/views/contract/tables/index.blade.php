@@ -4,6 +4,7 @@
     <thead>
         <tr>
             <th scope="col-1">#</th>
+            <th scope="col-1">ID</th>
             <th scope="col-2">{{ __('contract.data.customer') }}</th>
             <th scope="col-2">{{ __('contract.data.start_date') }}</th>
             <th scope="col-2">{{ __('contract.data.end_date') }}</th>
@@ -13,9 +14,10 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($contracts as $contract)
+        @foreach ($contracts as $index => $contract)
             <tr>
-                <th scope="row">{{ $contract->id }}</th>
+                <th scope="row">{{ ++$index }}</th>
+                <td scope="row">{{ $contract->id }}</th>
                 <td> {{ $contract->customer->name }} </td>
                 <td>{{ $contract->startdate }}</td>
                 <td>{{ $contract->enddate }}</td>

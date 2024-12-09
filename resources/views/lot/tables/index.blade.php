@@ -2,6 +2,7 @@
     <thead>
         <tr>
             <th scope="col">#</th>
+            <th scope="col">ID</th>
             <th scope="col">No. Lote</th>
             <th scope="col">Almacen</th>
             <th scope="col">Producto</th>
@@ -12,8 +13,9 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($lots as $lot)
+        @foreach ($lots as $index => $lot)
             <tr>
+                <td>{{ ++$index }}</td>
                 <td>{{ $lot->id }}</td>
                 <td>{{ $lot->registration_number }}</td>
                 <td>{{ $lot->warehouse->name }}</td>

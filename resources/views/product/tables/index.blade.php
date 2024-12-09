@@ -1,8 +1,9 @@
 <table class="table table-bordered text-center align-middle">
     <thead>
         <tr>
-            <th scope="col">Imagen</th>
+            <th scope="col">#</th>
             <th scope="col">ID</th>
+            <th scope="col">Imagen</th>
             <th class="col-3" scope="col">Nombre</th>
             <th class="col-1" scope="col">Fabricante/distribuidor</th>
             <th scope="col">Línea de negocio</th>
@@ -15,15 +16,17 @@
         </tr>
     </thead>
     <tbody>
-        @forelse ($products as $product)
+        @forelse ($products as $index => $product)
             <tr>
+                <th scope="row">{{ ++$index }}</td>
+
+                <td>{{ $product->id }}</td>
                 @if ($product->image_path)
                     <td><img src="{{ route('image.show', ['filename' => $product->image_path]) }}"
                             style="width: 60px; height: 60px;" alt="Miniatura de imagen"></td>
                 @else
                     <td><i class="bi bi-image"></i></td>
                 @endif
-                <td>{{ $product->id }}</td>
                 <td>{{ $product->name }}</td>
                 <td>{{ $product->manufacturer ?? 'S/A' }}</td>
                 <td> {{ $product->lineBusiness->name ?? 'S/A' }} </td>

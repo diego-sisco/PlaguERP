@@ -82,6 +82,100 @@ class CustomerController extends Controller
         return view('customer.create')->with(compact('customer', 'companies', 'branch', 'type', 'categs', 'services', 'states', 'cities'));
     }
 
+    public function showCustomerDetails(string $id): View
+    {
+        $client = $floortype = $prope = $actibableprop = $actibableprop = $defaultinac = $defaultprop = $activeprop = $sedes = $reference_types = $refs = $customer_file = $zones = $floorplans = null;
+
+        $companies = Company::all();
+        $companyCategories = CompanyCategory::all();
+        $services = ServiceType::all();
+        $branches = Branch::all();
+        $tax_regimes = TaxRegime::all();
+        $referenceTypes = Reference_type::all();
+        $floorTypes = FloorType::all();
+
+        $customer = Customer::find($id);
+        
+        $products = 0;
+        $pendingCount = 0;
+        $customerPending = [];
+
+        foreach ($customer->floorplans as $floorplan) {
+            foreach ($floorplan->devices($floorplan->versions->pluck('version')->first())->get() as $device) {
+                    $products++;
+            }
+        }
+
+        foreach($customer->contracts as $contract) {
+            $endDate = Carbon::parse($contract->enddate);
+            
+            if ($endDate->isBetween(Carbon::now(), Carbon::now()->addDays(31))) {
+                $pendingCount++;
+
+                $customerPending[$pendingCount] = [
+                    'id' => $contract->id,
+                    'content' => 'El contrato con id "'. $contract->id .  '" esta apunto de expirar.',
+                    'date' => $contract->enddate,
+                    'type' => 'contract'
+                ];
+            }
+        }
+
+        foreach($customer->ordersPending as $order) {
+            $programmed_date = Carbon::parse($order->programmed_date);
+            if ($programmed_date->isBetween(Carbon::now()->startOfWeek(), Carbon::now()->endOfWeek(), null, '[]')) {
+                $pendingCount++;
+                $servicesNames = [];
+                foreach ($order->services as $service) {
+                    $servicesNames[] = $service->name;
+                }
+
+                $customerPending[$pendingCount] = [
+                    'id' => $order->id,
+                    'content' => 'La orden de servicio con id "' . $order->id . '" con los servicios "' . implode(', ', $servicesNames) . '", esta programada para esta semana.',
+                    'date' => $order->programmed_date,
+                    'type' => 'order'
+                ];
+            }
+        }
+
+        foreach($customer->files as $file) {
+            $expirated_date = Carbon::parse($file->expirated_at);
+            if ($expirated_date->isBetween(Carbon::now(), Carbon::now()->addDays(31), null, '[]')) {
+                $pendingCount++;
+
+                $customerPending[$pendingCount] = [
+                    'id' => $file->id,
+                    'content' => 'El Documento "'. $file->filename->name . '" esta apunto de expirar.',
+                    'date' => $file->expirated_at,
+                    'type' => 'file'
+                ];
+            }
+        
+        }
+        
+        $customerData = [
+            'servicePendiente' => $customer->countOrdersbyStatus(1),
+            'serviceAccepted' => $customer->countOrdersbyStatus(2),
+            'serviceFinished' => $customer->countOrdersbyStatus(3),
+            'serviceVerified' => $customer->countOrdersByStatus(4),
+            'serviceApproved' => $customer->countOrdersByStatus(5),
+            'serviceCanceled' => $customer->countOrdersByStatus(6),
+            'floorplansCount' => $customer->floorplans->count(),
+            'applicationAreaCount' => $customer->applicationAreas()->count(),
+            'devices' => $products,
+            'customerFile' => $customer->files->where('path','!=', NULL)->count(),
+            'pendings' => $customerPending,
+        ];
+
+        $states = file_get_contents(public_path($this->states_route));
+        $cities = file_get_contents(public_path($this->cities_route));
+        $states = json_decode($states, true);
+        $cities = json_decode($cities, true);
+
+        return view('customer.show.details', compact('customer', 'customerData', 'companies', 'companyCategories', 'services', 'branches', 'tax_regimes', 'referenceTypes', 'floorTypes'));
+    }
+
     public function createReference(string $id, string $type): View
     {
         $states = file_get_contents(public_path($this->states_route));
@@ -235,6 +329,9 @@ class CustomerController extends Controller
 
     public function storeArea(Request $request, string $customerId)
     {
+        $request->validate([
+            'm2' => 'required|numeric|min:0|max:10000',
+        ]);
 
         $area = new ApplicationArea();
         $area->fill($request->all());
@@ -431,6 +528,7 @@ class CustomerController extends Controller
         $disk->put($url, file_get_contents($file));
 
         $customer_file->path = $url;
+        $customer_file->expirated_at = $request->expirated_date;
         $customer_file->save();
 
         return back();

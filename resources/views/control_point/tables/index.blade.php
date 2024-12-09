@@ -2,6 +2,7 @@
     <thead>
         <tr>
             <th scope="col-1">#</th>
+            <th scope="col-1">ID</th>
             <th scope="col-1">{{ __('product.product-data.color') }} </th>
             <th scope="col-2">{{ __('product.product-data.name') }} </th>
             <th scope="col">Código</th>
@@ -12,8 +13,9 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($points as $point)
+        @foreach ($points as $index => $point)
             <tr>
+                <th scope="row">{{ ++$index }}</th>
                 <td>{{ $point->id }}</td>
                 <td class="d-flex justify-content-center"> <span class="rounded w-75"
                         style="background-color: {{ $point->color }}; height:30px; "></span> </td>

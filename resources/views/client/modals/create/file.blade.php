@@ -29,7 +29,7 @@
             <div class="modal-footer">
                 <button type="submit" class="btn btn-primary" id="btnCrear">{{ __('buttons.store')}}</button>
                 <button type="button" class="btn btn-danger"
-                     data-bs-dismiss="modal">{{ __('buttons.cancel') }}</button>
+                    data-bs-dismiss="modal">{{ __('buttons.cancel') }}</button>
             </div>
         </form>
     </div>

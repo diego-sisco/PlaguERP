@@ -12,6 +12,7 @@
                         <table class="table text-center table-bordered">
                             <thead>
                                 <tr>
+                                    <th>#</th>
                                     <th>Fecha</th>
                                     <th>Hora</th>
                                     <th>Movimiento</th>
@@ -24,8 +25,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @forelse($movements as $movement)
+                                @forelse($movements as $index => $movement)
                                     <tr>
+                                        <th>{{ $index }}</th>
                                         <td>{{ $movement->date }}</td>
                                         <td>{{ $movement->time }}</td>
                                         <td
@@ -47,7 +49,7 @@
                                     </tr>
                                 @empty
                                     <tr>
-                                        <td class="text-danger" colspan="8">No hay movimientos en este almacén.</td>
+                                        <td class="text-danger" colspan="10">No hay movimientos en este almacén.</td>
                                     </tr>
                                 @endforelse
                             </tbody>
