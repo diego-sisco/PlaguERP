@@ -24,7 +24,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="m2" class="form-label is-required">Metros cuadrados (m²)</label>
-                    <input type="number" class="form-control border-secondary border-opacity-25" id="area-m2" name="m2" min="0" value="0" required>
+                    <input type="number" class="form-control border-secondary border-opacity-25" id="area-m2" name="m2" min="0" max="10000" value="0" required>
                 </div>
             </div>
             <div class="modal-footer">

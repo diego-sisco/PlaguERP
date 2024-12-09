@@ -103,40 +103,59 @@ Route::prefix('warehouses')
         Route::get('/delete/{id}', [WarehouseController::class, 'delete'])->name('delete');
     });
 
-Route::post('/warehouse/input', [WarehouseController::class, 'storeMovement'])->name('warehouse.input');
-Route::post('/warehouse/output', [WarehouseController::class, 'storeMovement'])->name('warehouse.output');
-Route::get('/warehouse/movements/show', [WarehouseController::class, 'allMovements'])->name('warehouse.movements.show');
-Route::get('/warehouse/movements/{id}', [WarehouseController::class, 'movements'])->name('warehouse.movements');
-Route::get('/warehouse/stock/{id}', [WarehouseController::class, 'stock'])->name('warehouse.stock');
-Route::post('/warehouse/destroy/{id}', [WarehouseController::class, 'destroy'])->name('warehouse.destroy');
+Route::prefix('warehouse')
+    ->middleware('auth')
+    ->name('warehouse.')
+    ->group(function () {
+        Route::post('/input', [WarehouseController::class, 'storeMovement'])->name('input');
+        Route::post('/output', [WarehouseController::class, 'storeMovement'])->name('output');
+        Route::get('/movements/show', [WarehouseController::class, 'allMovements'])->name('movements.show');
+        Route::get('/movements/{id}', [WarehouseController::class, 'movements'])->name('movements');
+        Route::get('/stock/{id}', [WarehouseController::class, 'stock'])->name('stock');
+        Route::post('/destroy/{id}', [WarehouseController::class, 'destroy'])->name('destroy');
+    });
 
-Route::post('/inventory/store_entry', [WarehouseController::class, 'store_entry'])->name('warehouse.store_entry');
-Route::post('/inventory/search', [WarehouseController::class, 'search'])->name('inventory.search');
-Route::get('/movements', [WarehouseController::class, 'showAllMovements'])->name('movements.all');
-Route::get('/inventory/{id}/generate-pdf', [WarehouseController::class, 'movement_print'])->name('warehouse.pdf');
+Route::prefix('inventory')
+    ->middleware('auth')
+    ->group(function () {
+        Route::post('/store_entry', [WarehouseController::class, 'store_entry'])->name('warehouse.store_entry');
+        Route::post('/search', [WarehouseController::class, 'search'])->name('inventory.search');
+        Route::get('/{id}/generate-pdf', [WarehouseController::class, 'movement_print'])->name('warehouse.pdf');
+    });
 
+    Route::get('/movements', [WarehouseController::class, 'showAllMovements'])->name('movements.all');
 
 //lot
-Route::get('/lot/index', [LotController::class, 'index'])->name('lot.index');
-Route::get('/lot/create', [LotController::class, 'create'])->name('lot.create');
-Route::post('/lot/store', [LotController::class, 'store'])->name('lot.store');
-Route::get('/lot/{id}/edit', [LotController::class, 'edit'])->name('lot.edit');
-Route::put('/lot/update/{id}', [LotController::class, 'update'])->name('lot.update');
-Route::get('/lot/show/{id}', [LotController::class, 'show'])->name('lot.show');
-Route::get('/lot/destroy/{id}', [LotController::class, 'destroy'])->name('lot.destroy');
+Route::prefix('lot')
+    ->middleware('auth')
+    ->name('lot.')
+    ->group(function () {
+        Route::get('/index', [LotController::class, 'index'])->name('index');
+        Route::get('/create', [LotController::class, 'create'])->name('create');
+        Route::post('/store', [LotController::class, 'store'])->name('store');
+        Route::get('/{id}/edit', [LotController::class, 'edit'])->name('edit');
+        Route::put('/update/{id}', [LotController::class, 'update'])->name('update');
+        Route::get('/show/{id}', [LotController::class, 'show'])->name('show');
+        Route::get('/destroy/{id}', [LotController::class, 'destroy'])->name('destroy');
+    });
 
+Route::prefix('CRM/chart')
+    ->middleware('auth')
+    ->name('crm.chart.')
+    ->group(function () {
+        // New Customers
+        Route::get('/customers', [GraphicController::class, 'newCustomersDataset'])->name('customers');
+        Route::get('/customers/update', [GraphicController::class, 'refreshNewCustomers'])->name('customers.refresh');
 
-// New Customers
-Route::get('/CRM/chart/customers', [GraphicController::class, 'newCustomersDataset'])->name('crm.chart.customers');
-Route::get('/CRM/chart/customers/update', [GraphicController::class, 'refreshNewCustomers'])->name('crm.chart.customers.refresh');
+        // Scheduled Orders
+        Route::get('/orders', [GraphicController::class, 'ordersDataset'])->name('orders');
+        Route::get('/orders/update', [GraphicController::class, 'refreshOrders'])->name('orders.refresh');
 
-// Scheduled Orders
-Route::get('/CRM/chart/orders', [GraphicController::class, 'ordersDataset'])->name('crm.chart.orders');
-Route::get('/CRM/chart/orders/update', [GraphicController::class, 'refreshOrders'])->name('crm.chart.orders.refresh');
+        // Order Types
+        Route::get('/ordertypes/{service_type}', [GraphicController::class, 'orderTypesDataset'])->name('ordertypes');
+        Route::get('/ordertypes/{service_type}/update', [GraphicController::class, 'refreshOrderTypes'])->name('ordertypes.refresh');
 
-// Order Types
-Route::get('/CRM/chart/ordertypes/{service_type}', [GraphicController::class, 'orderTypesDataset'])->name('crm.chart.ordertypes');
-Route::get('/CRM/chart/ordertypes/{service_type}/update', [GraphicController::class, 'refreshOrderTypes'])->name('crm.chart.ordertypes.refresh');
+    });
 
 // Client System
 Route::prefix('clients')
@@ -147,28 +166,39 @@ Route::prefix('clients')
         Route::get('/reports/{section}', [ClientController::class, 'reports'])->name('reports.index');
 
         Route::post('/reports/search', [ClientController::class, 'searchReport'])->name('report.search');
+
+        Route::get('/mip/{path}', [ClientController::class, 'mip'])->where('path', '.*')->name('mip.index');
+        Route::get('/system/{path}', [ClientController::class, 'directories'])->where('path', '.*')->name('system.index');
+
+        Route::get('/file/download/{path}', [ClientController::class, 'downloadFile'])->where('path', '.*')->name('file.download');
     });
-Route::get('/clients/mip/{path}', [ClientController::class, 'mip'])->where('path', '.*')->name('client.mip.index');
-Route::get('/clients/system/{path}', [ClientController::class, 'directories'])->where('path', '.*')->name('client.system.index');
-Route::post('/client/directory/store', [ClientController::class, 'storeDirectory'])->name('client.directory.store');
-Route::post('/client/file/store', [ClientController::class, 'storeFile'])->name('client.file.store');
-Route::post('/client/directory/update', [ClientController::class, 'updateDirectory'])->name('client.directory.update');
-Route::post('/client/directory/permissions', [ClientController::class, 'permissions'])->name('client.directory.permissions');
-Route::get('/client/directory/mip/{path}', [ClientController::class, 'createMip'])->where('path', '.*')->name('client.directory.mip');
 
-Route::get('/clients/file/download/{path}', [ClientController::class, 'downloadFile'])->where('path', '.*')->name('client.file.download');
+Route::prefix('client')
+    ->middleware('auth')
+    ->name('client.')
+    ->group(function () {
+        Route::post('/directory/store', [ClientController::class, 'storeDirectory'])->name('directory.store');
+        Route::post('/file/store', [ClientController::class, 'storeFile'])->name('file.store');
+        Route::post('/directory/update', [ClientController::class, 'updateDirectory'])->name('directory.update');
+        Route::post('/directory/permissions', [ClientController::class, 'permissions'])->name('directory.permissions');
+        Route::get('/directory/mip/{path}', [ClientController::class, 'createMip'])->where('path', '.*')->name('directory.mip');
 
-Route::get('/client/directory/destroy/{path}', [ClientController::class, 'destroyDirectory'])->where('path', '.*')->name('client.directory.destroy');
-Route::get('/client/file/destroy/{path}', [ClientController::class, 'destroyFile'])->where('path', '.*')->name('client.file.destroy');
+        Route::get('/directory/destroy/{path}', [ClientController::class, 'destroyDirectory'])->where('path', '.*')->name('directory.destroy');
+        Route::get('/file/destroy/{path}', [ClientController::class, 'destroyFile'])->where('path', '.*')->name('file.destroy');
+
+        Route::post('/reports/signature/store', [ClientController::class, 'storeSignature'])->name('report.signature.store');
+        Route::get('/report/search/backup', [ClientController::class, 'searchBackupReport'])->name('report.search.backup');
+    });
 
 
-Route::post('/client/reports/signature/store', [ClientController::class, 'storeSignature'])->name('client.report.signature.store');
-Route::get('/client/report/search/backup', [ClientController::class, 'searchBackupReport'])->name('client.report.search.backup');
-
-Route::get('/report/customer/export/{va}', [ReportController::class, 'indexc'])->name('customersexport.index');
-Route::get('/report/export/{va}', [ReportController::class, 'index'])->name('reportServs.index');
-Route::post('/report/export/{va}', [ReportController::class, 'create'])->name('reportServs.create');
-Route::post('/report/customer/export/{va}', [ReportController::class, 'create_customer_report'])->name('reportcustomer.create');
+Route::prefix('report')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/customer/export/{va}', [ReportController::class, 'indexc'])->name('customersexport.index');
+        Route::get('/export/{va}', [ReportController::class, 'index'])->name('reportServs.index');
+        Route::post('/export/{va}', [ReportController::class, 'create'])->name('reportServs.create');
+        Route::post('/customer/export/{va}', [ReportController::class, 'create_customer_report'])->name('reportcustomer.create');
+    });
 
 // USUARIOS
 Route::prefix('users')
@@ -267,30 +297,55 @@ Route::prefix('products')
 
 
 
-Route::post('/saveIndex', [PagesController::class, 'setIndexEdit'])->name('page.index.set');
+Route::middleware('auth')
+    ->group(function () {
+        Route::post('/saveIndex', [PagesController::class, 'setIndexEdit'])->name('page.index.set');
+    });
 
 //RUTAS PARA LA REFERENCIAS DEL CLIENTE
-Route::get('customer/reference/create/{id}/{type}', [CustomerController::class, 'createReference'])->name('reference.create');
-Route::get('customer/reference/edit/{id}/{type}', [CustomerController::class, 'editReference'])->name('reference.edit');
-Route::post('customer/reference/{ref}/{type}', [CustomerController::class, 'updateReference'])->name('customer.Referenceupdate');
-Route::get('customer/reference/show/{id}/{type}', [CustomerController::class, 'showReference'])->name('reference.show');
+Route::prefix('customer/reference')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('create/{id}/{type}', [CustomerController::class, 'createReference'])->name('reference.create');
+        Route::get('/edit/{id}/{type}', [CustomerController::class, 'editReference'])->name('reference.edit');
+        Route::post('/{ref}/{type}', [CustomerController::class, 'updateReference'])->name('customer.Referenceupdate');
+        Route::get('/show/{id}/{type}', [CustomerController::class, 'showReference'])->name('reference.show');
+    });
 
 // RUTAS PARA LAS AREAS DEL CLIENTE
-Route::post('/area/store/{customerId}', [CustomerController::class, 'storeArea'])->name('area.store');
-Route::post('/area/update/{id}', [CustomerController::class, 'updateArea'])->name('area.update');
-Route::get('/area/delete/{id}', [CustomerController::class, 'destroyArea'])->name('area.destroy');
+Route::prefix('area')
+    ->name('area.')
+    ->middleware('auth')
+    ->group(function (){
+        Route::post('/store/{customerId}', [CustomerController::class, 'storeArea'])->name('store');
+        Route::post('/update/{id}', [CustomerController::class, 'updateArea'])->name('update');
+        Route::get('/delete/{id}', [CustomerController::class, 'destroyArea'])->name('destroy');
+    });
 
 //RUTAS PARA PLANOS
-Route::get('/floorplans/{id}', [FloorplansController::class, 'index'])->name('floorplans.index');
-Route::get('/floorplans/create/{id}', [FloorplansController::class, 'create'])->name('floorplans.create');
-Route::post('/floorplan/store/{customerID}/{type}', [FloorplansController::class, 'store'])->name('floorplans.store');
-Route::get('/floorplan/edit/{id}/{customerID}/{type}/{section}', [FloorplansController::class, 'edit'])->name('floorplans.edit');
-Route::get('/floorplans/print/{id}/{type}', [FloorplansController::class, 'print'])->name('floorplans.print');
-Route::post('floorplans/update/{id}/{section}', [FloorplansController::class, 'update'])->name('floorplans.update');
-Route::get('/floorplans/delete/{id}/{customerID}/{type}', [FloorplansController::class, 'delete'])->name('floorplans.delete');
-Route::get('/floorplans/show/{filename}', [FloorPlansController::class, 'getImage'])->where('filename', '.*')->name('image.show');
-Route::get('/floorplan/QR/{id}', [FloorPlansController::class, 'getQR'])->name('floorplans.qr');
-Route::post('/floorplans/QR/print/{id}', [FloorplansController::class, 'printQR'])->name('floorplan.qr.print');
+Route::prefix('floorplans')
+    ->name('floorplans.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/{id}', [FloorplansController::class, 'index'])->name('index');
+        Route::get('/create/{id}', [FloorplansController::class, 'create'])->name('create');
+
+        Route::get('/print/{id}/{type}', [FloorplansController::class, 'print'])->name('print');
+        Route::post('/update/{id}/{section}', [FloorplansController::class, 'update'])->name('update');
+        Route::get('/delete/{id}/{customerID}/{type}', [FloorplansController::class, 'delete'])->name('delete');
+
+    });
+
+Route::middleware('auth')
+    ->group(function () {
+        Route::post('/floorplan/store/{customerID}/{type}', [FloorplansController::class, 'store'])->name('floorplans.store');
+        Route::get('/floorplan/edit/{id}/{customerID}/{type}/{section}', [FloorplansController::class, 'edit'])->name('floorplans.edit');
+
+        Route::get('/floorplans/show/{filename}', [FloorPlansController::class, 'getImage'])->where('filename', '.*')->name('image.show');
+        Route::get('/floorplan/QR/{id}', [FloorPlansController::class, 'getQR'])->name('floorplans.qr');
+
+        Route::post('/QR/print/{id}', [FloorplansController::class, 'printQR'])->name('floorplan.qr.print');
+    });
 
 //PLAGAS
 Route::prefix('pests')
@@ -356,8 +411,12 @@ Route::prefix('report')
     });
 
 // Daily Program
-Route::get('/dailyprogram', [ScheduleController::class, 'index'])->name('dailyprogram.index');
-Route::post('/dailyprogram/date', [ScheduleController::class, 'get_dailyprogram'])->name('dailyprogram.get');
+Route::name('dailyprogram.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/dailyprogram', [ScheduleController::class, 'index'])->name('index');
+        Route::post('/dailyprogram/date', [ScheduleController::class, 'get_dailyprogram'])->name('get');
+    });
 
 
 
@@ -374,35 +433,51 @@ Route::get('/prevpa', [PagesController::class, 'prevpa'])->name('prevpa');
 
 
 //PREGUNTAS - PUNTO DE CONTROL
-Route::get('/question/create/{pointId}', [QuestionController::class, 'create'])->name('question.create');
-Route::post('/question/store/{pointId}', [QuestionController::class, 'store'])->name('question.store');
-Route::get('/question/edit/{question}', [QuestionController::class, 'edit'])->name('question.edit');
-Route::put('/question/update/{question}', [QuestionController::class, 'update'])->name('question.update');
-Route::get('/question/delete/{question}', [QuestionController::class, 'destroy'])->name('question.destroy');
-Route::post('/question/set/{pointId}', [QuestionController::class, 'set'])->name('question.set');
+Route::prefix('question')
+    ->name('question.')
+    ->middleware('auth')
+    ->group(function (){
+        Route::get('/create/{pointId}', [QuestionController::class, 'create'])->name('create');
+        Route::post('/store/{pointId}', [QuestionController::class, 'store'])->name('store');
+        Route::get('/edit/{question}', [QuestionController::class, 'edit'])->name('edit');
+        Route::put('/update/{question}', [QuestionController::class, 'update'])->name('update');
+        Route::get('/delete/{question}', [QuestionController::class, 'destroy'])->name('destroy');
+        Route::post('/set/{pointId}', [QuestionController::class, 'set'])->name('set');
+    });
 
 //RUTAS PARA CALENDARIO
-Route::get('/contracts', [ContractController::class, 'index'])->name('contract.index');
-Route::get('/contract/create', [ContractController::class, 'create'])->name('contract.create');
-Route::post('/contract/store', [ContractController::class, 'store'])->name('contract.store');
-Route::get('/contract/show/{id}/{section}', [ContractController::class, 'show'])->name('contract.show');
-Route::get('/contract/edit/{id}', [ContractController::class, 'edit'])->name('contract.edit');
-Route::post('/contract/update/{id}', [ContractController::class, 'update'])->name('contract.update');
-Route::get('/contract/destroy/{id}', [ContractController::class, 'destroy'])->name('contract.destroy');
-Route::get('/contract/search', [ContractController::class, 'search'])->name('contract.search');
-Route::get('/contract/upload', [ContractController::class, ''])->name('contract.upload');
-Route::get('/contract/download/{id}/{file}', [ContractController::class, ''])->name('contract.download');
-Route::get('/contract/getSelectedTechnicians', [ContractController::class, 'getSelectedTechnicians'])->name('contract.getTechnicans');
-Route::post('/contract/update/technicians/{id}', [ContractController::class, 'updateTechnicians'])->name('contract.update.technicians');
-Route::post('/contract/file/{contractID}/{type}', [ContractController::class, 'store_file'])->name('contract.file');
-Route::get('/contract/index/{contractID}/', [ContractController::class, 'index_contract'])->name('contract.indexS');
-Route::get('/contract/file/download/{id}', [ContractController::class, 'contract_downolad'])->name('contract.file.download');
+Route::prefix('contract')
+    ->name('contract.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/create', [ContractController::class, 'create'])->name('create');
+        Route::post('/store', [ContractController::class, 'store'])->name('store');
+        Route::get('/show/{id}/{section}', [ContractController::class, 'show'])->name('show');
+        Route::get('/edit/{id}', [ContractController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [ContractController::class, 'update'])->name('update');
+        Route::get('/destroy/{id}', [ContractController::class, 'destroy'])->name('destroy');
+        Route::get('/search', [ContractController::class, 'search'])->name('search');
+        Route::get('/upload', [ContractController::class, ''])->name('upload');
+        Route::get('/download/{id}/{file}', [ContractController::class, ''])->name('download');
+        Route::get('/getSelectedTechnicians', [ContractController::class, 'getSelectedTechnicians'])->name('getTechnicans');
+        Route::post('/update/technicians/{id}', [ContractController::class, 'updateTechnicians'])->name('update.technicians');
+        Route::post('/file/{contractID}/{type}', [ContractController::class, 'store_file'])->name('file');
+        Route::get('/index/{contractID}/', [ContractController::class, 'index_contract'])->name('indexS');
+        Route::get('/file/download/{id}', [ContractController::class, 'contract_downolad'])->name('file.download');
+    });
+
+Route::get('/contracts', [ContractController::class, 'index'])->name('contract.index')->middleware('auth');
 
 //Rutas de busqueda para AJAX
-Route::post('/ajax/control-points', [OrderController::class, 'getControlPoints'])->name('ajax.devices.points');
-Route::post('/ajax/devices/{id}', [FloorPlansController::class, 'getDevicesVersion'])->name('ajax.devices');
-Route::post('/ajax/quality/search/orders/customer', [PagesController::class, 'getOrdersByCustomer'])->name('ajax.quality.search.customer');
-Route::get('/ajax/contract/service', [ContractController::class, 'getSelectData'])->name('ajax.contract.service');
-Route::post('/ajax/search/devices/{floorplan_id}', [FloorPlansController::class, 'searchDevices'])->name('ajax.search.devices');
+Route::prefix('ajax')
+    ->name('ajax.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::post('/control-points', [OrderController::class, 'getControlPoints'])->name('devices.points');
+        Route::post('/devices/{id}', [FloorPlansController::class, 'getDevicesVersion'])->name('devices');
+        Route::post('/quality/search/orders/customer', [PagesController::class, 'getOrdersByCustomer'])->name('quality.search.customer');
+        Route::get('/contract/service', [ContractController::class, 'getSelectData'])->name('contract.service');
+        Route::post('/search/devices/{floorplan_id}', [FloorPlansController::class, 'searchDevices'])->name('search.devices');
+    });
 
 require __DIR__ . '/auth.php';

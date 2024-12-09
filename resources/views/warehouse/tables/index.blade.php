@@ -10,7 +10,8 @@
     <table class="table text-center table-bordered">
         <thead>
             <tr>
-                <th scope="col"># (ID)</th>
+                <th scope="col">#</th>
+                <th scope="col">ID</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Sede</th>
                 <th scope="col">Técnico asociado</th>
@@ -19,8 +20,9 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($warehouses as $warehouse)
+            @forelse ($warehouses as $index => $warehouse)
                 <tr id="table-body">
+                    <th scope="row">{{ ++$index }}</th>
                     <td>{{ $warehouse->id }}</td>
                     <td>{{ $warehouse->name }}</td>
                     <td>{{ $warehouse->branch->name }}</td>

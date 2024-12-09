@@ -1,7 +1,8 @@
 <table class="table table-bordered text-center">
     <thead>
         <tr>
-            <th scope="col">#</th>
+            <th scope="col-1">#</th>
+            <th scope="col-1">ID</th>
             <th class="col-4" scope="col">{{ __('service.data.name') }}</th>
             <th scope="col">{{ __('service.data.type') }}</th>
             <th scope="col">{{ __('service.data.prefix') }}</th>
@@ -12,8 +13,9 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($services as $service)
+        @foreach ($services as $index => $service)
             <tr>
+                <th scope="row">{{ ++$index }}</th>
                 <th scope="row">{{ $service->id }}</th>
                 <td>{{ $service->name }}</td>
                 <td>

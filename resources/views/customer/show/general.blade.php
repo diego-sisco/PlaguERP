@@ -1,4 +1,5 @@
 <!-- Datos generales y fiscales -->
+
 <div class="col-12">
     @if ($section == 1)
         <div class="row">

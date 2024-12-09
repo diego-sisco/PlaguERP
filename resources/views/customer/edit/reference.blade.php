@@ -8,6 +8,7 @@
         <thead>
             <tr>
                 <th scope="col-1">#</th>
+                <th scope="col-1">ID</th>
                 <th scope="col-2">Nombre</th>
                 <th scope="col-2">Tipo de referencia</th>
                 <th scope="col-2">Correo electrónico</th>
@@ -20,6 +21,7 @@
             @forelse ($customer->references as $index => $reference)
                 <tr>
                     <th scope="row">{{ $index + 1 }}</th>
+                    <td>{{ $reference->id }}</td>
                     <td class="align-middle">{{ $reference->name }}</td>
                     <td class="align-middle">{{ $reference->referenceType->name }}</td>
                     <td class="align-middle">{{ $reference->email }}</td>

@@ -2,6 +2,7 @@
     <thead>
         <tr>
             <th scope="col">#</th>
+            <th scope="col">ID</th>
             <th scope="col">{{ __('branch.data.name') }}</th>
             <th scope="col">{{ __('branch.data.address') }}</th>
             <th scope="col">{{ __('branch.data.phone') }}</th>
@@ -11,9 +12,10 @@
         </tr>
     </thead>
     <tbody>
-        @foreach ($branches as $branch)
+        @foreach ($branches as $index => $branch)
             <tr>
-                <th scope="row">{{ $branch->id }}</th>
+                <th scope="row">{{ ++$index }}</th>
+                <td>{{ $branch->id }}</td>
                 <td>{{ $branch->name }}</td>
                 <td>{{ $branch->address }}</td>
                 <td>{{ $branch->phone }}</td>

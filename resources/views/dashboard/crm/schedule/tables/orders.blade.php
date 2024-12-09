@@ -1,5 +1,10 @@
 @extends('layouts.app')
 @section('content')
+
+@php
+    $offset = ($orders->currentPage() - 1) * $orders->perPage();
+@endphp
+
     <div class="row w-100 justify-content-between m-0 h-100">
         @include('dashboard.crm.schedule.navigation')
         <div class="col-11">
@@ -14,7 +19,8 @@
                     <table class="table text-center table-bordered">
                         <thead>
                             <tr>
-                                <th scope="col-1" class="align-middle"># (ID)</th>
+                                <th scope="col-1" class="align-middle">#</th>
+                                <th scope="col-1" class="align-middle">ID</th>
                                 <th scope="col-2" class="align-middle">Hora y fecha programada</th>
                                 <th scope="col-2" class="align-middle">Fecha realizada</th>
                                 <th scope="col-2" class="align-middle">Encargado</th>
@@ -36,9 +42,10 @@
                             </tr>
                         </thead>
                         <tbody id="table-body">
-                            @foreach ($orders as $order)
+                            @foreach ($orders as $index => $order)
                                 <tr id="order-{{ $order->id }}">
-                                    <th class="align-middle" scope="row">{{ $order->id }}</th>
+                                    <th scope="row"> {{ $offset + $index + 1 }} </th>
+                                    <td class="align-middle">{{ $order->id }}</td>
                                     <td class="align-middle"> {{ $order->start_time }} {{ $order->programmed_date }}</td>
                                     <td class="align-middle {{ empty($order->completed_date) ? 'text-danger' : '' }}">
                                         {{ empty($order->completed_date) ? 'S/N' : $order->completed_date }}</td>

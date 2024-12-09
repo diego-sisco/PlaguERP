@@ -7,6 +7,11 @@
         ?>
     @endif
 
+    @php
+        $globalIndex = 0;
+        
+    @endphp
+
     <div class="row w-100 h-100 m-0">
         @include('dashboard.quality.navigation')
         <div class="col-11">
@@ -24,6 +29,7 @@
                     <table class="table table-bordered text-center">
                         <thead>
                             <tr>
+                                <th class="col-1 align-middle" scope="col">#</th>
                                 <th class="col-1 align-middle" scope="col">ID Encargado (Calidad)</th>
                                 <th class="align-middle"scope="col">Encargado (Calidad)</th>
                                 <th class="col-1 align-middle" scope="col">ID Cliente</th>
@@ -68,7 +74,8 @@
                                             $data = json_encode($data);
                                         @endphp
                                         <tr>
-                                            <th scope="row">{{ $user->id }}</th>
+                                            <th scope="row">{{ ++$globalIndex }}</th>
+                                            <td>{{ $user->id }}</td>
                                             <td>{{ $user->name }}</td>
                                             <td>{{ $customer->id }}</td>
                                             <td>{{ $customer->name }}</td>

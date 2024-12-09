@@ -102,7 +102,6 @@ class CustomerController extends Controller
 
         foreach ($customer->floorplans as $floorplan) {
             foreach ($floorplan->devices($floorplan->versions->pluck('version')->first())->get() as $device) {
-                if($device->product_id)
                     $products++;
             }
         }
@@ -164,7 +163,7 @@ class CustomerController extends Controller
             'serviceCanceled' => $customer->countOrdersByStatus(6),
             'floorplansCount' => $customer->floorplans->count(),
             'applicationAreaCount' => $customer->applicationAreas()->count(),
-            'products' => $products,
+            'devices' => $products,
             'customerFile' => $customer->files->where('path','!=', NULL)->count(),
             'pendings' => $customerPending,
         ];
@@ -330,6 +329,9 @@ class CustomerController extends Controller
 
     public function storeArea(Request $request, string $customerId)
     {
+        $request->validate([
+            'm2' => 'required|numeric|min:0|max:10000',
+        ]);
 
         $area = new ApplicationArea();
         $area->fill($request->all());

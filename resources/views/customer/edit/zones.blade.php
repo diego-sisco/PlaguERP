@@ -7,6 +7,7 @@
         <thead>
             <tr>
                 <th scope="col-1">#</th>
+                <th scope="col-1">ID</th>
                 <th scope="col">Nombre</th>
                 <th scope="col">Tipo de zona</th>
                 <th scope="col">Metros cuadrados (m²)</th>
@@ -15,9 +16,10 @@
             </tr>
         </thead>
         <tbody>
-            @forelse ($customer->applicationAreas as $area)
+            @forelse ($customer->applicationAreas as $index => $area)
                 <tr>
-                    <th scope="row">{{ $area->id }}</th>
+                    <th scope="row">{{ ++$index }}</th>
+                    <td class="align-middle">{{ $area->id }}</td>
                     <td class="align-middle">{{ $area->name }}</td>
                     <td class="align-middle">
                         {{ $area->zoneType->name ?? 'N/A' }}

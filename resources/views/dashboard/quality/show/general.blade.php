@@ -1,5 +1,10 @@
 @extends('layouts.app')
 @section('content')
+    @if($section == 1)
+        @php
+            $offset = ($orders->currentPage() - 1) * $orders->perPage();
+        @endphp
+    @endif
     <div class="row w-100 justify-content-between m-0 h-100">
         
         @if($section == 1)
@@ -64,7 +69,8 @@
                         <table class="table text-center table-bordered">
                             <thead>
                                 <tr>
-                                    <th scope="col-1" class="align-middle"># (ID)</th>
+                                    <th scope="col-1" class="align-middle">#</th>
+                                    <th scope="col-1" class="align-middle">ID</th>
                                     <th scope="col-2" class="align-middle">Hora y fecha programada</th>
                                     <th scope="col-2" class="align-middle">Fecha realizada</th>
                                     <th scope="col-2" class="align-middle">Encargado</th>
@@ -79,9 +85,10 @@
                             <tbody id="table-body">
                                 @if(!$orders->isEmpty())
 
-                                    @foreach ($orders as $order)
+                                    @foreach ($orders as $index => $order)
                                         <tr id="order-{{ $order->id }}">
-                                            <th class="align-middle" scope="row">{{ $order->id }}</th>
+                                            <th class="align-middle" scope="row">{{ $offset + $index + 1 }}</th>
+                                            <td class="align-middle">{{ $order->id }}</td>
                                             <td class="align-middle"> {{ $order->start_time }} {{ $order->programmed_date }}</td>
                                             <td class="align-middle {{ empty($order->completed_date) ? 'text-danger' : '' }}">
                                                 {{ empty($order->completed_date) ? 'S/N' : $order->completed_date }}</td>
@@ -127,7 +134,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="8">No hay ordenes por el momento.</td>
+                                        <td class="text-danger" colspan="9">No hay ordenes por el momento.</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -173,7 +180,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="8">No existen planos del cliente.</td>
+                                        <td class="text-danger" colspan="8">No existen planos del cliente.</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -210,7 +217,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="6">No existen zonas del cliente.</td>
+                                        <td class="text-danger" colspan="6">No existen zonas del cliente.</td>
                                     </tr>
                                 @endif
                             </tbody>
@@ -223,7 +230,8 @@
                         <table class="table text-center table-bordered">
                             <thead>
                                 <tr>
-                                    <th scope="col-1" class="align-middle"># (ID)</th>
+                                    <th scope="col-1" class="align-middle">#</th>
+                                    <th scope="col-1" class="align-middle">ID</th>
                                     <th scope="col-2" class="align-middle">Tipo</th>
                                     <th scope="col-1" class="align-middle">Planos donde se utiliza</th>
                                     <th scope="col-1" class="align-middle">Cantidad total utilizada</th>
@@ -236,7 +244,8 @@
                                 @if($deviceSummary)
                                     @foreach ($deviceSummary as $index => $device)
                                         <tr>
-                                            <th class="align-middle" scope="row">{{ $device['id'] }}</th>
+                                            <th class="align-middle" scope="row">{{ $index++ }}</th>
+                                            <td class="align-middle">{{ $device['id'] }}</td>
                                             <td class="align-middle">{{ $device['name'] }}</td>
                                             <td class="align-middle">
                                                 {{ implode(', ', $device['floorplans']) }}
@@ -252,7 +261,7 @@
                                     @endforeach
                                 @else
                                     <tr>
-                                        <td colspan="6">No hay dispositivos utilizados por el cliente.</td>
+                                        <td class="text-danger" colspan="7">No hay dispositivos utilizados por el cliente.</td>
                                     </tr>
                                 @endif
                             </tbody>

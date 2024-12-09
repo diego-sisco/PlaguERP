@@ -63,7 +63,7 @@
                             <div class="card-body text-dark">
                                 <div class="d-flex justify-content-evenly align-items-center flex-wrap">
                                     <div class="badge bg-secondary">
-                                        {{ $customerData['products'] }}
+                                        {{ $customerData['devices'] }}
                                     </div>
                                 </div>
                             </div>
