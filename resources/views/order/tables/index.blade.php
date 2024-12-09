@@ -1,3 +1,7 @@
+@php
+    $page = $orders->currentPage();
+    
+    @endphp
 <table class="table table-bordered text-center">
     <thead>
         <tr>
@@ -31,7 +35,7 @@
                             : ($order->status_id == 4 || $order->status_id == 5
                                 ? 'text-success'
                                 : 'text-danger')) }}">
-                                    {{ $order->status->name }}
+                    {{ $order->status->name }}
                 </td>
                 <td>
                     <a class="btn

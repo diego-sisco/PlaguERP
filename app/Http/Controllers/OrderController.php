@@ -66,11 +66,13 @@ class OrderController extends Controller
 	public function index(): View
 	{
 		$orders = Order::orderBy('id', 'desc')->paginate($this->size);
+		$size = $this->size;
 
 		return view(
 			'order.index',
 			compact(
 				'orders',
+				'size'
 			)
 		);
 	}

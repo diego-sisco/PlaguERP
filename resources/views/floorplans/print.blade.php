@@ -23,35 +23,14 @@
 
     <div class="container pt-3">
         <button id="print-button" class="btn btn-primary mb-3">Generar PDF</button>
-
-        <div id="image-container"
-            style="
-                width: 100%;
-                position: relative;
-                overflow-y: auto;
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-            ">
-            <img id="zoom-image" class="border rounded" src="{{ route('image.show', ['filename' => $floorplan->path]) }}"
-                alt="Plano"
-                style="
-                max-width: none;
-                width: auto;
-                transition: transform 0.3s ease;
-                transform-origin: 0 0;
-            " />
-            <div id="points-container" style="position: absolute; top: 0; left: 0"></div>
-        </div>
     </div>
     <script>
         // Tu código previo para crear puntos
-        var devices = @json($devices);
-        var legend = @json($legend);
-        var container = document.getElementById('points-container');
-        var img = document.getElementById('zoom-image');
+        const devices = @json($devices);
+        const legend = @json($legend);
+        const img_src = "{{ route('image.show', ['filename' => $floorplan->path]) }}";
         var points = [];
-        var sizes = [];
+        var size = {};
         var color = '';
         var isImgLong = false;
 
@@ -104,68 +83,112 @@
         }
 
         $(document).ready(function() {
-            img.onload = function() {
-                console.log(`Original dimensions - x: ${img.width}, y: ${img.height}`);
+            const img = getImageSize();
+            const {
+                jsPDF
+            } = window.jspdf;
+            print(jsPDF, img);
 
-                var width = img.width;
-
-                /*const pageWidthMm = 210; // A4 width in mm
-                const pageHeightMm = 297; // A4 height in mm
-                const mmToPoints = 2.83465; // Conversion factor from mm to points
-
-                // Convert A4 dimensions to points
-                const pageWidthPoints = pageWidthMm * mmToPoints;
-                const pageHeightPoints = pageHeightMm * mmToPoints;
-
-                // Calculate the scale to fit the image within A4 dimensions
-                const widthScale = pageWidthPoints / img.width;
-                const heightScale = pageHeightPoints / img.height;
-                const scale = Math.min(widthScale, heightScale);
-
-                // Calculate new dimensions maintaining aspect ratio
-                const resizedWidth = img.width * scale;
-                const resizedHeight = img.height * scale;
-
-                console.log(
-                    `Resized dimensions - x: ${resizedWidth.toFixed(2)}, y: ${resizedHeight.toFixed(2)}`);
-
-                // Apply new dimensions to the image
-                img.style.width = `${resizedWidth}px`;
-                img.style.height = `${resizedHeight}px`;
-
-                // Apply additional logic based on specific conditions
-                if (resizedWidth < 800) {
-                    img.style.width = '800px';
-                } else if (resizedWidth > 1200 && resizedWidth <= 1700) {
-                    img.style.width = '1200px';
-                } else if (resizedWidth > 1700) {
-                    img.style.width = '1000px';
-                    isImgLong = true; // Preserving your condition
-                }*/
-
-                if (width < 800) {
-                    img.style.width = '800px';
-                } else if (width > 1200 && width <= 1700) {
-                    img.style.width = '1200px';
-                } else if (width > 1700) {
-                    img.style.width = '1000px';
-                    isImgLong = true; // Preserving your condition
-                }
-
-                setDevices(); // Call any additional logic
-            };
-
-            if (img.complete) {
-                img.onload();
-            }
         });
 
-        function checkSize() {
-            if (sizes.length == 0) return false;
-            const firstX = sizes[0].x;
-            const firstY = sizes[0].y;
-            return sizes.every(size => size.x == firstX && size.y == firstY);
+        async function getImageAsBase64(url) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.crossOrigin = "Anonymous"; // Permite el acceso desde diferentes dominios
+                img.src = url;
+                img.onload = () => {
+                    const canvas = document.createElement("canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    const ctx = canvas.getContext("2d");
+                    ctx.drawImage(img, 0, 0);
+                    const dataURL = canvas.toDataURL("image/jpeg"); // Convierte a Base64
+                    resolve({
+                        base64: dataURL,
+                        width: img.width,
+                        height: img.height
+                    });
+                };
+                img.onerror = (err) => reject(err);
+            });
         }
+
+        async function print(jsPDF, imageUrl) {
+            const {
+                base64,
+                width,
+                height
+            } = await getImageAsBase64(imageUrl);
+
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4', // A4 es 210 x 297 mm
+            });
+
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            const scale = Math.min(pageWidth / width, pageHeight / height);
+            const imgWidth = width * scale;
+            const imgHeight = height * scale;
+
+            const x = (pageWidth - imgWidth) / 2;
+            const y = (pageHeight - imgHeight) / 2;
+
+            pdf.addImage(base64, 'JPEG', x, y, imgWidth, imgHeight);
+            pdf.save('imagen-horizontal.pdf');
+        }
+
+        // Llamada a la función
+        print(window.jspdf.jsPDF, img_src);
+
+
+        function getImageSize() {
+            const equalX = devices.map(item => item.img_tamx).every(val => val == devices[0].img_tamx);
+            const equalY = devices.map(item => item.img_tamy).every(val => val == devices[0].img_tamy);
+
+            if (equalX && equalY) {
+                return {
+                    x: devices[0].img_tamx,
+                    y: devices[0].img_tamy
+                };
+            } else {
+                const maxImgTamX = Math.max(...devices.map(item => item.img_tamx));
+                const maxImgTamY = Math.max(...devices.map(item => item.img_tamy));
+                return {
+                    x: maxImgTamX,
+                    y: maxImgTamY
+                };
+            }
+        }
+
+        function print(jsPDF, img) {
+            const pdf = new jsPDF({
+                orientation: 'landscape',
+                unit: 'mm',
+                format: 'a4' // A4 es 210 x 297 mm
+            });
+
+            const originalWidth = img.x;
+            const originalHeight = img.y;
+
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+
+            const scale = Math.min(pageWidth / originalWidth, pageHeight / originalHeight);
+            const imgWidth = originalWidth * scale;
+            const imgHeight = originalHeight * scale;
+
+            const x = (pageWidth - imgWidth) / 2;
+            const y = (pageHeight - imgHeight) / 2;
+
+            const imageData = "data:image/jpeg;base64,...";
+
+            pdf.addImage(imageData, 'JPEG', x, y, imgWidth, imgHeight);
+            pdf.save('imagen-horizontal.pdf');
+        }
+
 
         function formatRange(numbers) {
             numbers.sort((a, b) => a - b);
@@ -218,13 +241,10 @@
             return result;
         }
 
+
+
         // Convertir la vista en un PDF
         document.getElementById('print-button').addEventListener('click', function() {
-            if (!checkSize()) {
-                alert('No hay puntos seleccionados o los puntos no corresponden')
-                return;
-            }
-
             const originalWidth = sizes[0].x;
             const originalHeight = sizes[0].y;
             const newWidth = img.width;
@@ -259,6 +279,7 @@
                 doc.text(point.nplan.toString(), 10 + adjustedX / 4 + 2, 10 + adjustedY / 4 + 2);
             });
 
+            /*
             // Crear la simbología
             const symbolSize = 2;
             const lineHeight = 5;
@@ -331,6 +352,7 @@
             });
             const filename = `Plano_${legend.name}_${legend.customer}.pdf`;
             doc.save(filename);
+            */
         });
     </script>
 @endsection
