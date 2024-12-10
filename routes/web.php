@@ -19,6 +19,7 @@ use App\Http\Controllers\GraphicController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\LotController;
+use App\Http\Controllers\QualityController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -277,13 +278,16 @@ Route::prefix('orders')
         Route::get('/', [OrderController::class, 'index'])->name('index');
         Route::get('/create', [OrderController::class, 'create'])->name('create');
         Route::post('/store', [OrderController::class, 'store'])->name('store');
+        Route::get('/search', [QualityController::class, 'searchOrders'])->name('search');
+        // Route::get('/search')
         Route::get('/show/{id}/{section}', [OrderController::class, 'show'])->name('show');
         Route::get('/edit/{id}', [OrderController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [OrderController::class, 'update'])->name('update');
         Route::get('/destroy/{id}', [OrderController::class, 'destroy'])->name('destroy');
-        Route::get('/search', [OrderController::class, 'search'])->name('search');
+        
         Route::post('/search/customer', [OrderController::class, 'searchCustomer'])->name('search.customer');
         Route::post('/search/service/{type}', [OrderController::class, 'searchService'])->name('search.service');
+
     });
 
 // PRODUCTOS
@@ -488,6 +492,10 @@ Route::prefix('ajax')
         Route::post('/devices/{id}', [FloorPlansController::class, 'getDevicesVersion'])->name('devices');
         Route::post('/quality/search/orders/customer', [PagesController::class, 'getOrdersByCustomer'])->name('quality.search.customer');
         Route::post('/quality/search/orders/date', [QualityController::class, 'getOrdersByDate'])->name('quality.search.date');
+        Route::post('/quality/search/orders/time', [QualityController::class, 'getOrdersByTime'])->name('quality.search.time');
+        Route::post('/quality/search/orders/service', [QualityController::class, 'getOrdersByService'])->name('quality.search.service');
+        Route::post('/quality/search/orders/status', [QualityController::class, 'getOrdersByStatus'])->name('quality.search.status');
+        
 
         Route::get('/contract/service', [ContractController::class, 'getSelectData'])->name('contract.service');
         Route::post('/search/devices/{floorplan_id}', [FloorPlansController::class, 'searchDevices'])->name('search.devices');
