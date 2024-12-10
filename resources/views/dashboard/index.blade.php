@@ -44,7 +44,7 @@
                 </div>
             </a>
 
-            <a href="{{ route('quality.orders', ['status' => 1, 'page' => 1]) }}"
+            <a href="{{ route('quality.index') }}"
                 class="d-flex flex-column align-items-center justify-content-center card shadow text-center text-white text-decoration-none p-2 m-2"
                 style="height: 10rem; width:12rem; background-color:#c62828">
                 <div class="w-100 d-flex justify-content-center align-items-end" style="font-size: 3rem; height: 60%">

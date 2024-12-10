@@ -9,6 +9,7 @@ use App\Http\Controllers\PagesController;
 use App\Http\Controllers\PestController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\CRMController;
+use App\Http\Controllers\QualityController;
 use App\Http\Controllers\QuestionController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ScheduleController;
@@ -71,13 +72,23 @@ Route::prefix('planning')->middleware('auth')->group(function () {
 
 // CALIDAD
 Route::prefix('quality')->name('quality.')->middleware('auth')->group(function () {
-    Route::get('/control', [PagesController::class, 'qualityControl'])->name('control');
-    Route::post('/control/store', [PagesController::class, 'qualityControlStore'])->name('control.store');
-    Route::get('/control/destroy/{customerId}', [PagesController::class, 'qualityControlDestroy'])->name('control.destroy');
-    Route::get('/customers', [PagesController::class, 'qualityCustomers'])->name('customers');
-    Route::get('/customer/{id}', [CustomerController::class, 'showCustomerDetails'])->name('customer.detail');
-    Route::get('/orders/{status}', [PagesController::class, 'qualityOrders'])->name('orders');
-    Route::get('/customer/{customerId}/{section}/{status}', [PagesController::class, 'qualityGeneralByCustomer'])->name('customer.details.general');
+    Route::get('/index', [QualityController::class, 'index'])->name('index');
+    Route::get('/control', [QualityController::class, 'control'])->name('control');
+    Route::post('/control/store', [QualityController::class, 'storeControl'])->name('control.store');
+    Route::get('/control/destroy/{id}', [PagesController::class, 'destroyControl'])->name('control.destroy');
+    Route::get('/search', [QualityController::class, 'search'])->name('search');
+    Route::get('/customer/{id}', [QualityController::class, 'customer'])->name('customer');
+
+    Route::get('/customer/{id}/orders/{statusId}', [QualityController::class, 'orders'])->name('orders');
+    Route::get('/customer/{id}/contracts', [QualityController::class, 'contracts'])->name('contracts');
+    Route::get('/customer/{id}/floorplans', [QualityController::class, 'floorplans'])->name('floorplans');
+    Route::get('/customer/{id}/zones', [QualityController::class, 'zones'])->name('zones');
+    Route::get('/customer/{id}/devices', [QualityController::class, 'devices'])->name('devices');
+    
+    //Route::get('/control', [PagesController::class, 'qualityControl'])->name('control');
+    //Route::get('/control/destroy/{customerId}', [PagesController::class, 'qualityControlDestroy'])->name('control.destroy');
+    //Route::get('/orders/{status}', [PagesController::class, 'qualityOrders'])->name('orders');
+    //Route::get('/customer/{customerId}/{section}/{status}', [PagesController::class, 'qualityGeneralByCustomer'])->name('customer.details.general');
 });
 
 // CRM
@@ -123,7 +134,7 @@ Route::prefix('inventory')
         Route::get('/{id}/generate-pdf', [WarehouseController::class, 'movement_print'])->name('warehouse.pdf');
     });
 
-    Route::get('/movements', [WarehouseController::class, 'showAllMovements'])->name('movements.all');
+Route::get('/movements', [WarehouseController::class, 'showAllMovements'])->name('movements.all');
 
 //lot
 Route::prefix('lot')
@@ -316,7 +327,7 @@ Route::prefix('customer/reference')
 Route::prefix('area')
     ->name('area.')
     ->middleware('auth')
-    ->group(function (){
+    ->group(function () {
         Route::post('/store/{customerId}', [CustomerController::class, 'storeArea'])->name('store');
         Route::post('/update/{id}', [CustomerController::class, 'updateArea'])->name('update');
         Route::get('/delete/{id}', [CustomerController::class, 'destroyArea'])->name('destroy');
@@ -436,7 +447,7 @@ Route::get('/prevpa', [PagesController::class, 'prevpa'])->name('prevpa');
 Route::prefix('question')
     ->name('question.')
     ->middleware('auth')
-    ->group(function (){
+    ->group(function () {
         Route::get('/create/{pointId}', [QuestionController::class, 'create'])->name('create');
         Route::post('/store/{pointId}', [QuestionController::class, 'store'])->name('store');
         Route::get('/edit/{question}', [QuestionController::class, 'edit'])->name('edit');

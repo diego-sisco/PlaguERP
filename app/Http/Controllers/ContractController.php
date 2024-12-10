@@ -206,6 +206,7 @@ class ContractController extends Controller
         //dd($contract_files);
         return view('contract.show', compact('contract_files', 'contract', 'section'));
     }
+    
     public function getSelectedTechnicians(Request $request)
     {
         $technicians = Technician::all();
@@ -315,7 +316,12 @@ class ContractController extends Controller
     {
         $contract_data = json_decode($request->input('contract_data'));
         $selected_technicians = json_decode($request->input('technicians'));
+
         $contract = Contract::find($id);
+        $contract->startdate = $request->input('startdate');
+        $contract->enddate = $request->input('enddate');
+        $contract->updated_at = now();
+        $contract->save();
 
         //Eliminar los servicios ligados a la orden
         $serviceIds = array_map(function ($item) {
