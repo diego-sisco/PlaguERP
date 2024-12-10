@@ -208,9 +208,7 @@ class PagesController extends Controller
         switch($section)
         {
             case 1:
-                $orders = Order::where('status_id', $status);
-                $orders = $orders->where('customer_id', $customerId);
-                $orders = $orders->paginate($this->size);
+                $orders = Order::where('status_id', $status)->where('customer_id', $customerId)->paginate($this->size);
                 
                 break;
             case 2:
@@ -266,7 +264,6 @@ class PagesController extends Controller
                                 'zones' => [],
                             ];
                         }
-
                         $deviceSummary[$deviceId]['count']++;
                         
                         // Agrega los dispositivos que no se han agregado
@@ -277,7 +274,6 @@ class PagesController extends Controller
                         if (!in_array($floorplan->filename, $deviceSummary[$deviceId]['floorplans'])) {
                             $deviceSummary[$deviceId]['floorplans'][] = $floorplan->filename;
                         }
-
                     }
                 }
                 break;
