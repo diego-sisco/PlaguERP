@@ -84,12 +84,14 @@
         }
 
         $(document).ready(function() {
+            if(devices.length > 0) {
+                console.log(1)
             const img = getImageSize();
             const {
                 jsPDF
             } = window.jspdf;
             print(jsPDF, img);
-
+        }
         });
 
         async function getImageAsBase64(url) {
@@ -141,14 +143,11 @@
             pdf.save('imagen-horizontal.pdf');
         }
 
-        // Llamada a la función
-        print(window.jspdf.jsPDF, img_src);
-
 
         function getImageSize() {
             const equalX = devices.map(item => item.img_tamx).every(val => val == devices[0].img_tamx);
             const equalY = devices.map(item => item.img_tamy).every(val => val == devices[0].img_tamy);
-
+            
             if (equalX && equalY) {
                 return {
                     x: devices[0].img_tamx,
@@ -187,10 +186,7 @@
             const x = (pageWidth - imgWidth) / 2;
             const y = (pageHeight - imgHeight) / 2;
 
-            const imageData = "data:image/jpeg;base64," + img_src;
-            console.log(imageData);
-
-            pdf.addImage(img_src, 'JPEG', x, y, imgWidth, imgHeight);
+            pdf.addImage(img_src, 'JPEG', 0, 0, imgWidth, imgHeight);
             pdf.save('imagen-horizontal.pdf');
         }
 
