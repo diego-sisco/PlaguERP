@@ -11,6 +11,7 @@ use App\Models\OrderStatus;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Contract;
+use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -112,8 +113,9 @@ class QualityController extends Controller
         $count_devices = 0;
         $customer = Customer::find($id);
         $orders = $customer->orders()->where('status_id', 1)->get();
-
-        $floorplans = FloorPlans::where('customer_id', $customer->id)->get();
+        
+        $floorplans = $customer->floorplans;
+        
         foreach ($floorplans as $floorplan) {
             $last_version = $floorplan->versions()->latest('version')->value('version');
             $count_devices += $floorplan->devices($last_version)->count();
@@ -214,6 +216,7 @@ class QualityController extends Controller
 
     public function devices(string $id)
     {
+        
     }
 
     public function getOrdersByCustomer(Request $request)
@@ -262,7 +265,12 @@ class QualityController extends Controller
 		}
 
 		$size = $this->size;
-		$orders = $orders->paginate($size)->appends('date', 'time', 'service', 'status');
+		$orders = $orders->paginate($size)->appends([
+			'date' => $date,
+			'time' => $time,
+			'service' => $service,
+			'status' => $status,
+		]);
 		$order_status = OrderStatus::all();
 
 		return view(
