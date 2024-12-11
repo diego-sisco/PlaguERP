@@ -185,6 +185,7 @@
 
             const x = (pageWidth - imgWidth) / 2;
             const y = (pageHeight - imgHeight) / 2;
+            // console.log(imageData);
 
             pdf.addImage(img_src, 'JPEG', 0, 0, imgWidth, imgHeight);
             pdf.save('imagen-horizontal.pdf');
