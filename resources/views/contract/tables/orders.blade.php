@@ -4,7 +4,7 @@
 
 <table class="table table-bordered text-center">
     <thead>
-        <form method="GET" action="{{ route('order.search') }}">
+        <form method="GET" action="{{ route('contract.search.orders', ['id' => $contract->id, 'customerId' => $contract->customer->id]) }}">
             <tr>
                 <th scope="col">#</th>
                 <th scope="col">ID</th>

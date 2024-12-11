@@ -9,11 +9,14 @@
 
         <div class="row justify-content-between p-3 m-0">
             <div class="col-auto">
-                @can('write_order')
-
+                @can('write_customer')
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#areaModal"
+                        onclick="resetForm()">Crear zona</button>
                 @endcan
             </div>
         </div>
+
+
 
         <div class="container-fluid">
             @include('messages.alert')
@@ -23,4 +26,6 @@
             {{ $zones->links('pagination::bootstrap-5') }}
         </div>
     </div>
+
+    @include('customer.edit.modals.area')
 @endsection

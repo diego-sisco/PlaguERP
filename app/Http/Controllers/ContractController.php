@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\OrderService;
+use App\Models\OrderStatus;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -22,6 +23,7 @@ use App\Models\Administrative;
 use App\Models\Contract_File;
 use App\Models\Service;
 
+use Carbon\Carbon;
 
 class ContractController extends Controller
 {
@@ -199,12 +201,65 @@ class ContractController extends Controller
         );
     }
 
+    public function searchOrders(Request $request, string $id, string $customerId) {
+
+        $contract = Contract::find($id);
+        $customer = Customer::find($customerId);
+		$date = $request->input('date');
+        $time = $request->input('time');
+        $service = $request->input('service');
+        $status = $request->input('status');
+
+        $orders = Order::where('customer_id', $customer->id)->where('status_id', $status);
+
+		if ($time) {
+			$orders = $orders->whereTime('start_time', $time);
+		}
+
+		if ($date) {
+			[$startDate, $endDate] = array_map(function ($d) {
+				return Carbon::createFromFormat('d/m/Y', trim($d));
+			}, explode(' - ', $date));
+			$startDate = $startDate->format('Y-m-d');
+			$endDate = $endDate->format('Y-m-d');
+			$orders = $orders->whereBetween('programmed_date', [$startDate, $endDate]);
+		}
+
+		if ($service) {
+			$serviceName = '%' . $service . '%';
+			$serviceIds = Service::where('name', 'LIKE', $serviceName)->get()->pluck('id');
+			$orderIds = OrderService::whereIn('service_id', $serviceIds)->get()->pluck('order_id');
+			$orders = $orders->whereIn('id', $orderIds);
+		}
+
+		$size = $this->size;
+		$orders = $orders->paginate($size)->appends([
+			'date' => $date,
+			'time' => $time,
+			'service' => $service,
+			'status' => $status,
+		]);
+		$order_status = OrderStatus::all();
+
+		return view(
+			'contract.show',
+			compact(
+				'orders',
+				'order_status',
+                'customer',
+                'contract',
+				'size'
+			)
+		);
+    }
+
     public function show(string $id, int $section)
     {
         $contract = Contract::find($id);
-        $contract_files = Contract_File::where('contract_id', $id)->orderBy('created_at', 'desc')->get();
-        //dd($contract_files);
-        return view('contract.show', compact('contract_files', 'contract', 'section'));
+        $order_status = OrderStatus::all();
+        $orders = Order::where('contract_id', $contract->id)->paginate($this->size);
+        $customer = $contract->customer();
+        return view('contract.show', compact( 'contract', 'orders', 'order_status', 'customer', 'section'));
     }
     
     public function getSelectedTechnicians(Request $request)

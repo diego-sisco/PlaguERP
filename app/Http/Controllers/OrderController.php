@@ -168,13 +168,13 @@ class OrderController extends Controller
 		OrderService::insert($order_services);
 		OrderTechnician::insert($order_technicians);
 		/*OrderFrequency::insert([
-						'order_id' => $order->id,
-						'number' => $request->input('number'),
-						'frequency' => $request->input('frequency'),
-						'next_date' => $this->generateDate($order->programmed_date, $request->input('number'), $request->input('frequency')),
-						'created_at' => now(),
-						'updated_at' => now()
-					]);*/
+							  'order_id' => $order->id,
+							  'number' => $request->input('number'),
+							  'frequency' => $request->input('frequency'),
+							  'next_date' => $this->generateDate($order->programmed_date, $request->input('number'), $request->input('frequency')),
+							  'created_at' => now(),
+							  'updated_at' => now()
+						  ]);*/
 
 		$sql = 'INSERT_ORDER_' . $order->id;
 		PagesController::log('store', 'Creacion de orden', $sql);
@@ -184,40 +184,49 @@ class OrderController extends Controller
 
 	public function search(Request $request)
 	{
-		dd($request->all());
-		$search = $request->input('search');
-		$data = json_decode($search);
-		$orders = Order::where('status_id', $data->status);
+		$customer = $request->input('customer');
+		$date = $request->input('date');
+		$time = $request->input('time');
+		$service = $request->input('service');
+		$status = $request->input('status');
 
-		if ($data->customer) {
-			$customerName = '%' . $data->customer . '%';
-			$customerIds = Customer::where('name', 'LIKE', $customerName)->get()->pluck('id');
+		$orders = Order::where('status_id', $status);
+
+		if ($customer) {
+			$searchTerm = '%' . $customer . '%';
+			$customerIds = Customer::where('name', 'LIKE', $searchTerm)->get()->pluck('id');
 			$orders = $orders->whereIn('customer_id', $customerIds);
 		}
 
-		if ($data->hour) {
-			$orders = $orders->whereTime('start_time', $data->hour);
+		if ($time) {
+			$orders = $orders->whereTime('start_time', $time);
 		}
 
-		if ($data->date) {
+		if ($date) {
 			[$startDate, $endDate] = array_map(function ($d) {
 				return Carbon::createFromFormat('d/m/Y', trim($d));
-			}, explode(' - ', $data->date));
+			}, explode(' - ', $date));
 			$startDate = $startDate->format('Y-m-d');
 			$endDate = $endDate->format('Y-m-d');
 			$orders = $orders->whereBetween('programmed_date', [$startDate, $endDate]);
 		}
 
-		if ($data->service) {
-			$serviceName = '%' . $data->service . '%';
+		if ($service) {
+			$serviceName = '%' . $service . '%';
 			$serviceIds = Service::where('name', 'LIKE', $serviceName)->get()->pluck('id');
 			$orderIds = OrderService::whereIn('service_id', $serviceIds)->get()->pluck('order_id');
 			$orders = $orders->whereIn('id', $orderIds);
 		}
 
 		$size = $this->size;
-		$orders = $orders->paginate($size);
 		$order_status = OrderStatus::all();
+		$orders = $orders->paginate($size)->appends([
+			'customer' => $customer,
+			'date' => $date,
+			'time' => $time,
+			'service' => $service,
+			'status' => $status,
+		]);
 
 		return view(
 			'order.index',
@@ -427,53 +436,53 @@ class OrderController extends Controller
 		}
 		/*$changes = '';
 
-									  $oldstart = $order->start_time;
-									  $newstart = $request->input('start_time');
-									  if ($oldstart != $newstart) {
-										  $changes .= 'Cambio de hora de inicio; ';
-									  }
-							  
-									  $oldend = $order->end_time;
-									  $newend = $request->input('end_time');
-									  if ($oldend != $newend) {
-										  $changes .= 'Cambio de hora de finalización; ';
-									  }
-							  
-									  $oldpro = $order->programmed_date;
-									  $newpro = $request->input('programmed_date');
-									  if ($oldpro != $newpro) {
-										  $changes .= 'Cambio de fecha programada; ';
-									  }
-							  
-									  $oldcomp = $order->completed_date;
-									  $newcomp = $request->input('completed_date');
-									  if ($oldcomp != $newcomp) {
-										  $changes .= 'Cambio de fecha de finalización; ';
-									  }
-							  
-									  $oldsta = $order->status_id;
-									  $newsta = $request->input('status');
-									  if ($oldsta != $newsta) {
-										  $changes .= 'Cambio de estado; ';
-									  }
-							  
-									  $oldex = $order->execution;
-									  $newex = $request->input('execution');
-									  if ($oldex != $newex) {
-										  $changes .= 'Cambio en la ejecución; ';
-									  }
-							  
-									  $oldare = $order->areas;
-									  $neware = $request->input('areas');
-									  if ($oldare != $neware) {
-										  $changes .= 'Cambio en las áreas; ';
-									  }
-							  
-									  $oldcome = $order->additional_comments;
-									  $newcome = $request->input('additional_comments');
-									  if ($oldcome != $newcome) {
-										  $changes .= 'Cambio en los comentarios adicionales; ';
-									  }*/
+											$oldstart = $order->start_time;
+											$newstart = $request->input('start_time');
+											if ($oldstart != $newstart) {
+												$changes .= 'Cambio de hora de inicio; ';
+											}
+									
+											$oldend = $order->end_time;
+											$newend = $request->input('end_time');
+											if ($oldend != $newend) {
+												$changes .= 'Cambio de hora de finalización; ';
+											}
+									
+											$oldpro = $order->programmed_date;
+											$newpro = $request->input('programmed_date');
+											if ($oldpro != $newpro) {
+												$changes .= 'Cambio de fecha programada; ';
+											}
+									
+											$oldcomp = $order->completed_date;
+											$newcomp = $request->input('completed_date');
+											if ($oldcomp != $newcomp) {
+												$changes .= 'Cambio de fecha de finalización; ';
+											}
+									
+											$oldsta = $order->status_id;
+											$newsta = $request->input('status');
+											if ($oldsta != $newsta) {
+												$changes .= 'Cambio de estado; ';
+											}
+									
+											$oldex = $order->execution;
+											$newex = $request->input('execution');
+											if ($oldex != $newex) {
+												$changes .= 'Cambio en la ejecución; ';
+											}
+									
+											$oldare = $order->areas;
+											$neware = $request->input('areas');
+											if ($oldare != $neware) {
+												$changes .= 'Cambio en las áreas; ';
+											}
+									
+											$oldcome = $order->additional_comments;
+											$newcome = $request->input('additional_comments');
+											if ($oldcome != $newcome) {
+												$changes .= 'Cambio en los comentarios adicionales; ';
+											}*/
 
 
 		$order->fill($request->all());
@@ -537,7 +546,7 @@ class OrderController extends Controller
 		}
 
 		/*$sql = 'UPDATE_ORDER_' . $order->id;
-									  PagesController::log('update', $changes, $sql);*/
+											PagesController::log('update', $changes, $sql);*/
 
 		return back();
 	}
