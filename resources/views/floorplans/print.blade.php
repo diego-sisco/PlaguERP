@@ -29,6 +29,7 @@
         const devices = @json($devices);
         const legend = @json($legend);
         const img_src = "{{ route('image.show', ['filename' => $floorplan->path]) }}";
+        // console.log(img_src);
         var points = [];
         var size = {};
         var color = '';
@@ -164,11 +165,14 @@
         }
 
         function print(jsPDF, img) {
-            const pdf = new jsPDF({
-                orientation: 'landscape',
+            let orientation = img.x > img.y ? "l" : "p";
+            // let orientationImage = img.x > img.y ? "horizontal" : "vertical"
+            const pdf = new jsPDF({ 
+                orientation: orientation,
                 unit: 'mm',
                 format: 'a4' // A4 es 210 x 297 mm
             });
+            
 
             const originalWidth = img.x;
             const originalHeight = img.y;
@@ -183,9 +187,10 @@
             const x = (pageWidth - imgWidth) / 2;
             const y = (pageHeight - imgHeight) / 2;
 
-            const imageData = "data:image/jpeg;base64,...";
+            const imageData = "data:image/jpeg;base64," + img_src;
+            console.log(imageData);
 
-            pdf.addImage(imageData, 'JPEG', x, y, imgWidth, imgHeight);
+            pdf.addImage(img_src, 'JPEG', x, y, imgWidth, imgHeight);
             pdf.save('imagen-horizontal.pdf');
         }
 

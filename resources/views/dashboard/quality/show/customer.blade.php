@@ -34,7 +34,7 @@
                 </a>
             </div>
             <div class="col">
-                <a href="{{ route('quality.floorplans', ['id' => $customer->id]) }}" class="text-decoration-none">
+                <a href="{{ route('customer.edit', ['id' => $customer->id, 'type' => 2, 'section' => 8]) }}" class="text-decoration-none">
                     <div class="card border border-secondary mb-3">
                         <div class="card-header text-center">Planos</div>
                         <div class="card-body text-dark">
