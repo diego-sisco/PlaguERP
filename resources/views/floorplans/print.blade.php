@@ -84,14 +84,14 @@
         }
 
         $(document).ready(function() {
-            if(devices.length > 0) {
-                console.log(1)
-            const img = getImageSize();
-            const {
-                jsPDF
-            } = window.jspdf;
-            print(jsPDF, img);
-        }
+            console.log(devices.length)
+            if (devices.length > 0) {
+                const {
+                    jsPDF
+                } = window.jspdf;
+                const img = getImageSize();
+                print(jsPDF, img);
+            }
         });
 
         async function getImageAsBase64(url) {
@@ -116,38 +116,10 @@
             });
         }
 
-        async function print(jsPDF, imageUrl) {
-            const {
-                base64,
-                width,
-                height
-            } = await getImageAsBase64(imageUrl);
-
-            const pdf = new jsPDF({
-                orientation: 'landscape',
-                unit: 'mm',
-                format: 'a4', // A4 es 210 x 297 mm
-            });
-
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-
-            const scale = Math.min(pageWidth / width, pageHeight / height);
-            const imgWidth = width * scale;
-            const imgHeight = height * scale;
-
-            const x = (pageWidth - imgWidth) / 2;
-            const y = (pageHeight - imgHeight) / 2;
-
-            pdf.addImage(base64, 'JPEG', x, y, imgWidth, imgHeight);
-            pdf.save('imagen-horizontal.pdf');
-        }
-
-
         function getImageSize() {
             const equalX = devices.map(item => item.img_tamx).every(val => val == devices[0].img_tamx);
             const equalY = devices.map(item => item.img_tamy).every(val => val == devices[0].img_tamy);
-            
+
             if (equalX && equalY) {
                 return {
                     x: devices[0].img_tamx,
@@ -164,14 +136,12 @@
         }
 
         function print(jsPDF, img) {
-            let orientation = img.x > img.y ? "l" : "p";
-            // let orientationImage = img.x > img.y ? "horizontal" : "vertical"
-            const pdf = new jsPDF({ 
+            const orientation = img.x > img.y ? "l" : "p";
+            const pdf = new jsPDF({
                 orientation: orientation,
                 unit: 'mm',
                 format: 'a4' // A4 es 210 x 297 mm
             });
-            
 
             const originalWidth = img.x;
             const originalHeight = img.y;
@@ -179,6 +149,7 @@
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
 
+            // Escala para ajustar la imagen a la página
             const scale = Math.min(pageWidth / originalWidth, pageHeight / originalHeight);
             const imgWidth = originalWidth * scale;
             const imgHeight = originalHeight * scale;
@@ -187,7 +158,28 @@
             const y = (pageHeight - imgHeight) / 2;
             // console.log(imageData);
 
-            pdf.addImage(img_src, 'JPEG', 0, 0, imgWidth, imgHeight);
+            // Agregar la imagen al PDF
+            pdf.addImage(img_src, 'JPEG', x, y, imgWidth, imgHeight);
+
+            // Calcular escalas para los puntos
+            const scaleX = imgWidth / originalWidth;
+            const scaleY = imgHeight / originalHeight;
+
+            // Agregar puntos al PDF
+            devices.forEach(function(point) {
+                const adjustedX = x + point.map_x * scaleX; // Ajustar la coordenada X
+                const adjustedY = y + point.map_y * scaleY; // Ajustar la coordenada Y
+
+                // Dibujar el punto
+                pdf.setFillColor(point.color);
+                pdf.circle(adjustedX, adjustedY, 1, 'F'); // Ajustar posición y tamaño
+
+                // Agregar el texto junto al punto
+                pdf.setFontSize(10);
+                pdf.text(point.nplan.toString(), adjustedX + 2, adjustedY + 2);
+            });
+
+            // Guardar el archivo PDF
             pdf.save('imagen-horizontal.pdf');
         }
 
