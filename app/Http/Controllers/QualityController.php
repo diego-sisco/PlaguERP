@@ -185,11 +185,11 @@ class QualityController extends Controller
     public function contracts(string $id)
     {
         $customer = Customer::find($id);
-        $contracts = Contract::where('customer_id', $customer->id)->orderBy('enddate', 'desc')->get();
+        $contracts = Contract::where('customer_id', $customer->id)->orderBy('enddate', 'desc')->paginate($this->size);
 
         return view(
-            'dashboard.quality.show.contracts',
-            compact('contracts')
+            'dashboard.quality.contract.index',
+            compact('contracts', 'customer')
         );
     }
 
