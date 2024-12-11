@@ -472,6 +472,7 @@ Route::prefix('contract')
         Route::post('/update/{id}', [ContractController::class, 'update'])->name('update');
         Route::get('/destroy/{id}', [ContractController::class, 'destroy'])->name('destroy');
         Route::get('/search', [ContractController::class, 'search'])->name('search');
+        Route::get('/search/orders/{id}/{customerId}', [ContractController::class, 'searchOrders'])->name('search.orders');
         Route::get('/upload', [ContractController::class, ''])->name('upload');
         Route::get('/download/{id}/{file}', [ContractController::class, ''])->name('download');
         Route::get('/getSelectedTechnicians', [ContractController::class, 'getSelectedTechnicians'])->name('getTechnicans');
