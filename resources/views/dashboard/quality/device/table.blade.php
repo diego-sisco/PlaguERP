@@ -5,7 +5,7 @@
 
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">ID</th>
+                <th scope="col">Id</th>
                 <th scope="col">
                     Nombre
                 </th>
@@ -24,7 +24,7 @@
         @forelse ($deviceSummary as $index => $device)
             <tr id="device-{{ $device['id'] }}">
                 <th scope="row"> {{ ++$index }} </th>
-                <td> {{ $device['id'] }} </td>
+                <td class="text-primary"> {{ $device['id'] }} </td>
                 <td> {{ $device['name'] }} </td>
                 <td> {{ $device['count'] }} </td>
                 <td> {{ $device['code'] }} </td>

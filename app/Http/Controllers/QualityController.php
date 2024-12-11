@@ -11,8 +11,9 @@ use App\Models\OrderStatus;
 use App\Models\Service;
 use App\Models\User;
 use App\Models\Contract;
-use Illuminate\Support\Facades\DB;
+use App\Models\ZoneType;
 
+use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Carbon\Carbon;
@@ -205,6 +206,7 @@ class QualityController extends Controller
 
     public function zones(string $id)
     {
+        $zone_types = ZoneType::all();
         $customer = Customer::find($id);
         $zones = ApplicationArea::where('customer_id', $customer->id)->paginate($this->size);
 
@@ -221,7 +223,7 @@ class QualityController extends Controller
 
         return view(
             'dashboard.quality.zone.index',
-            compact('zones', 'customer')
+            compact('zones', 'customer', 'zone_types')
         );
     }
 
@@ -229,6 +231,7 @@ class QualityController extends Controller
     {
         $customer = Customer::find($id);
         $floorplans = FloorPlans::where('customer_id', $customer->id)->get();
+
         $deviceSummary = [];
         foreach ($floorplans as $floorplan) {
             $last_version = $floorplan->versions()->latest('version')->value('version');
@@ -247,18 +250,16 @@ class QualityController extends Controller
                 }
                 $deviceSummary[$deviceId]['count']++;
                 
-                // Agrega los dispositivos que no se han agregado
                 if (!in_array($device->applicationArea->name, $deviceSummary[$deviceId]['zones'])) {
                     $deviceSummary[$deviceId]['zones'][] = $device->applicationArea->name;
                 }
-                // Agrega los planos que no se han agregado
+
                 if (!in_array($floorplan->filename, $deviceSummary[$deviceId]['floorplans'])) {
                     $deviceSummary[$deviceId]['floorplans'][] = $floorplan->filename;
                 }
             }
         }
 
-        
         return view(
             'dashboard.quality.device.index',
             compact('deviceSummary', 'customer')
