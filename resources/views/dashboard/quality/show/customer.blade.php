@@ -8,7 +8,7 @@
         </div>
         <div class="row justify-content-center m-3">
             <div class="col">
-                <a href="{{ route('quality.orders', ['id' => $customer->id, 'statusId' => 1]) }}" class="text-decoration-none">
+                <a href="{{ route('quality.orders', ['id' => $customer->id]) }}" class="text-decoration-none">
                     <div class="card border border-secondary mb-3">
                         <div class="card-header text-center">Ordenes de Servicio</div>
                         <div class="card-body text-dark">

@@ -30,6 +30,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 use Carbon\Carbon;
 
 class OrderController extends Controller
@@ -66,12 +67,14 @@ class OrderController extends Controller
 	public function index(): View
 	{
 		$orders = Order::orderBy('id', 'desc')->paginate($this->size);
+		$order_status = OrderStatus::all();
 		$size = $this->size;
 
 		return view(
 			'order.index',
 			compact(
 				'orders',
+				'order_status',
 				'size'
 			)
 		);
@@ -83,7 +86,8 @@ class OrderController extends Controller
 		$pest_categories = PestCategory::orderBy('category', 'asc')->get();
 		$application_methods = ApplicationMethod::orderBy('name', 'asc')->get();
 		$technicians = User::where('role_id', 3) /*->where('status_id', 2)*/ ->get();
-        $contracts = Contract::all(); 
+		$contracts = Contract::all();
+		$order_status = OrderStatus::all();
 
 		return view(
 			'order.create',
@@ -92,7 +96,8 @@ class OrderController extends Controller
 					'pest_categories',
 					'application_methods',
 					'technicians',
-					'contracts'
+					'contracts',
+					'order_status'
 				)
 			)
 		);
@@ -163,13 +168,13 @@ class OrderController extends Controller
 		OrderService::insert($order_services);
 		OrderTechnician::insert($order_technicians);
 		/*OrderFrequency::insert([
-			'order_id' => $order->id,
-			'number' => $request->input('number'),
-			'frequency' => $request->input('frequency'),
-			'next_date' => $this->generateDate($order->programmed_date, $request->input('number'), $request->input('frequency')),
-			'created_at' => now(),
-			'updated_at' => now()
-		]);*/
+						'order_id' => $order->id,
+						'number' => $request->input('number'),
+						'frequency' => $request->input('frequency'),
+						'next_date' => $this->generateDate($order->programmed_date, $request->input('number'), $request->input('frequency')),
+						'created_at' => now(),
+						'updated_at' => now()
+					]);*/
 
 		$sql = 'INSERT_ORDER_' . $order->id;
 		PagesController::log('store', 'Creacion de orden', $sql);
@@ -179,28 +184,47 @@ class OrderController extends Controller
 
 	public function search(Request $request)
 	{
-		if (empty($request->search)) {
-			return redirect()->back()->with('error', trans('messages.no_results_found'));
+		dd($request->all());
+		$search = $request->input('search');
+		$data = json_decode($search);
+		$orders = Order::where('status_id', $data->status);
+
+		if ($data->customer) {
+			$customerName = '%' . $data->customer . '%';
+			$customerIds = Customer::where('name', 'LIKE', $customerName)->get()->pluck('id');
+			$orders = $orders->whereIn('customer_id', $customerIds);
 		}
 
-		$searchTerm = '%' . $request->search . '%';
-
-		$customerIds = Customer::where('name', 'LIKE', $searchTerm)->get()->pluck('id');
-
-		$orders = Order::whereIn('customer_id', $customerIds)
-			->orWhereDate('programmed_date', 'LIKE', $searchTerm)
-			->orderBy('id', 'desc')
-			->paginate($this->size);
-
-		if ($orders->isEmpty()) {
-			session()->flash('error', trans('messages.no_results_found'));
-			$orders = Order::orderBy('id', 'desc')->paginate($this->size);
+		if ($data->hour) {
+			$orders = $orders->whereTime('start_time', $data->hour);
 		}
+
+		if ($data->date) {
+			[$startDate, $endDate] = array_map(function ($d) {
+				return Carbon::createFromFormat('d/m/Y', trim($d));
+			}, explode(' - ', $data->date));
+			$startDate = $startDate->format('Y-m-d');
+			$endDate = $endDate->format('Y-m-d');
+			$orders = $orders->whereBetween('programmed_date', [$startDate, $endDate]);
+		}
+
+		if ($data->service) {
+			$serviceName = '%' . $data->service . '%';
+			$serviceIds = Service::where('name', 'LIKE', $serviceName)->get()->pluck('id');
+			$orderIds = OrderService::whereIn('service_id', $serviceIds)->get()->pluck('order_id');
+			$orders = $orders->whereIn('id', $orderIds);
+		}
+
+		$size = $this->size;
+		$orders = $orders->paginate($size);
+		$order_status = OrderStatus::all();
 
 		return view(
 			'order.index',
 			compact(
 				'orders',
+				'order_status',
+				'size'
 			)
 		);
 	}
@@ -398,58 +422,58 @@ class OrderController extends Controller
 
 		if ($request->missing('technicians')) {
 			$error = 'No se ha seleccionado un técnico.';
-			
+
 			return back();
 		}
 		/*$changes = '';
 
-						  $oldstart = $order->start_time;
-						  $newstart = $request->input('start_time');
-						  if ($oldstart != $newstart) {
-							  $changes .= 'Cambio de hora de inicio; ';
-						  }
-				  
-						  $oldend = $order->end_time;
-						  $newend = $request->input('end_time');
-						  if ($oldend != $newend) {
-							  $changes .= 'Cambio de hora de finalización; ';
-						  }
-				  
-						  $oldpro = $order->programmed_date;
-						  $newpro = $request->input('programmed_date');
-						  if ($oldpro != $newpro) {
-							  $changes .= 'Cambio de fecha programada; ';
-						  }
-				  
-						  $oldcomp = $order->completed_date;
-						  $newcomp = $request->input('completed_date');
-						  if ($oldcomp != $newcomp) {
-							  $changes .= 'Cambio de fecha de finalización; ';
-						  }
-				  
-						  $oldsta = $order->status_id;
-						  $newsta = $request->input('status');
-						  if ($oldsta != $newsta) {
-							  $changes .= 'Cambio de estado; ';
-						  }
-				  
-						  $oldex = $order->execution;
-						  $newex = $request->input('execution');
-						  if ($oldex != $newex) {
-							  $changes .= 'Cambio en la ejecución; ';
-						  }
-				  
-						  $oldare = $order->areas;
-						  $neware = $request->input('areas');
-						  if ($oldare != $neware) {
-							  $changes .= 'Cambio en las áreas; ';
-						  }
-				  
-						  $oldcome = $order->additional_comments;
-						  $newcome = $request->input('additional_comments');
-						  if ($oldcome != $newcome) {
-							  $changes .= 'Cambio en los comentarios adicionales; ';
-						  }*/
+									  $oldstart = $order->start_time;
+									  $newstart = $request->input('start_time');
+									  if ($oldstart != $newstart) {
+										  $changes .= 'Cambio de hora de inicio; ';
+									  }
+							  
+									  $oldend = $order->end_time;
+									  $newend = $request->input('end_time');
+									  if ($oldend != $newend) {
+										  $changes .= 'Cambio de hora de finalización; ';
+									  }
+							  
+									  $oldpro = $order->programmed_date;
+									  $newpro = $request->input('programmed_date');
+									  if ($oldpro != $newpro) {
+										  $changes .= 'Cambio de fecha programada; ';
+									  }
+							  
+									  $oldcomp = $order->completed_date;
+									  $newcomp = $request->input('completed_date');
+									  if ($oldcomp != $newcomp) {
+										  $changes .= 'Cambio de fecha de finalización; ';
+									  }
+							  
+									  $oldsta = $order->status_id;
+									  $newsta = $request->input('status');
+									  if ($oldsta != $newsta) {
+										  $changes .= 'Cambio de estado; ';
+									  }
+							  
+									  $oldex = $order->execution;
+									  $newex = $request->input('execution');
+									  if ($oldex != $newex) {
+										  $changes .= 'Cambio en la ejecución; ';
+									  }
+							  
+									  $oldare = $order->areas;
+									  $neware = $request->input('areas');
+									  if ($oldare != $neware) {
+										  $changes .= 'Cambio en las áreas; ';
+									  }
+							  
+									  $oldcome = $order->additional_comments;
+									  $newcome = $request->input('additional_comments');
+									  if ($oldcome != $newcome) {
+										  $changes .= 'Cambio en los comentarios adicionales; ';
+									  }*/
 
 
 		$order->fill($request->all());
@@ -513,7 +537,7 @@ class OrderController extends Controller
 		}
 
 		/*$sql = 'UPDATE_ORDER_' . $order->id;
-						  PagesController::log('update', $changes, $sql);*/
+									  PagesController::log('update', $changes, $sql);*/
 
 		return back();
 	}
@@ -593,7 +617,7 @@ class OrderController extends Controller
 			'application_methods',
 			'pests',
 			'services',
-			'products',	
+			'products',
 			'lots',
 			'metrics',
 		));

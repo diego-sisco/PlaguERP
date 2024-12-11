@@ -8,12 +8,6 @@
                 </a>
             @endcan
         </div>
-
-        <div class="col-4">
-            <div type="browser" class="row mb-3">
-                @include('order.browser')
-            </div>
-        </div>
     </div>
 
     <div class="container-fluid">

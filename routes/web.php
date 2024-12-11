@@ -19,7 +19,6 @@ use App\Http\Controllers\GraphicController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\LotController;
-use App\Http\Controllers\QualityController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -80,7 +79,8 @@ Route::prefix('quality')->name('quality.')->middleware('auth')->group(function (
     Route::get('/search', [QualityController::class, 'search'])->name('search');
     Route::get('/customer/{id}', [QualityController::class, 'customer'])->name('customer');
 
-    Route::get('/customer/{id}/orders/{statusId}', [QualityController::class, 'orders'])->name('orders');
+    Route::get('/customer/{id}/orders', [QualityController::class, 'orders'])->name('orders');
+    Route::get('/customer/{id}/orders/search', [QualityController::class, 'searchOrders'])->name('orders.search');
     Route::get('/customer/{id}/contracts', [QualityController::class, 'contracts'])->name('contracts');
     Route::get('/customer/{id}/floorplans', [QualityController::class, 'floorplans'])->name('floorplans');
     Route::get('/customer/{id}/zones', [QualityController::class, 'zones'])->name('zones');
@@ -278,7 +278,7 @@ Route::prefix('orders')
         Route::get('/', [OrderController::class, 'index'])->name('index');
         Route::get('/create', [OrderController::class, 'create'])->name('create');
         Route::post('/store', [OrderController::class, 'store'])->name('store');
-        Route::get('/search', [QualityController::class, 'searchOrders'])->name('search');
+        Route::get('/search', [OrderController::class, 'search'])->name('search');
         // Route::get('/search')
         Route::get('/show/{id}/{section}', [OrderController::class, 'show'])->name('show');
         Route::get('/edit/{id}', [OrderController::class, 'edit'])->name('edit');

@@ -4,57 +4,58 @@
 
 <table class="table table-bordered text-center">
     <thead>
-        <tr>
-            <th scope="col">#</th>
-            <th scope="col">ID</th>
-            <th scope="col">
-                {{ __('order.data.customer') }}
-                @if (!isset($customer))
+        <form method="GET" action="{{ route('quality.orders.search', ['id' => $customer->id]) }}">
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">ID</th>
+                <th scope="col">
+                    {{ __('order.data.customer') }}
+                    @if (!isset($customer))
+                        <div class="input-group input-group-sm">
+                            <input type="text" class="form-control" id="search-customer"
+                                placeholder="Filtrar por cliente" name="customer">
+                            <button class="btn btn-primary" type="submit">
+                                <i class="bi bi-search"></i></button>
+                        </div>
+                    @endif
+                </th>
+                <th scope="col">{{ __('order.data.start_time') }}
                     <div class="input-group input-group-sm">
-                        <input type="text" class="form-control" id="search-customer" placeholder="Filtrar por cliente"
-                            name="searchCustomer">
-                        <button class="btn btn-primary" type="button" onclick="submitSearch()">
+                        <input type="time" class="form-control" id="search-time" name="time"
+                            placeholder="Filtrar por hora programada">
+                        <button class="btn btn-primary" type="submit">
                             <i class="bi bi-search"></i></button>
                     </div>
-                @endif
-            </th>
-            <th scope="col">{{ __('order.data.start_time') }}
-                <div class="input-group input-group-sm">
-                    <input type="time" class="form-control" id="search-time"
-                        placeholder="Filtrar por hora programada" name="start_time">
-                    <button class="btn btn-primary" type="button" onclick="submitSearch()">
-                        <i class="bi bi-search"></i></button>
-                </div>
-            </th>
-            <th scope="col">{{ __('order.data.programmed_date') }}
-                <form class="input-group input-group-sm" method="GET" action="{{ route('planning.activities') }}">
-                    @csrf
-                    <input type="text" class="form-control" id="search-date" value="" />
-                    <button class="btn btn-primary" type="button" id="search-button" onclick="submitSearch()"><i
-                            class="bi bi-search"></i></button>
-                </form>
-            </th>
-            <th scope="col">{{ __('order.data.service') }}
-                <div class="input-group input-group-sm">
-                    <input type="text" class="form-control" id="search-service" placeholder="Filtrar por servicio"
-                        name="searchService">
-                    <button class="btn btn-primary" type="button" onclick="submitSearch()">
-                        <i class="bi bi-search"></i></button>
-                </div>
-            </th>
-            <th scope="col">{{ __('order.data.status') }}
-                <div class="input-group input-group-sm">
-                    <select class="form-select form-select-sm" id="search-status">
-                        @foreach ($order_status as $status)
-                            <option value="{{ $status->id }}">{{ $status->name }}</option>
-                        @endforeach
-                    </select>
-                    <button class="btn btn-primary" type="button" onclick="submitSearch()">
-                        <i class="bi bi-search"></i></button>
-                </div>
-            </th>
-            <th scope="col">{{ __('buttons.actions') }}</th>
-        </tr>
+                </th>
+                <th scope="col">{{ __('order.data.programmed_date') }}
+                    <div class="input-group input-group-sm" method="GET" action="{{ route('planning.activities') }}">
+                        @csrf
+                        <input type="text" class="form-control" id="search-date" name="date" value="" />
+                        <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
+                    </div>
+                </th>
+                <th class="col-4" scope="col">{{ __('order.data.service') }}
+                    <div class="input-group input-group-sm">
+                        <input type="text" class="form-control" id="search-service" name="service"
+                            placeholder="Filtrar por servicio">
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i></button>
+                    </div>
+                </th>
+                <th scope="col">{{ __('order.data.status') }}
+                    <div class="input-group input-group-sm">
+                        <select class="form-select form-select-sm" id="search-status" name="status">
+                            @foreach ($order_status as $status)
+                                <option value="{{ $status->id }}">{{ $status->name }}</option>
+                            @endforeach
+                        </select>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="bi bi-search"></i></button>
+                    </div>
+                </th>
+                <th scope="col">{{ __('buttons.actions') }}</th>
+            </tr>
+        </form>
     </thead>
     <tbody>
         @foreach ($orders as $index => $order)

@@ -20,7 +20,7 @@
         <div class="container-fluid">
             @include('messages.alert')
             <div class="table-responsive">
-                @include('order.tables.index')
+                @include('dashboard.quality.order.table')
             </div>
             {{ $orders->links('pagination::bootstrap-5') }}
         </div>
