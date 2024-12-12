@@ -29,6 +29,7 @@
         const devices = @json($devices);
         const legend = @json($legend);
         const img_src = "{{ route('image.show', ['filename' => $floorplan->path]) }}";
+        const logo_src = "{{ asset('images/logo.png') }}";
         // console.log(img_src);
         var points = [];
         var size = {};
@@ -149,13 +150,15 @@
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
 
-            // Escala para ajustar la imagen a la página
-            const scale = Math.min(pageWidth / originalWidth, pageHeight / originalHeight);
+            const scale =Math.min(pageWidth / originalWidth, pageHeight / originalHeight)/1.225;
+            
             const imgWidth = originalWidth * scale;
             const imgHeight = originalHeight * scale;
-
-            const x = (pageWidth - imgWidth) / 2;
-            const y = (pageHeight - imgHeight) / 2;
+            console.log("height: " + originalHeight + ", imgWidth: " + originalWidth);
+            console.log("scale: " + scale);
+            console.log("heightScale: " + imgHeight + ", imgWidthScale: " + imgWidth);
+            const x = 0;
+            const y = 0;
             // console.log(imageData);
 
             // Agregar la imagen al PDF
@@ -179,8 +182,73 @@
                 pdf.text(point.nplan.toString(), adjustedX + 2, adjustedY + 2);
             });
 
+            const spaceWidth = pageWidth - imgWidth - 3;
+            const spaceHeight = pageHeight - imgHeight - 3;
+            const offsetX = spaceWidth * 0.05;
+            const offsetY = spaceHeight * 0.05;
+            const marginX = offsetX + offsetX;
+            const marginY = offsetY + offsetY;
+
+            const simbologyX = imgWidth + offsetX;
+            const simbologyY = imgHeight + offsetY;
+
+            // Medidas del logo
+            const logoWidth = 602, logoHeight = 180;
+            const scaleLogo = Math.min(
+                spaceWidth > spaceHeight 
+                    ? spaceWidth / logoWidth
+                    : spaceHeight / logoHeight,
+                0.11
+            );
+            const logoResizeWidth = (logoWidth - marginX) * scaleLogo;
+            const logoResizeHeight = (logoHeight - marginY) * scaleLogo;
+            console.log(scaleLogo);
+            console.log(spaceWidth / logoWidth )
+            const textTest = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. \nNunc tristique tellus est, id facilisis turpis lacinia nec. Sed efficitur tortor at volutpat accumsan. Donec at tortor tortor. Duis ultrices cursus blandit. Suspendisse condimentum eget orci ultrices elementum. Nam venenatis suscipit est id facilisis. Morbi et porta diam. Proin semper nunc eu erat sagittis dignissim et in turpis. Sed cursus dui in diam tincidunt imperdiet. Vestibulum ornare odio eget dignissim ultrices. Nam sollicitudin pretium eleifend.";
+
+            if (spaceWidth > spaceHeight) {
+                // El espacio esta a la derecha
+                pdf.addImage(logo_src, 'PNG', simbologyX, offsetX, logoResizeWidth, logoResizeHeight);
+                addWrappedText(pdf, textTest, simbologyX, offsetX + logoResizeHeight, pageWidth - simbologyX - 10, pageHeight - offsetY - 10);
+            } else {
+                // el espacio esta abajo
+                pdf.addImage(logo_src, 'PNG', offsetY, simbologyY, logoResizeWidth, logoResizeHeight);
+                addColumnText(pdf, textTest, offsetY, simbologyY + logoResizeHeight, pageWidth / 3 - 5, pageHeight - offsetY, 3);
+            }
+
             // Guardar el archivo PDF
             pdf.save('imagen-horizontal.pdf');
+        }
+
+        function addWrappedText(pdf, text, x, y, maxWidth, maxHeight) {
+            const lines = pdf.splitTextToSize(text, maxWidth);
+            let currentY = y;
+
+            for (const line of lines) {
+                if (currentY + 10 > maxHeight) break; // Detener si excede la altura máxima
+                pdf.text(line, x, currentY);
+                currentY += 5; // Espaciado entre líneas
+            }
+        }
+
+        // Ajustar texto en columnas
+        function addColumnText(pdf, text, startX, startY, columnWidth, maxHeight, numColumns) {
+            const lines = pdf.splitTextToSize(text, columnWidth);
+            let currentX = startX;
+            let currentY = startY;
+
+            for (const line of lines) {
+                if (currentY + 10 > maxHeight) {
+                    // Mover a la siguiente columna
+                    currentX += columnWidth + 5; // Espaciado entre columnas
+                    currentY = startY;
+
+                    if (currentX > startX + columnWidth * numColumns) break; // Detener si excede el número de columnas
+                }
+
+                pdf.text(line, currentX, currentY);
+                currentY += 5;
+            }
         }
 
 
