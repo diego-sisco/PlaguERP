@@ -27,6 +27,7 @@ use App\Models\OrderInsidences;
 use App\Models\Branch;
 use App\Models\OrderName;
 
+use Carbon\Carbon;
 use Mpdf\Mpdf;
 
 use SimpleSoftwareIO\QrCode\Facades\QrCode as QrCode;
@@ -131,6 +132,7 @@ class FloorPlansController extends Controller
 
     public function print(string $id, string $type)
     {
+        
         $data = [];
         $floorplan = FloorPlans::findOrFail($id);
         if ($floorplan->service_id) {
@@ -149,17 +151,26 @@ class FloorPlansController extends Controller
                     $data[$key]['count']++;
                     $data[$key]['numbers'][] = $device->nplan;
                 } else {
+                    $productName = ProductCatalog::where("id", $device->product_id)->value('name');
+                    // dd($productName);
                     $data[] = [
                         'type' => $type,
                         'label' => $device->controlPoint->name,
                         'color' => $device->controlPoint->color,
                         'count' => 1,
-                        'numbers' => [$device->nplan]
+                        'numbers' => [$device->nplan],
+                        'product' => $productName ? $productName : "No aplica",
                     ];
                 }
             }
+
+            Carbon::setLocale('es');
+            setlocale(LC_TIME, 'es_ES.UTF-8'); 
+
             $legend = [
                 'name' => $floorplan->filename,
+                'floorplan_version' => $floorplan->versions()->latest('version')->value('version'),
+                'date_version' => Carbon::parse($floorplan->versions()->latest('version')->value('created_at'))->translatedFormat('F Y'),
                 'customer' => $floorplan->customer->name,
                 'service' => $floorplan->service->name,
                 'quantity' => $devices->count(),
