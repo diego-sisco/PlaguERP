@@ -152,7 +152,7 @@
                         <label class="form-label is-required">Rango de fecha</label>
                         <div class="input-group">
                             <input type="text" hidden id="search-date-url" value="{{ route('ajax.quality.search.date.technician', ['id' => $customer->id]) }}" />
-                            <input type="text" class="form-control border-secondary" id="search-date" name="date" value="" autocomplete="off"/>
+                            <input type="text" class="form-control border-secondary border-opacity-50" id="search-date" name="date" value="" autocomplete="off"/>
                             <button class="btn btn-primary" onclick="getOrdersByDate()"><i class="bi bi-search"></i> {{ __('buttons.search')}}</button>
                         </div>
                     </div>

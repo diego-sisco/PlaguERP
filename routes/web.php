@@ -279,6 +279,8 @@ Route::prefix('orders')
         Route::get('/create', [OrderController::class, 'create'])->name('create');
         Route::post('/store', [OrderController::class, 'store'])->name('store');
         Route::get('/search', [OrderController::class, 'search'])->name('search');
+
+        Route::post('/store/signature', [OrderController::class, 'storeSignature'])->name('signature.store');
         // Route::get('/search')
         Route::get('/show/{id}/{section}', [OrderController::class, 'show'])->name('show');
         Route::get('/edit/{id}', [OrderController::class, 'edit'])->name('edit');
