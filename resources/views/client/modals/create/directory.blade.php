@@ -9,7 +9,7 @@
              </div>
              <div class="modal-body">
                  <label for="name" class="form-label is-required">Nombre: </label>
-                 <input type="text" class="form-control border-secondary border-opacity-25" id="name"
+                 <input type="text" class="form-control border-secondary border-opacity-50" id="name"
                      name="name" maxlength="50" autocomplete="off" required>
                  <input type="hidden" name="path" value="{{ $data['root_path'] }}" />
              </div>

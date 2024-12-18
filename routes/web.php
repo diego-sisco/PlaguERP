@@ -19,7 +19,7 @@ use App\Http\Controllers\GraphicController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\WarehouseController;
 use App\Http\Controllers\LotController;
-
+use App\Http\Controllers\RotationPlanController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -85,7 +85,7 @@ Route::prefix('quality')->name('quality.')->middleware('auth')->group(function (
     Route::get('/customer/{id}/floorplans', [QualityController::class, 'floorplans'])->name('floorplans');
     Route::get('/customer/{id}/zones', [QualityController::class, 'zones'])->name('zones');
     Route::get('/customer/{id}/devices', [QualityController::class, 'devices'])->name('devices');
-    
+
     //Route::get('/control', [PagesController::class, 'qualityControl'])->name('control');
     //Route::get('/control/destroy/{customerId}', [PagesController::class, 'qualityControlDestroy'])->name('control.destroy');
     //Route::get('/orders/{status}', [PagesController::class, 'qualityOrders'])->name('orders');
@@ -242,7 +242,7 @@ Route::prefix('customers')
         Route::get('/edit/{id}/{type}/{section}', [CustomerController::class, 'edit'])->name('edit');
         Route::get('/show/{id}/{type}/{section}', [CustomerController::class, 'show'])->name('show');
         Route::post('/update/{id}/{type}', [CustomerController::class, 'update'])->name('update');
-        Route::get('/delete/{id}', [CustomerController::class, 'destroy'])->name('destroy');
+        Route::get('/destroy/{id}', [CustomerController::class, 'destroy'])->name('destroy');
         Route::get('/search/{type}', [CustomerController::class, 'search'])->name('search');
         Route::post('/file/upload', [CustomerController::class, 'store_file'])->name('file.upload');
         Route::get('/file/download/{id}', [CustomerController::class, 'download_file'])->name('file.download');
@@ -284,7 +284,7 @@ Route::prefix('orders')
         Route::get('/edit/{id}', [OrderController::class, 'edit'])->name('edit');
         Route::post('/update/{id}', [OrderController::class, 'update'])->name('update');
         Route::get('/destroy/{id}', [OrderController::class, 'destroy'])->name('destroy');
-        
+
         Route::post('/search/customer', [OrderController::class, 'searchCustomer'])->name('search.customer');
         Route::post('/search/service/{type}', [OrderController::class, 'searchService'])->name('search.service');
 
@@ -344,7 +344,7 @@ Route::prefix('floorplans')
     ->group(function () {
         Route::get('/{id}', [FloorplansController::class, 'index'])->name('index');
         Route::get('/create/{id}', [FloorplansController::class, 'create'])->name('create');
-
+        Route::post('/search/devices/{id}', [FloorplansController::class, 'searchDevicesbyVersion'])->name('search.devices');
         Route::get('/print/{id}/{type}', [FloorplansController::class, 'print'])->name('print');
         Route::post('/update/{id}/{section}', [FloorplansController::class, 'update'])->name('update');
         Route::get('/delete/{id}/{customerID}/{type}', [FloorplansController::class, 'delete'])->name('delete');
@@ -461,10 +461,11 @@ Route::prefix('question')
     });
 
 //RUTAS PARA CALENDARIO
-Route::prefix('contract')
+Route::prefix('contracts')
     ->name('contract.')
     ->middleware('auth')
     ->group(function () {
+        Route::get('/', [ContractController::class, 'index'])->name('index');
         Route::get('/create', [ContractController::class, 'create'])->name('create');
         Route::post('/store', [ContractController::class, 'store'])->name('store');
         Route::get('/show/{id}/{section}', [ContractController::class, 'show'])->name('show');
@@ -482,7 +483,23 @@ Route::prefix('contract')
         Route::get('/file/download/{id}', [ContractController::class, 'contract_downolad'])->name('file.download');
     });
 
-Route::get('/contracts', [ContractController::class, 'index'])->name('contract.index')->middleware('auth');
+// RUTAS PARA EL PLAN DE ROTACION
+
+Route::prefix('rotationplan')
+    ->name('rotation.')
+    ->middleware('auth')
+    ->group(function () {
+        Route::get('/{contractId}', [RotationPlanController::class, 'index'])->name('index');
+        Route::get('/create/{contractId}', [RotationPlanController::class, 'create'])->name('create');
+        Route::post('/store', [RotationPlanController::class, 'store'])->name('store');
+        Route::get('/show/{id}', [RotationPlanController::class, 'show'])->name('show');
+        Route::get('/edit/{id}', [RotationPlanController::class, 'edit'])->name('edit');
+        Route::post('/update/{id}', [RotationPlanController::class, 'update'])->name('update');
+        Route::get('/destroy/{id}', [RotationPlanController::class, 'destroy'])->name('destroy');
+
+        Route::post('/ajax/search/product', [RotationPlanController::class, 'searchProduct'])->name('search.product');
+    });
+
 
 //Rutas de busqueda para AJAX
 Route::prefix('ajax')
@@ -496,7 +513,7 @@ Route::prefix('ajax')
         Route::post('/quality/search/orders/time', [QualityController::class, 'getOrdersByTime'])->name('quality.search.time');
         Route::post('/quality/search/orders/service', [QualityController::class, 'getOrdersByService'])->name('quality.search.service');
         Route::post('/quality/search/orders/status', [QualityController::class, 'getOrdersByStatus'])->name('quality.search.status');
-        
+
 
         Route::get('/contract/service', [ContractController::class, 'getSelectData'])->name('contract.service');
         Route::post('/search/devices/{floorplan_id}', [FloorPlansController::class, 'searchDevices'])->name('search.devices');

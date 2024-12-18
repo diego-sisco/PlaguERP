@@ -247,7 +247,7 @@ class MyPDF extends TCPDF
 
         if ($order->services->isNotEmpty()) {
             foreach ($order->services as $service) {
-                if ($service->prefix == 2) {
+                if ($service->prefix >= 2) {
                     $service_details = ServiceDetails::where('service_id', $service->id);
                     if ($order->contract_id) {
                         $service_details = $service_details->where('contract_id', $order->contract_id);

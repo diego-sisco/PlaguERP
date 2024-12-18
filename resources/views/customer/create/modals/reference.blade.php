@@ -12,7 +12,7 @@
                     <div class="row mb-3">
                         <div class="col-3">
                             <label for="name" class="form-label is-required">{{ __('customer.customer_table.type_ref') }}</label>
-                            <select class="form-select border-secondary border-opacity-25 " name="reference_type_id" id="type" required
+                            <select class="form-select border-secondary border-opacity-50 " name="reference_type_id" id="type" required
                                 onchange="showLocation(this.value)">
                                 @foreach ($reference_types as $item)
                                     <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -22,37 +22,37 @@
                     </div>
                     <div class="col-4 mb-2">
                         <label for="name" class="form-label is-required">{{ __('customer.customer_table.name') }}</label>
-                        <input class="form-control border-secondary border-opacity-25" type="text" maxlength="255" name="name" required>
+                        <input class="form-control border-secondary border-opacity-50" type="text" maxlength="255" name="name" required>
                     </div>
                     <div class="col-4 mb-2">
                         <label for="phone" class="form-label is-required">{{ __('customer.customer_table.phone') }}</label>
-                        <input type="number" minlength="0" maxlength="10" class="form-control border-secondary border-opacity-25" name="phone"
+                        <input type="number" minlength="0" maxlength="10" class="form-control border-secondary border-opacity-50" name="phone"
                             required>
                     </div>
                     <div class="col-4 mb-2">
                         <label for="email" class="form-label is-required">{{ __('customer.customer_table.correo') }}</label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="email" required>
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="email" required>
                     </div>
                     <div class="col-4 mb-2">
                         <label for="department"
                             class="form-label is-required">{{ __('customer.customer_table.department') }}</label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="department" required>
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="department" required>
                     </div>
             
                     <div class="col-12 location mb-0">
                         <div class="row">
                             <div class="col-4">
                                 <label for="address" class="form-label">{{ __('customer.customer_table.address') }}</label>
-                                <input type="text" class="form-control border-secondary border-opacity-25" name="address">
+                                <input type="text" class="form-control border-secondary border-opacity-50" name="address">
                             </div>
                             <div class="col-2">
                                 <label for="zip-code" class="form-label">{{ __('customer.customer_table.zipcode') }}</label>
-                                <input type="number" minlength="0" maxlength="5" class="form-control border-secondary border-opacity-25"
+                                <input type="number" minlength="0" maxlength="5" class="form-control border-secondary border-opacity-50"
                                     name="zip_code">
                             </div>
                             <div class="col-2">
                                 <label for="state" class="form-label">{{ __('customer.data.state') }}: </label>
-                                <select class="form-select border-secondary border-opacity-25 " id="state" name="state" onchange="load_city()">
+                                <select class="form-select border-secondary border-opacity-50 " id="state" name="state" onchange="load_city()">
                                     <option value="" selected disabled hidden></option>
                                     @foreach ($states as $state)
                                         <option value="{{ $state['key'] }}">{{ $state['name'] }}</option>
@@ -62,7 +62,7 @@
                             </div>
                             <div class="col-3">
                                 <label for="city" class="form-label">{{ __('customer.data.city') }}: </label>
-                                <select type="text" class="form-select border-secondary border-opacity-25 " id="city" name="city">
+                                <select type="text" class="form-select border-secondary border-opacity-50 " id="city" name="city">
                                     @foreach ($states as $state)
                                         @foreach ($cities[$state['key']] as $city)
                                             <option value="{{ $city }}">{{ $city }}</option>

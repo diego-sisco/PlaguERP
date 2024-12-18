@@ -16,6 +16,8 @@ return new class extends Migration
             $table->foreignId('contract_id')->constrained('contract')->onDelete('cascade');
             $table->foreignId('service_id')->constrained('service')->onDelete('cascade');
             $table->foreignId('execution_frequency_id')->constrained('exec_frequency')->onDelete('cascade');
+            $table->integer('interval');
+            $table->json('days');
             $table->integer('total');
             $table->timestamps();
         });

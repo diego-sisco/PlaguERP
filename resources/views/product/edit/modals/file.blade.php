@@ -22,7 +22,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="file" class="form-label is-required">Archivo</label>
-                    <input type="file" class="form-control border-secondary border-opacity-25 rounded"
+                    <input type="file" class="form-control border-secondary border-opacity-50 rounded"
                         accept=".pdf .png, .jpg, .jpeg" name="file" id="file" required>
                 </div>
             </div>

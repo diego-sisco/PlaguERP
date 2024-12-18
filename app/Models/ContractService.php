@@ -16,6 +16,8 @@ class ContractService extends Model
         'contract_id',
         'service_id',
         'execution_frequency_id',
+        'interval',
+        'days',
         'total',
     ];
 

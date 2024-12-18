@@ -5,7 +5,7 @@
     <div class="row mb-3">
         <div class="col">
             <label for="role" class="form-label">{{ __('modals.data.role') }}: </label>
-            <select class="form-select border-secondary border-opacity-25" id="role" name="role">
+            <select class="form-select border-secondary border-opacity-50" id="role" name="role">
                 @foreach ($roles as $role)
                     @if ($role->id == $user->role_id)
                         <option value="{{ $role->id }}" selected>{{ $role->name }}</option>
@@ -17,7 +17,7 @@
         </div>
         <div class="col">
             <label for="department" class="form-label">{{ __('modals.data.department') }}: </label>
-            <select class="form-select border-secondary border-opacity-25" id="work_department" name="work_department">
+            <select class="form-select border-secondary border-opacity-50" id="work_department" name="work_department">
                 @foreach ($work_departments as $department)
                     @if ($department->id == $user->work_department_id)
                         <option value="{{ $department->id }}" selected>{{ $department->name }}</option>
@@ -29,7 +29,7 @@
         </div>
         <div class="col">
             <label for="status" class="form-label">{{ __('modals.data.status') }}: </label>
-            <select class="form-select border-secondary border-opacity-25" id="status" name="status">
+            <select class="form-select border-secondary border-opacity-50" id="status" name="status">
                 @foreach ($statuses as $status)
                     @if ($status->id == $user->status_id)
                         <option value="{{ $status->id }}" selected>{{ $status->name }}</option>

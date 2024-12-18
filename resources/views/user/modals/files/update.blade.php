@@ -9,7 +9,7 @@
             <div class="modal-body row">
                 <div class="col-12 mb-3">
                     <label for="end_time" class="form-label">Fecha de expiración:</label>
-                    <input type="date" class="form-control border-secondary border-opacity-25" id="expirated-at"
+                    <input type="date" class="form-control border-secondary border-opacity-50" id="expirated-at"
                         name="expirated_at">
                 </div>
                 <div class="col-12">

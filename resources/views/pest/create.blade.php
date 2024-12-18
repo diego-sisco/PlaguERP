@@ -21,19 +21,19 @@
                                 <div class="col-12 mb-3">
                                     <label for="name" class="form-label is-required">{{ __('pest.data.name') }}:
                                     </label>
-                                    <input type="text" class="form-control border-secondary border-opacity-25"
+                                    <input type="text" class="form-control border-secondary border-opacity-50"
                                         id="name" name="name" required>
                                 </div>
                                 <div class="col-6 mb-3">
                                     <label for="pcode" class="form-label is-required">{{ __('pest.data.code') }}:
                                     </label>
-                                    <input type="text" class="form-control border-secondary border-opacity-25"
+                                    <input type="text" class="form-control border-secondary border-opacity-50"
                                         id="pest-code" name="pest_code" value=0 required>
                                 </div>
                                 <div class="col-6 mb-3">
                                     <label for="categid" class="form-label is-required">{{ __('pest.data.category') }}:
                                     </label>
-                                    <select class="form-select border-secondary border-opacity-25 " id="pest-category-ID"
+                                    <select class="form-select border-secondary border-opacity-50 " id="pest-category-ID"
                                         name="pest_category_id">
                                         @foreach ($pestCategories as $pestCategory)
                                             <option value="{{ $pestCategory->id }}">{{ $pestCategory->category }}</option>
@@ -43,14 +43,14 @@
                                 <div class="col-12 mb-3">
                                     <label for="categid" class="form-label">Imagen:
                                     </label>
-                                    <input type="file" class="form-control border-secondary border-opacity-25 rounded"
+                                    <input type="file" class="form-control border-secondary border-opacity-50 rounded"
                                         accept=".png, .jpg, .jpeg" name="img" id="img">
                                 </div>
                             </div>
                         </div>
                         <div class="col-6 mb-3">
                             <label for="desc" class="form-label is-required">{{ __('pest.data.description') }}: </label>
-                            <textarea class="form-control border-secondary border-opacity-25 h-100" placeholder="Descripción de la plaga"
+                            <textarea class="form-control border-secondary border-opacity-50 h-100" placeholder="Descripción de la plaga"
                                 id="floatingTextarea" name="description" required>S/D</textarea>
                         </div>
                     </div>

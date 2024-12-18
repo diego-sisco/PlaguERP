@@ -85,7 +85,7 @@ class OrderController extends Controller
 		$success = $warning = $error = null;
 		$pest_categories = PestCategory::orderBy('category', 'asc')->get();
 		$application_methods = ApplicationMethod::orderBy('name', 'asc')->get();
-		$technicians = User::where('role_id', 3) /*->where('status_id', 2)*/ ->get();
+		$technicians = User::where('role_id', 3)->where('status_id', 2)->orderBy('name', 'asc')->get();
 		$contracts = Contract::all();
 		$order_status = OrderStatus::all();
 
@@ -107,8 +107,6 @@ class OrderController extends Controller
 	{
 		$selected_services = json_decode($request->input('services'));
 		$selected_technicians = json_decode($request->input('technicians'));
-
-		//dd($request->all());
 
 		if (!$request->input('customer_id')) {
 			return back();
@@ -156,8 +154,8 @@ class OrderController extends Controller
 				];
 			}
 		} else {
-			foreach ($selected_technicians as $id) {
-				$technician = Technician::where('user_id', $id)->first();
+			foreach ($selected_technicians as $technicianId) {
+				$technician = Technician::where('user_id', $technicianId)->first();
 				$order_technicians[] = [
 					'technician_id' => $technician->id,
 					'order_id' => $order->id,
@@ -168,13 +166,13 @@ class OrderController extends Controller
 		OrderService::insert($order_services);
 		OrderTechnician::insert($order_technicians);
 		/*OrderFrequency::insert([
-							  'order_id' => $order->id,
-							  'number' => $request->input('number'),
-							  'frequency' => $request->input('frequency'),
-							  'next_date' => $this->generateDate($order->programmed_date, $request->input('number'), $request->input('frequency')),
-							  'created_at' => now(),
-							  'updated_at' => now()
-						  ]);*/
+									'order_id' => $order->id,
+									'number' => $request->input('number'),
+									'frequency' => $request->input('frequency'),
+									'next_date' => $this->generateDate($order->programmed_date, $request->input('number'), $request->input('frequency')),
+									'created_at' => now(),
+									'updated_at' => now()
+								]);*/
 
 		$sql = 'INSERT_ORDER_' . $order->id;
 		PagesController::log('store', 'Creacion de orden', $sql);
@@ -388,7 +386,6 @@ class OrderController extends Controller
 	public function edit(string $id): View
 	{
 		$services = $pest_categories = $application_methods = [];
-
 		$order = Order::find($id);
 		$orders = Order::orderBy('id', 'desc')->get();
 		$order_status = OrderStatus::all();
@@ -410,7 +407,7 @@ class OrderController extends Controller
 		}
 		$customer = Customer::find($order->customer_id);
 
-		$technicians = Technician::all();
+		$technicians = User::where('role_id', 3)->where('status_id', 2)->orderBy('name', 'asc')->get();
 
 		return view(
 			'order.edit',
@@ -434,56 +431,6 @@ class OrderController extends Controller
 
 			return back();
 		}
-		/*$changes = '';
-
-											$oldstart = $order->start_time;
-											$newstart = $request->input('start_time');
-											if ($oldstart != $newstart) {
-												$changes .= 'Cambio de hora de inicio; ';
-											}
-									
-											$oldend = $order->end_time;
-											$newend = $request->input('end_time');
-											if ($oldend != $newend) {
-												$changes .= 'Cambio de hora de finalización; ';
-											}
-									
-											$oldpro = $order->programmed_date;
-											$newpro = $request->input('programmed_date');
-											if ($oldpro != $newpro) {
-												$changes .= 'Cambio de fecha programada; ';
-											}
-									
-											$oldcomp = $order->completed_date;
-											$newcomp = $request->input('completed_date');
-											if ($oldcomp != $newcomp) {
-												$changes .= 'Cambio de fecha de finalización; ';
-											}
-									
-											$oldsta = $order->status_id;
-											$newsta = $request->input('status');
-											if ($oldsta != $newsta) {
-												$changes .= 'Cambio de estado; ';
-											}
-									
-											$oldex = $order->execution;
-											$newex = $request->input('execution');
-											if ($oldex != $newex) {
-												$changes .= 'Cambio en la ejecución; ';
-											}
-									
-											$oldare = $order->areas;
-											$neware = $request->input('areas');
-											if ($oldare != $neware) {
-												$changes .= 'Cambio en las áreas; ';
-											}
-									
-											$oldcome = $order->additional_comments;
-											$newcome = $request->input('additional_comments');
-											if ($oldcome != $newcome) {
-												$changes .= 'Cambio en los comentarios adicionales; ';
-											}*/
-
 
 		$order->fill($request->all());
 		$order->updated_at = now();
@@ -531,10 +478,11 @@ class OrderController extends Controller
 					}
 				}
 			} else {
-				foreach ($ot_array as $technicianID) {
+				foreach ($ot_array as $technicianId) {
+					$technician = Technician::where('user_id', $technicianId)->first();
 					OrderTechnician::updateOrCreate(
-						['technician_id' => $technicianID, 'order_id' => $id],
-						['technician_id' => $technicianID, 'order_id' => $id]
+						['technician_id' => $technicianId, 'order_id' => $id],
+						['technician_id' => $technicianId, 'order_id' => $id]
 					);
 				}
 
@@ -546,7 +494,7 @@ class OrderController extends Controller
 		}
 
 		/*$sql = 'UPDATE_ORDER_' . $order->id;
-											PagesController::log('update', $changes, $sql);*/
+												  PagesController::log('update', $changes, $sql);*/
 
 		return back();
 	}

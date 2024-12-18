@@ -1,6 +1,5 @@
 <div class="col-12 mb-3">
-    <a href="{{ route('customer.create', ['id' => $customer->id, 'type' => 2]) }}"
-        class="btn btn-primary"> Crear sede
+    <a href="{{ route('customer.create', ['id' => $customer->id, 'type' => 2]) }}" class="btn btn-primary"> Crear sede
     </a>
 </div>
 <table class="table text-center table-bordered">
@@ -24,8 +23,7 @@
                     <td class="align-middle">{{ $sede->address }}</td>
                     <td class="align-middle">{{ $sede->phone }}</td>
                     <td class="align-middle">{{ $sede->email }}</td>
-                    <td
-                        class="align-middle {{ $sede->status == 1 ? 'text-success' : 'text-danger' }} fw-bold">
+                    <td class="align-middle {{ $sede->status == 1 ? 'text-success' : 'text-danger' }} fw-bold">
                         {{ $sede->status == 1 ? 'Activo' : 'Inactivo' }}
                     </td>
                     <td class="align-middle">
@@ -38,6 +36,11 @@
                             class="btn btn-secondary btn-sm btn-sm">
                             <i class="bi bi-pencil-square"></i> {{ __('buttons.edit') }}
                         </a>
+                        <a href="{{ route('customer.destroy', ['id' => $sede->id]) }}"
+                            class="btn btn-danger btn-sm"
+                            onclick="return confirm('{{ __('messages.are_you_sure_delete') }}')"><i
+                                class="bi bi-trash-fill"></i>
+                            {{ __('buttons.delete') }}</a>
                     </td>
                 </tr>
             @endforeach

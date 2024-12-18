@@ -30,17 +30,17 @@
             </div>
             <div class="col-3">
                 <label for="client" class="form-label">Nombre </label>
-                <input class="form-control border-secondary border-opacity-25" name="customer_name" id="customer-name"
+                <input class="form-control border-secondary border-opacity-50" name="customer_name" id="customer-name"
                     placeholder="Example" value="" />
             </div>
             <div class="col-3">
                 <label for="client" class="form-label">Teléfono </label>
-                <input class="form-control border-secondary border-opacity-25" name="customer_phone" id="customer-phone"
+                <input class="form-control border-secondary border-opacity-50" name="customer_phone" id="customer-phone"
                     placeholder="0000000000" value="" />
             </div>
             <div class="col-6">
                 <label for="client" class="form-label">Dirección </label>
-                <input class="form-control border-secondary border-opacity-25" name="customer_address"
+                <input class="form-control border-secondary border-opacity-50" name="customer_address"
                     id="customer-address" placeholder="Example #00, Col. Example" value="" />
             </div>
             <div class="col-3 my-2">
@@ -81,7 +81,7 @@
                 <label for="client" class="form-label is-required">
                     {{ __('contract.data.start_date') }}
                 </label>
-                <input type="date" class="form-control border-secondary border-opacity-25" name="startdate"
+                <input type="date" class="form-control border-secondary border-opacity-50" name="startdate"
                     id="startdate" oninput="set_endDate()" required />
             </div>
 
@@ -89,7 +89,7 @@
                 <label for="client" class="form-label">
                     {{ __('contract.data.end_date') }}
                 </label>
-                <input type="date" class="form-control border-secondary border-opacity-25" name="enddate"
+                <input type="date" class="form-control border-secondary border-opacity-50" name="enddate"
                     id="enddate" />
             </div>
         </div>
@@ -121,7 +121,7 @@
                     {{ __('contract.title.find_service') }}
                 </h6>
                 <div class="input-group mb-3">
-                    <input type="search" class="form-control border-secondary border-opacity-25"
+                    <input type="search" class="form-control border-secondary border-opacity-50"
                         id="search-service-input" name="search_service_input" placeholder="Nombre del servicio" />
                     <button class="btn btn-primary btn-sm" type="button" id="btn-search-service"
                         onclick="searchService()">
@@ -207,6 +207,7 @@
     var execution_frecuencies = @json($exec_frecuencies);
     var contracts = @json($contracts);
     var orders = [];
+    var intervals = @json($intervals);
 
     const new_client_account = false;
 </script>

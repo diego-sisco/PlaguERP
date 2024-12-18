@@ -14,7 +14,7 @@
                     <div class="row">
                         <div class="col mb-3">
                             <label for="question" class="form-label is-required">Texto de la pregunta: </label>
-                            <input type="text" class="form-control border-secondary border-opacity-25" id="question"
+                            <input type="text" class="form-control border-secondary border-opacity-50" id="question"
                                 name="question" required>
                         </div>
                     </div>

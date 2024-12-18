@@ -13,15 +13,15 @@
         <div class="row">
             <div class="col-sm">
                 <label class="form-label is-required" for="fechaI">Fecha Inicio:</label>
-                <input class="form-control border-secondary border-opacity-25 "  type="date" name="fechaI" required>
+                <input class="form-control border-secondary border-opacity-50 "  type="date" name="fechaI" required>
             </div>
             <div class="col-sm">
                 <label class="form-label is-required" for="fechaF">Fecha Fin:</label>
-                <input class="form-control border-secondary border-opacity-25 " type="date" name="fechaF" required>
+                <input class="form-control border-secondary border-opacity-50 " type="date" name="fechaF" required>
             </div>
             <div class="col-sm">
                 <label class="form-label is-required" for="branch">Sucursal:</label>
-                <select class="form-control border-secondary border-opacity-25 " name="branch" required>
+                <select class="form-control border-secondary border-opacity-50 " name="branch" required>
                     @foreach($branchs as $branch)
                         <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                     @endforeach

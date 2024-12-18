@@ -5,17 +5,17 @@
     <div class="row mb-3">
         <div class="col-4">
             <label for="name" class="form-label is-required"> {{ __('customer.data.name') }}: </label>
-            <input type="text" class="form-control border-secondary border-opacity-25 " id="name" name="name"
+            <input type="text" class="form-control border-secondary border-opacity-50 " id="name" name="name"
                 placeholder="Example" required>
         </div>
         <div class="col-4">
             <label for="email" class="form-label">{{ __('customer.data.email') }}: </label>
-            <input type="email" class="form-control border-secondary border-opacity-25" id="email" name="email"
+            <input type="email" class="form-control border-secondary border-opacity-50" id="email" name="email"
                 placeholder="example@mail.com" autocomplete="off">
         </div>
         <div class="col-4">
             <label for="phone" class="form-label is-required">{{ __('customer.data.phone') }}</label>
-            <input type="number" min=1 class="form-control border-secondary border-opacity-25" id="phone"
+            <input type="number" min=1 class="form-control border-secondary border-opacity-50" id="phone"
                 placeholder="0000000000" name="phone" autocomplete="off" min="0" required>
         </div>
     </div>
@@ -23,17 +23,17 @@
     <div class="row mb-3">
         <div class="col-6">
             <label for="address" class="form-label is-required">{{ __('customer.data.address') }}</label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="address" name="address"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="address" name="address"
                 placeholder="#00 Col. Example" required>
         </div>
         <div class="col-2">
             <label for="zip_code" class="form-label is-required">{{ __('customer.data.zip_code') }} :</label>
-            <input type="number" min=10000 max=99999 class="form-control border-secondary border-opacity-25"
+            <input type="number" min=10000 max=99999 class="form-control border-secondary border-opacity-50"
                 name="zip_code" placeholder="00000" id="zip_code" required>
         </div>
         <div class="col-2">
             <label for="state" class="form-label is-required">{{ __('customer.data.state') }}: </label>
-            <select class="form-select border-secondary border-opacity-25 " id="state" name="state"
+            <select class="form-select border-secondary border-opacity-50 " id="state" name="state"
                 onchange="load_city()" required>
                 <option value="" selected disabled hidden></option>
                 @foreach ($states as $state)
@@ -43,7 +43,7 @@
         </div>
         <div class="col-2">
             <label for="city" class="form-label is-required">{{ __('customer.data.city') }}: </label>
-            <select type="text" class="form-select border-secondary border-opacity-25 " id="city" name="city"
+            <select type="text" class="form-select border-secondary border-opacity-50 " id="city" name="city"
                 required>
                 @foreach ($states as $state)
                     @foreach ($cities[$state['key']] as $city)
@@ -57,7 +57,7 @@
     <div class="row mb-3">
         <div class="col-3">
             <label for="serv" class="form-label is-required">{{ __('customer.data.type') }} :</label>
-            <select type="text" class="form-select border-secondary border-opacity-25 " id="service-type"
+            <select type="text" class="form-select border-secondary border-opacity-50 " id="service-type"
                 name="service_type_id" required>
                 @foreach ($services as $service)
                     <option value="{{ $service->id }}" {{ !empty($customer) && $customer->service_type_id == $service->id ? 'selected' : '' }}>
@@ -70,7 +70,7 @@
         <div class="col-3" id="company-type">
             <label for="type_com" id="lab"
                 class="form-label is-required">{{ __('customer.data.category') }}:</label>
-            <select type="text" class="form-select border-secondary border-opacity-25 " id="company_category_id"
+            <select type="text" class="form-select border-secondary border-opacity-50 " id="company_category_id"
                 name="company_category_id">
                 @foreach ($categs as $cat)
                     <option value="{{ $cat->id }}" {{ !empty($customer) && $customer->company_category_id == $cat->id ? 'selected' : '' }}>{{ $cat->category }}</option>
@@ -79,7 +79,7 @@
         </div>
         <div class="col-3">
             <label for="branch" class="form-label is-required">{{ __('customer.data.branch') }}:</label>
-            <select type="text" class="form-select border-secondary border-opacity-25 " name="branch_id"
+            <select type="text" class="form-select border-secondary border-opacity-50 " name="branch_id"
                 id="branch">
                 @foreach ($branch as $item)
                     <option value="{{ $item->id }}">{{ $item->name }}</option>
@@ -97,7 +97,7 @@
         @endif
         <div class="col-12">
             <label for="url" class="form-label">{{ __('customer.data.url_map') }}:</label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="map_location_url"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="map_location_url"
                 name="map_location_url" placeholder="https://www.google.com/maps?q=latitude,longitude&hl=en" />
         </div>
     </div>

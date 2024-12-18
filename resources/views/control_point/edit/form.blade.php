@@ -4,19 +4,19 @@
     <div class="row">
         <div class="col-4 mb-3">
             <label for="name" class="form-label">{{ __('product.product-data.name') }} punto de control: </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="name" name="name"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="name" name="name"
                 value="{{ $point->name }}" />
         </div>
         <div class="col-auto mb-3">
             <label for="code" class="form-label is-required">Código: </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="code" name="code"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="code" name="code"
                 value="{{ $point->code }}" placeholder="EQ" required />
         </div>
     </div>
     <div class="row">
         <div class="col-4 mb-3">
             <label for="device" class="form-label is-required"> Dispositivo asociado: </label>
-            <select class="form-select border-secondary border-opacity-25 " name="device_id" id="device-id" required>
+            <select class="form-select border-secondary border-opacity-50 " name="device_id" id="device-id" required>
                 @foreach ($devices as $device)
                     <option value="{{ $device->id }}" {{ $point->product->id == $device->id ? 'selected' : '' }}>
                         {{ $device->name }}</option>
@@ -26,7 +26,7 @@
         <div class="col-auto mb-3">
             <label for="colorPicker" class="form-label">Color:</label>
             <input type="color" style="height: 40px;"
-                class="form-control-file form-control border-secondary border-opacity-25" id="color" name="color"
+                class="form-control-file form-control border-secondary border-opacity-50" id="color" name="color"
                 value="{{ $point->color }}" />
         </div>
     </div>

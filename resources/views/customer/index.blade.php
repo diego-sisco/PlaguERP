@@ -47,7 +47,7 @@
             </div>
 
             <div class="container-fluid">
-                @include('messages.alert')
+                @include('layouts.alert')
                 <div class="table-responsive">
                     @include('customer.tables.index')
                 </div>

@@ -4,59 +4,59 @@
     <div class="row">
         <div class="col-4 mb-3">
             <label for="name" class="form-label is-required">{{ __('modals.branch_data.name') }}: </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="name" name="name"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="name" name="name"
                 required>
         </div>
         <div class="col-4 mb-3">
             <label for="email" class="form-label">{{ __('modals.branch_data.email') }}: </label>
-            <input type="email" class="form-control border-secondary border-opacity-25" id="email" name="email">
+            <input type="email" class="form-control border-secondary border-opacity-50" id="email" name="email">
         </div>
         <div class="col-4 mb-3">
             <label for="email" class="form-label ">Correo alternativo: </label>
-            <input type="email" class="form-control border-secondary border-opacity-25" id="alt-email"
+            <input type="email" class="form-control border-secondary border-opacity-50" id="alt-email"
                 name="alt_email">
         </div>
         <div class="col-3 mb-3">
             <label for="phone" class="form-label">{{ __('modals.branch_data.phone') }}: </label>
-            <input type="number" class="form-control border-secondary border-opacity-25" id="phone" name="phone">
+            <input type="number" class="form-control border-secondary border-opacity-50" id="phone" name="phone">
         </div>
         <div class="col-3 mb-3">
             <label for="alt_phone" class="form-label">Teléfono alternativo: </label>
-            <input type="number" class="form-control border-secondary border-opacity-25" id="alt_phone"
+            <input type="number" class="form-control border-secondary border-opacity-50" id="alt_phone"
                 name="alt_phone">
         </div>
         <div class="col-2 mb-3">
             <label for="code" class="form-label">Código: </label>
-            <input type="number" class="form-control border-secondary border-opacity-25" id="code" name="code">
+            <input type="number" class="form-control border-secondary border-opacity-50" id="code" name="code">
         </div>
     </div>
 
     <div class="row">
         <div class="col-4 mb-3">
             <label for="address" class="form-label is-required">{{ __('modals.branch_data.address') }}: </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="address" name="address"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="address" name="address"
                 placeholder="{{ __('modals.branch_data.address_specify') }}" required>
         </div>
         <div class="col-4 mb-3">
             <label for="colony" class="form-label is-required">{{ __('modals.branch_data.colony') }}: </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="colony" name="colony"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="colony" name="colony"
                 required>
         </div>
         <div class="col-2 mb-3">
             <label for="zip_code" class="form-label is-required">{{ __('modals.branch_data.zip_code') }}: </label>
-            <input type="number" class="form-control border-secondary border-opacity-25" id="zip_code" name="zip_code"
+            <input type="number" class="form-control border-secondary border-opacity-50" id="zip_code" name="zip_code"
                 required>
         </div>
         <div class="col-2 mb-3">
             <label for="country" class="form-label">{{ __('modals.branch_data.country') }}: </label>
-            <select class="form-select border-secondary border-opacity-25  bg-secondary-subtle" id="country" name="country" required>
+            <select class="form-select border-secondary border-opacity-50  bg-secondary-subtle" id="country" name="country" required>
                 <option value="Mex">México</option>
             </select>
         </div>
 
         <div class="col-3 mb-3">
             <label for="state" class="form-label is-required">{{ __('modals.branch_data.state') }}: </label>
-            <select class="form-select border-secondary border-opacity-25 " id="state" name="state"
+            <select class="form-select border-secondary border-opacity-50 " id="state" name="state"
                 onchange="load_city()" required>
                 <option value="" selected disabled hidden>{{ __('modals.branch_data.state_select') }}</option>
                 @foreach ($states as $state)
@@ -66,7 +66,7 @@
         </div>
         <div class="col-3 mb-3">
             <label for="city" class="form-label is-required">{{ __('modals.branch_data.city') }}: </label>
-            <select type="text" class="form-select border-secondary border-opacity-25 " id="city" name="city"
+            <select type="text" class="form-select border-secondary border-opacity-50 " id="city" name="city"
                 required>
             </select>
         </div>
@@ -74,7 +74,7 @@
     <div class="row">
         <div class="col-6 mb-3">
             <label for="license_number" class="form-label fw-bold is-required">NO. de licencia sanitaria (COFEPRIS): </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="license_number"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="license_number"
                 name="license_number" required>
         </div>
     </div>

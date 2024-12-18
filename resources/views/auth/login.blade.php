@@ -35,7 +35,7 @@
                                         <div class="col-12 mb-3">
                                             <label for="exampleInputEmail1" class="form-label"> {{ __('auth.email') }}:
                                             </label>
-                                            <input type="email" class="form-control border-secondary border-opacity-25"
+                                            <input type="email" class="form-control border-secondary border-opacity-50"
                                                 id="exampleInputEmail1" name="email" aria-describedby="emailHelp"
                                                 maxlength="50">
                                         </div>
@@ -45,7 +45,7 @@
                                             </label>
                                             <div class="input-group flex-nowrap">
                                                 <input type="password"
-                                                    class="form-control border-secondary border-opacity-25" id="password"
+                                                    class="form-control border-secondary border-opacity-50" id="password"
                                                     name="password" autocomplete=off maxlength="50" required>
                                                 <button class="btn btn-outline-secondary" type="button"
                                                     id="togglePassword"><i id="eye-icon-pass"

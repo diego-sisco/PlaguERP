@@ -247,7 +247,6 @@ class CustomerController extends Controller
         // Crear nuevo cliente o Lead_Customer según el tipo
         if ($type != 0) {
             $customer = new Customer();
-            $customer->general_sedes = $type == 2 ? $id : 0;
             $customer->blueprints = $request->input('service_type_id') == 3 ? 1 : 0;
             $customer->print_doc = $request->input('service_type_id') == 3 ? 1 : 0;
             $customer->validate_certificate = $request->input('service_type_id') == 3 ? 1 : 0;
@@ -259,6 +258,7 @@ class CustomerController extends Controller
 
         // Rellenar el cliente con los datos de la solicitud
         $customer->fill($request->all());
+        $customer->general_sedes = $type == 2 ? $id : 0;
         $customer->status = 1;
         $customer->save();
 
@@ -552,8 +552,13 @@ class CustomerController extends Controller
     public function destroy(string $id)
     {
         $customer = Customer::find($id);
+        if($customer->general_sedes == 0) {
+            Customer::where('general_sedes', $customer->id)->delete();
+        }
         $customer->delete();
-        return redirect()->route('customer.index');
+        $message = 'Cliente' . $customer->id . ' [' . $customer->name . '] eliminado'; 
+        session()->flash('success', $message);
+        return back();
     }
 
     public function destroyArea(string $id)

@@ -21,15 +21,15 @@
         </div>
         <div class="col-2 mb-3">
             <label class="form-label is-required" for="registration_number">Número de Lote</label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="registration-number" name="registration_number" value="{{ $lot->registration_number }}" required>
+            <input type="text" class="form-control border-secondary border-opacity-50" id="registration-number" name="registration_number" value="{{ $lot->registration_number }}" required>
         </div>
         <div class="col-2 mb-3">
             <label class="form-label is-required" for="product_id">Fecha de expiración</label>
-            <input type="date" class="form-control border-secondary border-opacity-25" id="expiration-date" name="expiration_date" value="{{ $lot->expiration_date }}" required>
+            <input type="date" class="form-control border-secondary border-opacity-50" id="expiration-date" name="expiration_date" value="{{ $lot->expiration_date }}" required>
         </div>
         <div class="col-2 mb-3">
             <label class="form-label is-required" for="amount">Cantidad</label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="amount" name="amount" value="{{ $lot->amount }}" required>
+            <input type="text" class="form-control border-secondary border-opacity-50" id="amount" name="amount" value="{{ $lot->amount }}" required>
         </div>
     </div>
 

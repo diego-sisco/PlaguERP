@@ -34,6 +34,7 @@
                         <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
                     </div>
                 </th>
+                <th scope="col">Tipo</th>
                 <th class="col-4" scope="col">{{ __('order.data.service') }}
                     <div class="input-group input-group-sm">
                         <input type="text" class="form-control" id="search-service" name="service"
@@ -65,6 +66,7 @@
                 <td>{{ $order->customer->name }}</td>
                 <td>{{ $order->start_time }}</td>
                 <td>{{ $order->programmed_date }}</td>
+                <td>{{ $order->contract_id > 0 ? 'Programación' : 'Seguimiento' }}</td>
                 <td>
                     @foreach ($order->services as $service)
                         {{ $service->name }} <br>

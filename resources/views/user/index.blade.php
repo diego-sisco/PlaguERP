@@ -29,7 +29,7 @@
 
             <div class="col-4">
                 <form class="form input-group m-0" method="GET" action="{{ route('user.export') }}">
-                    <select type="password" class="form-select border-secondary border-opacity-25 " name="option_export">
+                    <select type="password" class="form-select border-secondary border-opacity-50 " name="option_export">
                         <option value="1" selected>Datos generales (personal y laboral)</option>
                         <option value="2">Archivos</option>
                     </select>

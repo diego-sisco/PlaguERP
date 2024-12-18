@@ -34,7 +34,7 @@
                     <h2 class="test-start fs-5 fw-blod mb-2 pb-2">{{ __('customer.title.infrefserv')}}</h2>
                 @endif
                 <label for="type">Tipo de referencia:</label>
-                <select class="form-select border-secondary border-opacity-25" id="type_{{ $reference->id }}" name="type" disabled>
+                <select class="form-select border-secondary border-opacity-50" id="type_{{ $reference->id }}" name="type" disabled>
                     @foreach($reference_types as $type)
                         <option value="{{ $type->id }}" {{ $type->id == $reference->reference_type_id ? 'selected' : '' }}>
                             {{ $type->name }}

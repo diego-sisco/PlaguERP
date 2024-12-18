@@ -11,28 +11,28 @@
         <h5 class="border-bottom pb-1 fw-bold">{{ __('order.title.basic') }}</h5>
         <div class="col-2 mb-3">
             <label for="start_time" class="form-label is-required">{{ __('order.data.start_time') }}</label>
-            <input type="time" class="form-control border-secondary border-opacity-25" id="start-time"
+            <input type="time" class="form-control border-secondary border-opacity-50" id="start-time"
                 name="start_time" placeholder="00:00" required>
         </div>
         <div class="col-2 mb-3">
             <label for="end_time" class="form-label">{{ __('order.data.end_time') }}</label>
-            <input type="time" class="form-control border-secondary border-opacity-25" id="end-time" name="end_time"
+            <input type="time" class="form-control border-secondary border-opacity-50" id="end-time" name="end_time"
                 placeholder="00:00">
         </div>
         <div class="col-2 mb-3">
             <label for="request_date" class="form-label is-required">{{ __('order.data.programmed_date') }}</label>
-            <input type="date" class="form-control border-secondary border-opacity-25" id="programmed-date"
+            <input type="date" class="form-control border-secondary border-opacity-50" id="programmed-date"
                 name="programmed_date" required>
         </div>
         <!--div class="col-4 mb-2">
             <label for="request_date" class="form-label">{{ __('order.data.frecuency') }}</label>
             <div class="row">
                 <div class="col-3">
-                    <input type="number" class="form-control border-secondary border-opacity-25" id="number"
+                    <input type="number" class="form-control border-secondary border-opacity-50" id="number"
                         name="number" value="0" min=0>
                 </div>
                 <div class="col-6">
-                    <select class="form-select border-secondary border-opacity-25 " id="frequency" name="frequency">
+                    <select class="form-select border-secondary border-opacity-50 " id="frequency" name="frequency">
                         <option value="1">Día</option>
                         <option value="2">Semana</option>
                         <option value="3">Mes</option>
@@ -55,17 +55,17 @@
         </div>
         <div class="col-3">
             <label for="client" class="form-label">Nombre</label>
-            <input class="form-control border-secondary border-opacity-25" name="customer_name" id="customer-name"
+            <input class="form-control border-secondary border-opacity-50" name="customer_name" id="customer-name"
                 placeholder="Example" value="">
         </div>
         <div class="col-3">
             <label for="client" class="form-label">Teléfono</label>
-            <input class="form-control border-secondary border-opacity-25" name="customer_phone" id="customer-phone"
+            <input class="form-control border-secondary border-opacity-50" name="customer_phone" id="customer-phone"
                 placeholder="0000000000" value="">
         </div>
         <div class="col-6">
             <label for="client" class="form-label">Dirección</label>
-            <input class="form-control border-secondary border-opacity-25" name="customer_address" id="customer-address"
+            <input class="form-control border-secondary border-opacity-50" name="customer_address" id="customer-address"
                 placeholder="Example #00, Col. Example" value="">
         </div>
         <div class="col-3 mt-2 mb-3">
@@ -112,7 +112,7 @@
         <div class="col-12">
             <h6 class="pb-1 mb-1 fw-bold">{{ __('order.title.find_service') }}</h6>
             <div class="input-group mb-3">
-                <input type="search" class="form-control border-secondary border-opacity-25"
+                <input type="search" class="form-control border-secondary border-opacity-50"
                     id="search-service-input" name="search_service_input" placeholder="Nombre del servicio">
                 <button class="btn btn-primary btn-sm" type="button" id="btn-search-service"
                     onclick="searchService()">
@@ -183,17 +183,17 @@
         <h5 class="border-bottom pb-1 mb-3 fw-bold"> {{ __('order.title.additional') }}</h5>
         <div class="col-12 mb-3">
             <label class="mb-2">{{ __('order.data.execution') }}</label>
-            <textarea class="form-control border-secondary border-opacity-25" id="execution" name="execution"
+            <textarea class="form-control border-secondary border-opacity-50" id="execution" name="execution"
                 style="height: 100px"></textarea>
         </div>
         <div class="col-12 mb-3">
             <label class="mb-2">{{ __('order.data.areas') }}</label>
-            <textarea class="form-control border-secondary border-opacity-25" id="areas" name="areas"
+            <textarea class="form-control border-secondary border-opacity-50" id="areas" name="areas"
                 style="height: 100px"></textarea>
         </div>
         <div class="col-12 mb-3">
             <label class="mb-2">{{ __('order.data.comments') }}</label>
-            <textarea class="form-control border-secondary border-opacity-25" id="additional_comments" name="additional_comments"
+            <textarea class="form-control border-secondary border-opacity-50" id="additional_comments" name="additional_comments"
                 style="height: 100px"></textarea>
         </div>
     </div>

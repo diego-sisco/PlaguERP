@@ -17,9 +17,9 @@
         <div class="border rounded bg-body-tertiary p-3 m-3">
             <div class="row mb-3">
                 <div class="col">
-                    <select class="form-select border-secondary border-opacity-25" id="version" name="version">
+                    <select class="form-select border-secondary border-opacity-50" id="version" name="version">
                         @foreach ($floorplan->versions as $floorVersion)
-                            <option value="{{ $floorVersion->id }}">
+                            <option value="{{ $floorVersion->version }}">
                                 {{ $floorVersion->version }} - ({{ $floorVersion->created_at }})
                             </option>
                         @endforeach
@@ -27,7 +27,7 @@
                 </div>
 
                 <div class="col">
-                    <select class="form-select border-secondary border-opacity-25" id="point" name="point">
+                    <select class="form-select border-secondary border-opacity-50" id="point" name="point">
                         <option value="" selected disabled>Seleccionar tipo</option>
                         @foreach ($control_points as $point)
                             <option value="{{ $point->id }}">
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="col">
-                    <select class="form-select border-secondary border-opacity-25" id="zone" name="zone">
+                    <select class="form-select border-secondary border-opacity-50" id="zone" name="zone">
                         <option value="" selected disabled>Seleccionar zona</option>
                         @foreach ($zones_areas as $zone)
                             <option value="{{ $zone->id }}">{{ $zone->name }}</option>
@@ -62,7 +62,8 @@
                 <thead>
                     <tr>
                         <th scope="col"></th>
-                        <th class="col-2" scope="col"># (Número)</th>
+                        <th scope="col">#</th>
+                        <th class="col-2">Código</th>
                         <th scope="col">Color</th>
                         <th scope="col">Tipo</th>
                         <th scope="col">Zona</th>
@@ -77,6 +78,7 @@
                                     value="{{ $device->id }}" onchange="selectDevice(this)">
                             </td>
                             <td>{{ $device->nplan }}</td>
+                            <td class="text-primary fw-bold">{{ $device->code }}</td>
                             <td class="d-flex justify-content-center">
                                 <div class="rounded"
                                     style="width: 40px; height: 20px; background-color: {{ $device->color }};"></div>

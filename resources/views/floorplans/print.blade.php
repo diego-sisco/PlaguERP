@@ -35,41 +35,6 @@
         var color = '';
         var isImgLong = false;
 
-        function createPoint(x, y, index, nplan, width, height) {
-            const newWidth = img.width;
-            const newHeight = img.height;
-
-            // Calcular los factores de escala
-            const scaleX = newWidth / width; // Factor de escala para el ancho
-            const scaleY = newHeight / height; // Factor de escala para la altura
-
-            // Escalar las coordenadas del punto
-            const scaledX = x * scaleX;
-            const scaledY = y * scaleY;
-
-            // Crear el elemento del punto
-            var pointElement = document.createElement('div');
-            pointElement.className = 'point';
-            pointElement.style.backgroundColor = color;
-
-            // Ajustar la posición del punto en base a las coordenadas escaladas
-            pointElement.style.left = (scaledX - 5) + 'px';
-            pointElement.style.top = (scaledY - 5) + 'px';
-            pointElement.innerText = nplan.toString();
-
-            container.appendChild(pointElement);
-
-            // Guardar el punto escalado en la lista de puntos
-            points.push({
-                x: scaledX,
-                y: scaledY,
-                index,
-                color,
-                nplan,
-                element: pointElement
-            });
-        }
-
         function setDevices() {
             devices.forEach(function(device) {
                 pointID = device.type_control_point_id;
@@ -90,6 +55,7 @@
                     jsPDF
                 } = window.jspdf;
                 const img = getImageSize();
+                console.log()
                 print(jsPDF, img);
             }
         });
@@ -136,6 +102,7 @@
         }
 
         function print(jsPDF, img) {
+            console.log(img)
             const orientation = img.x > img.y ? "l" : "p";
             const pdf = new jsPDF({
                 orientation: orientation,
@@ -166,8 +133,8 @@
 
             // Agregar puntos al PDF
             devices.forEach(function(point) {
-                const adjustedX = x + point.map_x * scaleX; // Ajustar la coordenada X
-                const adjustedY = y + point.map_y * scaleY; // Ajustar la coordenada Y
+                const adjustedX = (point.map_x * scale) + 5; // Ajustar la coordenada X
+                const adjustedY = (point.map_y * scale) - 9; // Ajustar la coordenada Y
 
                 // Dibujar el punto
                 pdf.setFillColor(point.color);
@@ -181,7 +148,6 @@
             // Guardar el archivo PDF
             pdf.save('imagen-horizontal.pdf');
         }
-
 
         function formatRange(numbers) {
             numbers.sort((a, b) => a - b);
