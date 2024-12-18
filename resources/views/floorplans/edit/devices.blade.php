@@ -61,7 +61,7 @@
         </div>
     </div>
     <div class="row">
-        <div class="col-6 mb-2">
+        <div class="col-4 mb-2">
             <label for="exampleFormControlInput1" class="form-label">Zonas o áreas de la
                 empresa:
             </label>
@@ -104,9 +104,42 @@
             </select>
         </div>
 
+        <div class="col-2 mb-2">
+            <label for="exampleFormControlInput1" class="form-label">
+                Rango:</label>
+            <!-- <input type="number" class="form-control border-secondary border-opacity-25" min=0
+                value="0">
+                -
+            <input type="number" class="form-control border-secondary border-opacity-25" min=0
+                value="0"> -->
+                <div class="row-col range-input">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <input 
+                            class="form-control border-secondary border-opacity-25"
+                            id="min-value" 
+                            type="number" 
+                            placeholder="Mín" 
+                            min="0" 
+                            value="0" 
+                        />
+                        <span>-</span>
+                        <input 
+                            class="form-control border-secondary border-opacity-25"
+                            id="max-value" 
+                            type="number" 
+                            placeholder="Máx" 
+                            min="0" 
+                            value="0" 
+                        />
+                    </div>
+                    <small id="range-error" style="color: red; display: none;">El valor mínimo no puede ser mayor que el máximo.</small>
+                    <small id="range-unavailable" style="color: red; display: none;">Estos dispositivos ya se encuentran ocupados.</small>
+                </div>
+
+        </div>
+
         <div class="col-2 mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Puntos a generar:
-            </label>
+            <label for="exampleFormControlInput1" class="form-label">Puntos a generar:</label>
             <input type="number" id="numPoints" class="form-control border-secondary border-opacity-25" min=0
                 value="0">
         </div>
@@ -232,10 +265,16 @@
         var areaNames = @json($areaNames);
         var productNames = @json($productNames);
         var deviceRevisions = @json($deviceRevisions);
+        var floorplan_service = @json($floorplan->service->id);
+        var devicesToCheck = @json($devicesAyuda);
         var container = document.getElementById('points-container');
         var imageContainer = document.getElementById('image-container');
         var zoomRange = document.getElementById('zoom-range');
         var img = document.getElementById('zoom-image');
+        var createPointsButton = document.getElementById('create-points');
+        var rangeUnavailable = document.getElementById('range-unavailable');
+        var minValueInput = document.getElementById('min-value');
+        var maxValueInput = document.getElementById('max-value');
         var addedPoints = [];
         var points = [];
         var pointsBackup = [];
@@ -249,7 +288,11 @@
         var productID = 0;
         var index = 1;
         var hasPoints = false;
-
+        var isRangeUnavailable = false;
+        console.log("floorplan service: " + floorplan_service);
+        console.log(devicesToCheck);
+        // console.log("ctrlPoints: " + data);
+        
         function submitForm() {
             if (confirm('{{ __('messages.new_devices') }}')) {
                 if (points.length > 0) {
@@ -307,6 +350,17 @@
         function findCode(id) {
             return data.find(item => item.id == id)?.code ?
                 data.find(item => item.id == id).code : 'Sin código';
+        }
+
+        function checkRangeIsUnavailable(devicesToCheck, minValue, maxValue){
+            const isUnavailable = devicesToCheck.some(device => {
+                        if (device >= minValue && device <= maxValue) 
+                            return true; 
+                        
+                        return false;
+            });
+            // console.log(isUnavailable);
+            return isUnavailable;
         }
 
         function verifyInputs(point_id, area_id, num_points) {
@@ -765,7 +819,7 @@
             if (numPoints > 0) {
                 index = points.length > 0 ? ++index : ++countDevices;
                 count++;
-                createPoint(offsetX, offsetY, count);
+                createPoint(offsetX, offsetY,   );
                 numPoints--;
                 $('#countPoints').text('Puntos restantes: ' + numPoints);
             } else {
@@ -833,5 +887,54 @@
                 img.onload();
             }
         });
+
+        devicesToCheck.forEach(function(device) {
+            console.log('nplan: ' + device);
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const rangeError = document.getElementById('range-error');
+            const countPoints = document.getElementById('numPoints');
+            
+
+            // console.log(devicesToCheck);
+
+            const validateRange = () => {
+                const minValue = parseInt(minValueInput.value, 10);
+                const maxValue = parseInt(maxValueInput.value, 10);
+              
+
+                if (minValue > maxValue) {
+                    rangeError.style.display = 'block';
+                    maxValueInput.style.borderColor = 'red';
+                    minValueInput.style.borderColor = 'red';
+                } else {
+                    rangeError.style.display = 'none';
+                    maxValueInput.style.borderColor = '';
+                    minValueInput.style.borderColor = '';
+                    
+                    isRangeUnavailable = checkRangeIsUnavailable(devicesToCheck, minValue, maxValue);
+                    
+                    if (isRangeUnavailable) {
+                        rangeUnavailable.style.display = 'block';
+                    }else
+                    {
+                        rangeUnavailable.style.display = 'none';
+                    }
+
+                    countPoints.value = isRangeUnavailable ? 0 : (maxValue - minValue) + 1;
+                    // createPointsButton.disabled = isRangeUnavailable ? true : false;
+                    
+                }
+            };
+
+            minValueInput.addEventListener('input', validateRange);
+            maxValueInput.addEventListener('input', validateRange);
+        });
+
+
+
     </script>
+
+
 @endif
