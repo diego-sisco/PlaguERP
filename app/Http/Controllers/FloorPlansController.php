@@ -208,22 +208,12 @@ class FloorPlansController extends Controller
     public function edit(string $id, string $customerID, int $type, int $section)
     {
         $data = [];
-        $devicesSelected = [];
         $floorplan = FloorPlans::findOrFail($id);
 
         // Filtrado de dispositivos segun el servicio
         $devicesIds = [];
-        $floorplansSelected = FloorPlans::where("customer_id", $customerID)->where("service_id", $floorplan->service_id)->get();
-        foreach($floorplansSelected as $floorplanSelected)
-        {  
-            $latestVersionNumber = $floorplanSelected->versions()->latest('version')->value('version');
-            $devicesIds[] = $floorplanSelected->devices($latestVersionNumber)->get()->pluck('id');
-        }
-        $devicesIds = collect($devicesIds)->flatten(1)->toArray();
-        $devicesAyuda = Device::whereIn("id", $devicesIds)->get()->pluck('nplan');
-        $customer = Customer::find($customerID);
 
-        
+        $customer = Customer::find($customerID);
         $floorplanIds = $customer->floorplans()->get()->pluck('id');
         $nplan = $count = 0;
 
@@ -252,13 +242,21 @@ class FloorPlansController extends Controller
         $lastDevice = Device::whereIn('floorplan_id', $floorplanIds)->get()->last();
         $countDevices = !empty($lastDevice) ? $lastDevice->itemnumber : 0;
 
-        $floorplansByService = Floorplans::where('service_id', $floorplan->service_id)->where('customer_id', $customerID)->get();
+        $band = -1;
 
+        $floorplansByService = Floorplans::where('service_id', $floorplan->service_id)->where('customer_id', $customerID)->get();
         foreach ($floorplansByService as $floorplanByService) {
             $latestVersionNumber = $floorplanByService->versions()->latest('version')->value('version');
-            $nplan = Device::where('floorplan_id', $floorplanByService->id)->where('version', $latestVersionNumber)->get()->last()->nplan ?? 0;
+            $devicesIds[] = $floorplanByService->devices($latestVersionNumber)->get()->pluck('id');
+
+            $band = Device::where('floorplan_id', $floorplanByService->id)->where('version', $latestVersionNumber)->get()->last()->nplan ?? 0;
+            if($band > $nplan)
+                $nplan = $band;
+
         }
-        
+        $devicesIds = collect($devicesIds)->flatten(1)->toArray();
+        $devicesAyuda = Device::whereIn("id", $devicesIds)->get()->pluck('nplan');
+
         // Compacta las variables para pasarlas a la vista
         return view('floorplans.edit', compact('ctrlPoints', 'applications_areas', 'services', 'customer', 'devices', 'deviceRevisions', 'floorplan', 'products', 'countDevices', 'nplan', 'type', 'section', 'devicesAyuda'));
     }

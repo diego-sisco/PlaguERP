@@ -290,6 +290,7 @@
         var devices = @json($devices);
         var countDevices = @json($countDevices);
         var count = @json($nplan);
+        var memoryCount = count;
         var pointNames = @json($pointNames);
         var areaNames = @json($areaNames);
         var productNames = @json($productNames);
@@ -321,10 +322,11 @@
         var isRangeUnavailable = false;
         console.log("floorplan service: " + floorplan_service);
         console.log(devicesToCheck);
+        console.log("Count Nplan: " + count );
 
-        numPointsInput.addEventListener('input', updateButtonState);
-        minValueInput.addEventListener('input', updateButtonState);
-        maxValueInput.addEventListener('input', updateButtonState);
+        // numPointsInput.addEventListener('input', updateButtonState);
+        // minValueInput.addEventListener('input', updateButtonState);
+        // maxValueInput.addEventListener('input', updateButtonState);
         // console.log("ctrlPoints: " + data);
         
         function submitForm() {
@@ -499,13 +501,23 @@
             areaID = document.getElementById('area').value;
             color = findColor(pointID);
 
-            if (verifyInputs(pointID, areaID, nums)) {
+            if (verifyInputs(pointID, areaID, nums) && !isRangeUnavailable) {
                 if (!hasPoints) {
                     container.innerHTML = '';
                 }
                 numPoints = document.getElementById('numPoints').value;
                 hasPoints = numPoints > 0;
+                if(minValueInput.value > 0 && maxValueInput.value > 0 && maxValueInput.value != minValueInput.value)
+                    count = minValueInput.value - 1;
+                else
+                    count = memoryCount;
+
+                numPointsInput.value = 0;
+                maxValueInput.value = '';
+                minValueInput.value = '';
+
                 $('#countPoints').text('Puntos restantes: ' + numPoints);
+
             }
         }
 
@@ -979,9 +991,12 @@
                     
                     if (isRangeUnavailable) {
                         rangeUnavailable.style.display = 'block';
+                        // count = memoryCount;
+                        
                     }else
                     {
                         rangeUnavailable.style.display = 'none';
+                        // count = minValue - 1;
                     }
 
                     countPoints.value = isRangeUnavailable ? 0 : (maxValue - minValue) + 1;
@@ -995,7 +1010,7 @@
         });
 
 
-        updateButtonState();
+        // updateButtonState();
     </script>
 
 
