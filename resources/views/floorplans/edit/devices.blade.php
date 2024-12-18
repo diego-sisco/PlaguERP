@@ -304,6 +304,7 @@
         var rangeUnavailable = document.getElementById('range-unavailable');
         var minValueInput = document.getElementById('min-value');
         var maxValueInput = document.getElementById('max-value');
+        var numPointsInput = document.getElementById('numPoints');
         var addedPoints = [];
         var points = [];
         var pointsBackup = [];
@@ -320,6 +321,10 @@
         var isRangeUnavailable = false;
         console.log("floorplan service: " + floorplan_service);
         console.log(devicesToCheck);
+
+        numPointsInput.addEventListener('input', updateButtonState);
+        minValueInput.addEventListener('input', updateButtonState);
+        maxValueInput.addEventListener('input', updateButtonState);
         // console.log("ctrlPoints: " + data);
         
         function submitForm() {
@@ -845,6 +850,20 @@
             createLegend();
         }
 
+        function updateButtonState() {
+            const numPoints = parseInt(numPointsInput.value, 10);
+            const minValue = parseInt(minValueInput.value, 10);
+            const maxValue = parseInt(maxValueInput.value, 10);
+            if (
+                numPoints !== 0 || 
+                (minValue === 0 && maxValue === 0 || !isRangeUnavailable)
+            ) {
+                createPointsButton.disabled = false; // Activar
+            } else {
+                createPointsButton.disabled = true; // Desactivar
+            }
+        }
+
         zoomRange.addEventListener('input', function() {
             applyZoom();
         });
@@ -976,7 +995,7 @@
         });
 
 
-
+        updateButtonState();
     </script>
 
 
