@@ -4,7 +4,7 @@
     <thead>
         <tr>
             <th scope="col-1">#</th>
-            <th scope="col-1">ID</th>
+            <th scope="col-1">Id</th>
             <th scope="col-2">{{ __('contract.data.customer') }}</th>
             <th scope="col-2">{{ __('contract.data.start_date') }}</th>
             <th scope="col-2">{{ __('contract.data.end_date') }}</th>
@@ -17,7 +17,7 @@
         @foreach ($contracts as $index => $contract)
             <tr>
                 <th scope="row">{{ ++$index }}</th>
-                <td scope="row">{{ $contract->id }}</th>
+                <td class="text-primary fw-bold">{{ $contract->id }}</th>
                 <td> {{ $contract->customer->name }} </td>
                 <td>{{ $contract->startdate }}</td>
                 <td>{{ $contract->enddate }}</td>
@@ -33,6 +33,10 @@
                     <a class="btn btn-info btn-sm"
                         href="{{ route('contract.show', ['id' => $contract->id, 'section' => 1]) }}">
                         <i class="bi bi-eye-fill"></i> {{ __('buttons.show') }}
+                    </a>
+                    <a class="btn btn-dark btn-sm"
+                        href="{{ route('rotation.index', ['contractId' => $contract->id]) }}">
+                        <i class="bi bi-arrow-clockwise"></i> Plan de rotación
                     </a>
                     @can('write_order')
                         <a href="{{ route('contract.edit', ['id' => $contract->id]) }}" class="btn btn-secondary btn-sm">

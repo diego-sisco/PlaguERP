@@ -1,7 +1,3 @@
-@php
-    $pos_pest_cat = [];
-    $pos_app_method = [];
-@endphp
 <form id="create_service_form" class="form" method="POST"
     action="{{ route('service.update', ['id' => $service->id]) }}" enctype="multipart/form-data">
     @csrf
@@ -17,7 +13,7 @@
                             {{ $prefix->name }}</option>
                     @endforeach
                 </select>
-                <input type="text" class="form-control border-secondary border-opacity-25 rounded-end" id="name"
+                <input type="text" class="form-control border-secondary border-opacity-50 rounded-end" id="name"
                     name="name" placeholder="{{ __('service.data.input.name') }}" value="{{ $service->name }}"
                     autocomplete="off" required />
             </div>
@@ -25,7 +21,7 @@
 
         <div class="col-3 mb-3">
             <label for="name" class="form-label is-required">{{ __('service.data.service_type') }} </label>
-            <select class="form-select border-secondary border-opacity-25" id="service_type" name="service_type_id"
+            <select class="form-select border-secondary border-opacity-50" id="service_type" name="service_type_id"
                 required>
                 @foreach ($service_types as $service_type)
                     <option value="{{ $service_type->id }}"
@@ -39,7 +35,7 @@
 
         <div class="col-3 mb-3">
             <label for="name" class="form-label is-required">{{ __('service.data.business_line') }}</label>
-            <select class="form-select border-secondary border-opacity-25 " id="business_line" name="business_line_id"
+            <select class="form-select border-secondary border-opacity-50 " id="business_line" name="business_line_id"
                 required>
                 <option value="" selected disabled>Selecciona una opción</option>
                 @foreach ($business_lines as $business_line)
@@ -54,13 +50,13 @@
             <div class="row">
                 <div class="col-4 mb-1">
                     <label for="name" class="form-label">{{ __('service.data.time') }}</label>
-                    <input type="number" class="form-control border-secondary border-opacity-25" id="time"
+                    <input type="number" class="form-control border-secondary border-opacity-50" id="time"
                         $pos_pest_cat=Array(); name="time" value="{{ $service->time }}" min="0"
                         max="59" placeholder="00" />
                 </div>
                 <div class="col-8 mb-1">
                     <label for="name" class="form-label">{{ __('service.data.time_unit') }}</label>
-                    <select class="form-select border-secondary border-opacity-25 " id="time_unit" name="time_unit"
+                    <select class="form-select border-secondary border-opacity-50 " id="time_unit" name="time_unit"
                         required>
                         @for ($i = 0; $i < count($time_types); $i++)
                             <option value="{{ $i + 1 }}"  @if ($i + 1 == $service->time_unit) selected @endif>
@@ -73,7 +69,7 @@
 
         <div class="col-2 mb-3">
             <label for="name" class="form-label is-required">{{ __('service.data.status') }}</label>
-            <select class="form-select border-secondary border-opacity-25" id="status" name="status_id" required>
+            <select class="form-select border-secondary border-opacity-50" id="status" name="status_id" required>
                 @foreach ($service_status as $status)
                     <option value="{{ $status->id }}" {{$status->id == $service->status_id ? 'selected' : '' }} >
                         {{ $status->name }} </option>
@@ -145,7 +141,7 @@
 
         <div class="col-12 mb-3">
             <h5 class="fw-bold pb-1 mb-3 border-bottom">Descripción del servicio</h5>
-            <textarea type="text" class="form-control border-secondary border-opacity-25 p-3" id="description"
+            <textarea type="text" class="form-control border-secondary border-opacity-50 p-3" id="description"
                 name="description" rows="7" placeholder="Incluye una descripción, directrices o prevenciones sobre el servicio."
                 style="text-align: justify;">{{ $service->description }}</textarea>
         </div>
@@ -163,7 +159,7 @@
             </div>
         </div>
     </div>
-    <button id="form_service_button" type="summit" class="btn btn-primary my-3">
+    <button id="form_service_button" type="submit" class="btn btn-primary my-3">
         {{ __('buttons.update') }}
     </button>
 </form>

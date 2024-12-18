@@ -10,10 +10,10 @@
 
     .point {
         position: absolute;
-        width: 12px;
-        height: 12px;
+        /*width: 5px;*/
+        /*height: 5px;*/
+        /*padding: 2px;*/
         border-radius: 50%;
-        padding: 6px;
         cursor: pointer;
         font-weight: bold;
     }
@@ -27,6 +27,14 @@
         background-color: #e9ecef;
         color: #212529;
     }
+
+    .container-img {
+        position: relative;
+        width: 1500px;
+        height: 1500px;
+        overflow: auto;
+        border: 2px solid #000;
+    }
 </style>
 
 @if ($floorplan->service_id == null)
@@ -37,9 +45,9 @@
             <label for="exampleFormControlInput1" class="form-label">Versión del plano: </label>
             @if (!$floorplan->versions->isEmpty())
                 <div class="input-group">
-                    <select class="form-select border-secondary border-opacity-25 " id="version" name="version">
+                    <select class="form-select border-secondary border-opacity-50 " id="version" name="version">
                         @foreach ($floorplan->versions as $floorVersion)
-                            <option value="{{ $floorVersion->id }}">
+                            <option value="{{ $floorVersion->version }}">
                                 {{ $floorVersion->version }} -
                                 ({{ $floorVersion->created_at }})
                             </option>
@@ -48,7 +56,7 @@
                     <button class="btn btn-success" type="button" onclick="searchVersion()">Buscar</button>
                 </div>
             @else
-                <input type="text" class="form-control border-secondary border-opacity-25" value="Sin versiones"
+                <input type="text" class="form-control border-secondary border-opacity-50" value="Sin versiones"
                     id="version-none" disabled>
             @endif
         </div>
@@ -56,7 +64,7 @@
     <div class="row mb-3">
         <div class="col-6">
             <label for="exampleFormControlInput1" class="form-label">Servicio: </label>
-            <input type="text" class="form-control border-secondary border-opacity-25"
+            <input type="text" class="form-control border-secondary border-opacity-50"
                 value="{{ $floorplan->service->name }}" disabled>
         </div>
     </div>
@@ -66,7 +74,7 @@
                 empresa:
             </label>
             @if (!$customer->applicationAreas->isEmpty())
-                <select class="form-select border-secondary border-opacity-25 " id="area" name="area">
+                <select class="form-select border-secondary border-opacity-50 " id="area" name="area">
                     @foreach ($customer->applicationAreas as $area)
                         @php
                             $areaNames[] = [
@@ -80,7 +88,7 @@
                     @endforeach
                 </select>
             @else
-                <input type="text" class="form-control border-secondary border-opacity-25"
+                <input type="text" class="form-control border-secondary border-opacity-50"
                     value="Sin zonas o áreas disponibles" id="area" disabled>
             @endif
         </div>
@@ -89,7 +97,7 @@
             <label for="exampleFormControlInput1" class="form-label">Puntos de control
                 asociados:
             </label>
-            <select class="form-select border-secondary border-opacity-25 " id="control-points" name="control_points">
+            <select class="form-select border-secondary border-opacity-50 " id="control-points" name="control_points">
                 @foreach ($ctrlPoints as $point)
                     @php
                         $pointNames[] = [
@@ -139,8 +147,9 @@
         </div>
 
         <div class="col-2 mb-3">
-            <label for="exampleFormControlInput1" class="form-label">Puntos a generar:</label>
-            <input type="number" id="numPoints" class="form-control border-secondary border-opacity-25" min=0
+            <label for="exampleFormControlInput1" class="form-label">Puntos a generar:
+            </label>
+            <input type="number" id="numPoints" class="form-control border-secondary border-opacity-50" min=0
                 value="0">
         </div>
     </div>
@@ -157,8 +166,8 @@
                         <th class="col-1" scope="col">Color</th>
                         <th scope="col">Tipo</th>
                         <th scope="col">Código</th>
-                        <th scope="col">Area</th>
-                        <th class="col-4" scope="col">Producto</th>
+                        <th class="col-3" scope="col">Area</th>
+                        <th class="col-3" scope="col">Producto</th>
                         <th scope="col">Cantidad</th>
                     </tr>
                 </thead>
@@ -167,7 +176,20 @@
         </div>
     </div>
 
-    <div class="w-100 border border-secondary p-1 rounded">
+
+    <div class="row">
+        <div class="col-auto mb-2">
+            <div class="form-check">
+                <input class="form-check-input border-secondary" type="checkbox" id="create-version"
+                    name="create_version">
+                <label class="form-check-label" for="create-version">
+                    ¿Deseas crear una nueva versión?
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-100 border border-2 border-dark p-1 rounded">
         <div class="row mb-3 p-3">
             <div class="col-12">
                 <p id="countPoints" class="fw-bold p-2 bg-secondary-subtle border rounded">Puntos
@@ -181,11 +203,17 @@
             </div>
         </div>
 
-        <div id="image-container" class="w-100 border p-3" style="position: relative; overflow-y: auto;">
+        <div id="image-container" class="w-100 border border-secondary rounded p-5"
+            style="position: relative; overflow-y: auto;">
             <img id="zoom-image" class="w-100" src="{{ route('image.show', ['filename' => $floorplan->path]) }}"
                 alt="Plano" style="transition: transform 0.3s ease; transform-origin: 0 0;">
             <div id="points-container" style="position: absolute; top: 0; left: 0;"></div>
         </div>
+
+        {{-- <div class="w-100 h-100">
+            <img src="https://via.placeholder.com/1500x1500" alt="Imagen" class="img-fluid">
+            <canvas id="canvas"></canvas>
+        </div> --}}
     </div>
 
     <input type="hidden" id="points" name="points" value="">
@@ -195,8 +223,9 @@
     </button>
 @endif
 
-<div class="modal fade" id="editPointModal" tabindex="-1" aria-labelledby="editPointModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+<div class="modal fade" id="editPointModal" tabindex="-1" aria-labelledby="editPointModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-dialog-scrollable">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="editPointModalLabel"></h1>
@@ -207,7 +236,7 @@
                     <div class="col-12 mb-3">
                         <label for="exampleFormControlInput1" class="form-label is-required">Punto(s) de control:
                         </label>
-                        <select class="form-select border-secondary border-opacity-25 " id="update-control-point"
+                        <select class="form-select border-secondary border-opacity-50 " id="update-control-point"
                             name="update_control_point">
                             @foreach ($ctrlPoints as $point)
                                 <option value="{{ $point->id }}">
@@ -218,7 +247,7 @@
                     </div>
                     <div class="col-12 mb-3">
                         <label for="exampleFormControlInput1" class="form-label is-required"> Zona o área: </label>
-                        <select class="form-select border-secondary border-opacity-25 " id="update-area"
+                        <select class="form-select border-secondary border-opacity-50 " id="update-area"
                             name="update_area">
                             @foreach ($customer->applicationAreas as $area)
                                 <option value="{{ $area->id }}">
@@ -230,7 +259,7 @@
 
                     <div class="col-12 mb-3">
                         <label for="exampleFormControlInput1" class="form-label"> Producto asociado: </label>
-                        <select class="form-select border-secondary border-opacity-25 " id="update-product"
+                        <select class="form-select border-secondary border-opacity-50 " id="update-product"
                             name="update_product">
                             <option value="0" selected>
                                 Sin producto
@@ -294,7 +323,14 @@
         // console.log("ctrlPoints: " + data);
         
         function submitForm() {
-            if (confirm('{{ __('messages.new_devices') }}')) {
+            var element = $('#create-version');
+            element.val(Boolean(element.is(':checked')));
+
+            var message = element.is(':checked') ?
+                '{{ __('messages.new_devices') }}' :
+                'Los dispositivos se actualizan utilizando la versión actual.';
+
+            if (confirm(message)) {
                 if (points.length > 0) {
                     $('#points').val(JSON.stringify(points));
                 }
@@ -372,7 +408,7 @@
             return false;
         }
 
-        function createPoint(x, y, count) {
+        function createPoint(x, y, count, img_origX, img_origY) {
             var pointName = (pointNames.find(item => item.id == pointID)).name;
             var areaName = (areaNames.find(item => item.id == areaID)).name;
             var productName = productID > 0 ? (productNames.find(item => item.id == productID)).name : 'S/N';
@@ -384,23 +420,25 @@
                     `<div><strong>${revision.answer}</strong> <small>${revision.updated_at}</small></div>`;
             });
 
-            var img_tamx = img.width;
-            var img_tamy = img.height;
+            //var factX = img.width / img_origX;
+            //var factY = img.height / img_origY;
             var pointX = x;
             var pointY = y;
             var code = data.find(item => item.id == pointID)?.code ?
                 `${data.find(item => item.id == pointID).code}-${index}` : null;
-
+            var diameter = img.width > 1000 ? 10 : 5;
             var pointElement = document.createElement('div');
-
-            pointElement.style.left = (pointX - 5) + 'px';
-            pointElement.style.top = (pointY - 5) + 'px';
-            //pointElement.innerText = code;
+            pointElement.style.left = (pointX - (diameter / 2)) + 'px';
+            pointElement.style.top = (pointY - (diameter / 2)) + 'px';
             pointElement.id = 'popoverPoint' + index;
             pointElement.className = 'point';
             pointElement.innerText = count;
             pointElement.style.backgroundColor = color;
             pointElement.style.textAlign = 'center';
+            pointElement.style.width = `${diameter}px`;
+            pointElement.style.height = `${diameter}px`;
+            pointElement.style.padding = `${diameter/2}px`;
+
             pointElement.addEventListener('mousedown', startDragging);
 
             var newPoint = {
@@ -413,8 +451,8 @@
                 y: pointY,
                 color: color,
                 code: code,
-                img_tamx: img_tamx,
-                img_tamy: img_tamy,
+                img_tamx: img.width,
+                img_tamy: img.height,
                 element: pointElement,
                 revisions: revisions
             }
@@ -460,7 +498,6 @@
                 if (!hasPoints) {
                     container.innerHTML = '';
                 }
-
                 numPoints = document.getElementById('numPoints').value;
                 hasPoints = numPoints > 0;
                 $('#countPoints').text('Puntos restantes: ' + numPoints);
@@ -621,8 +658,8 @@
         function createLegend() {
             var html = '';
             if (addedPoints.length > 0) {
-                console.log('addP: ', addedPoints)
-                console.log('P: ', addedPoints)
+                //console.log('addP: ', addedPoints)
+                //console.log('P: ', addedPoints)
                 addedPoints.forEach(point => {
                     var count = points.filter(item => item.pointID == point.pointID && item.areaID == point.areaID)
                         .length;
@@ -630,7 +667,7 @@
                         html += `
                             <tr>
                                 <td>
-                                    <input type="color" class="form-control border-secondary border-opacity-25" style="height: 2em;" value="${findColorLegend(point.pointID, point.areaID)}" onchange="updateColor(this.value, ${point.pointID}, ${point.areaID})">
+                                    <input type="color" class="form-control border-secondary border-opacity-50" style="height: 2em;" value="${findColorLegend(point.pointID, point.areaID)}" onchange="updateColor(this.value, ${point.pointID}, ${point.areaID})">
                                 </td>
                                 <td>${findPointName(point.pointID)}</td>
                                 <td class="fw-bold text-primary">${findCode(point.pointID)}</td>
@@ -755,7 +792,7 @@
             var version = $('#version').val();
             formData.append('version', version);
             $.ajax({
-                url: "{{ route('ajax.search.devices', ['floorplan_id' => $floorplan->id]) }}",
+                url: "{{ route('floorplans.search.devices', ['id' => $floorplan->id]) }}",
                 type: "POST",
                 data: formData,
                 processData: false,
@@ -764,7 +801,9 @@
                     "X-CSRF-TOKEN": csrfToken,
                 },
                 success: function(response) {
-                    devices = response;
+                    console.log(response)
+                    devices = response.devices;
+                    deviceRevisions = response.reviews;
                     points = [];
                     countPoints = {};
                     hasPoints = false;
@@ -785,7 +824,7 @@
                     productID = parseInt(device.product_id);
                     index = parseInt(device.itemnumber);
                     color = color_op ? findColor(pointID) : device.color;
-                    createPoint(device.map_x, device.map_y, device.nplan);
+                    createPoint(device.map_x, device.map_y, device.nplan, device.img_tamx, device.img_tamy);
                     setStoragePoint(pointID, areaID);
                     //countIndexs.push(index);
                 });
@@ -819,7 +858,7 @@
             if (numPoints > 0) {
                 index = points.length > 0 ? ++index : ++countDevices;
                 count++;
-                createPoint(offsetX, offsetY,   );
+                createPoint(offsetX, offsetY, count, img.width, img.height);
                 numPoints--;
                 $('#countPoints').text('Puntos restantes: ' + numPoints);
             } else {
@@ -873,9 +912,13 @@
 
         $(document).ready(function() {
             img.onload = function() {
-                var width = img.width;
-                var height = img.height;
+                imgWidth = img.width;
+                imgHeight = img.height;
                 setDevices(0);
+
+                var imageContainerWidth = imageContainer.offsetWidth;
+                var imageContainerHeight = imageContainer.offsetHeight;
+
                 applyZoom();
             };
 

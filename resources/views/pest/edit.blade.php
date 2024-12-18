@@ -28,21 +28,21 @@
                                     <label for="name"
                                         class="form-label is-required">{{ __('pagination.pest_catalog.nom') }}:
                                     </label>
-                                    <input type="text" class="form-control border-secondary border-opacity-25" id="name"
+                                    <input type="text" class="form-control border-secondary border-opacity-50" id="name"
                                         name="name" value="{{ $pest->name }}" required>
                                 </div>
                                 <div class="col-6 mb-2">
                                     <label for="pcode"
                                         class="form-label is-required">{{ __('pagination.pest_catalog.pcode') }}:
                                     </label>
-                                    <input type="text" class="form-control border-secondary border-opacity-25" id="pest-code"
+                                    <input type="text" class="form-control border-secondary border-opacity-50" id="pest-code"
                                         name="pest_code" value="{{ $pest->pest_code }}" required>
                                 </div>
                                 <div class="col-6 mb-2">
                                     <label for="categid"
                                         class="form-label is-required">{{ __('pagination.pest_catalog.categ') }}:
                                     </label>
-                                    <select class="form-select border-secondary border-opacity-25 " id="pest-category-id" name="pest_category_id">
+                                    <select class="form-select border-secondary border-opacity-50 " id="pest-category-id" name="pest_category_id">
                                         @foreach ($categs as $categ)
                                             @if ($categ->id == $pest->pest_category_id)
                                                 <option value="{{ $categ->id }}" selected>{{ $categ->category }}</option>
@@ -54,7 +54,7 @@
                                 </div>
                                 <div class="col-12 mb-2">
                                     <label for="categid" class="form-label">Imagen: </label>
-                                    <input type="file" class="form-control border-secondary border-opacity-25 rounded"
+                                    <input type="file" class="form-control border-secondary border-opacity-50 rounded"
                                         accept=".png, .jpg, .jpeg" name="img" id="img" value="{{ $pest->image }}">
                                 </div>
                             </div>
@@ -62,7 +62,7 @@
                         <div class="col-6 mb-2">
                             <label for="desc"
                                 class="form-label is-required">{{ __('pagination.pest_catalog.desc') }}</label>
-                            <textarea class="form-control border-secondary border-opacity-25 h-100" placeholder="Descripción de la plaga" id="description"
+                            <textarea class="form-control border-secondary border-opacity-50 h-100" placeholder="Descripción de la plaga" id="description"
                                 name="description" required> {{ $pest->description }} </textarea>
                         </div>
                     </div>

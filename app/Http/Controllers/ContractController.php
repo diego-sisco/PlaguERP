@@ -49,6 +49,15 @@ class ContractController extends Controller
         'Pago seguro'
     ];
 
+    private $intervals = [
+        'Por día',
+        'Primera semana',
+        'Segunda semana',
+        'Tercera semana',
+        'Ultima semana',
+        'Quincenal'
+    ];
+
     private $size = 50;
 
     public function index(): View
@@ -70,7 +79,7 @@ class ContractController extends Controller
         $technicians = Technician::all();
         $exec_frecuencies = ExecFrequency::all();
         $contracts = Contract::all();
-
+        $intervals = $this->intervals;
 
         return view(
             'contract.create',
@@ -81,6 +90,7 @@ class ContractController extends Controller
                 'technicians',
                 //'days',
                 'contracts',
+                'intervals'
             )
         );
     }
@@ -89,21 +99,21 @@ class ContractController extends Controller
     {
         $contract_data = json_decode($request->input('contract_data'));
         $selected_technicians = json_decode($request->input('technicians'));
-        $contract_id = $request->input('contract_id');
+        //$contract_id = $request->input('contract_id');
+        //dd($contract_data);
 
-
-        if ($contract_id == 0) {
-            $contract = Contract::create([
-                'customer_id' => $request->input('customer_id'),
-                'user_id' => auth()->user()->id,
-                'startdate' => $request->input('startdate'),
-                'enddate' => $request->input('enddate'),
-                'status' => 1,
-                'file' => null,
-            ]);
-        } else {
+        //if ($contract_id == 0) {
+        $contract = Contract::create([
+            'customer_id' => $request->input('customer_id'),
+            'user_id' => auth()->user()->id,
+            'startdate' => $request->input('startdate'),
+            'enddate' => $request->input('enddate'),
+            'status' => 1,
+            'file' => null,
+        ]);
+        /*} else {
             $contract = Contract::find($contract_id);
-        }
+        }*/
 
         if ($selected_technicians[count($selected_technicians) - 1] == 0) {
             $technicians = Technician::all();
@@ -123,47 +133,52 @@ class ContractController extends Controller
         }
 
         foreach ($contract_data as $data) {
-            $countOrders = 0;
-            foreach ($data->dates as $date) {
-                if (isset($date)) {
-                    $order = Order::create([
-                        'administrative_id' => Administrative::where('user_id', auth()->user()->id)->first()->id,
-                        'customer_id' => $contract->customer_id,
-                        'contract_id' => $contract->id,
-                        'status_id' => '1',
-                        'start_time' => '00:00',
-                        'programmed_date' => $date,
-                    ]);
-                    OrderService::insert([
-                        'order_id' => $order->id,
-                        'service_id' => $data->id,
-                    ]);
-                    if ($selected_technicians[count($selected_technicians) - 1] == 0) {
-                        $technicians = Technician::all();
-                        foreach ($technicians as $tech) {
-                            OrderTechnician::insert([
-                                'technician_id' => $tech->id,
-                                'order_id' => $order->id,
-                            ]);
-                        }
-                    } else {
-                        foreach ($selected_technicians as $id) {
-                            OrderTechnician::insert([
-                                'technician_id' => $id,
-                                'order_id' => $order->id,
-                            ]);
+            foreach ($data->settings as $setting) {
+                $contract_service = ContractService::create([
+                    'contract_id' => $contract->id,
+                    'service_id' => $data->id,
+                    'execution_frequency_id' => $setting->frequency,
+                    'interval' => $setting->interval,
+                    'days' => json_encode($setting->days),
+                    'total' => count($setting->dates),
+                    'created_at' => now(),
+                ]);
+
+                foreach ($setting->dates as $date) {
+                    if (isset($date)) {
+                        $order = Order::create([
+                            'administrative_id' => Administrative::where('user_id', auth()->user()->id)->first()->id,
+                            'customer_id' => $contract->customer_id,
+                            'contract_id' => $contract->id,
+                            'setting_id' => $contract_service->id,
+                            'status_id' => '1',
+                            'start_time' => '00:00',
+                            'programmed_date' => $date,
+                        ]);
+                        OrderService::insert([
+                            'order_id' => $order->id,
+                            'service_id' => $data->id,
+                        ]);
+                        if ($selected_technicians[count($selected_technicians) - 1] == 0) {
+                            $technicians = Technician::all();
+                            foreach ($technicians as $tech) {
+                                OrderTechnician::insert([
+                                    'technician_id' => $tech->id,
+                                    'order_id' => $order->id,
+                                ]);
+                            }
+                        } else {
+                            foreach ($selected_technicians as $id) {
+                                OrderTechnician::insert([
+                                    'technician_id' => $id,
+                                    'order_id' => $order->id,
+                                ]);
+                            }
                         }
                     }
-                    $countOrders++;
                 }
+
             }
-            ContractService::insert([
-                'contract_id' => $contract->id,
-                'service_id' => $data->id,
-                'execution_frequency_id' => $data->frequency,
-                'total' => $countOrders,
-                'created_at' => now(),
-            ]);
         }
         return redirect()->route('contract.index');
     }
@@ -201,56 +216,57 @@ class ContractController extends Controller
         );
     }
 
-    public function searchOrders(Request $request, string $id, string $customerId) {
+    public function searchOrders(Request $request, string $id, string $customerId)
+    {
 
         $contract = Contract::find($id);
         $customer = Customer::find($customerId);
-		$date = $request->input('date');
+        $date = $request->input('date');
         $time = $request->input('time');
         $service = $request->input('service');
         $status = $request->input('status');
 
         $orders = Order::where('customer_id', $customer->id)->where('status_id', $status);
 
-		if ($time) {
-			$orders = $orders->whereTime('start_time', $time);
-		}
+        if ($time) {
+            $orders = $orders->whereTime('start_time', $time);
+        }
 
-		if ($date) {
-			[$startDate, $endDate] = array_map(function ($d) {
-				return Carbon::createFromFormat('d/m/Y', trim($d));
-			}, explode(' - ', $date));
-			$startDate = $startDate->format('Y-m-d');
-			$endDate = $endDate->format('Y-m-d');
-			$orders = $orders->whereBetween('programmed_date', [$startDate, $endDate]);
-		}
+        if ($date) {
+            [$startDate, $endDate] = array_map(function ($d) {
+                return Carbon::createFromFormat('d/m/Y', trim($d));
+            }, explode(' - ', $date));
+            $startDate = $startDate->format('Y-m-d');
+            $endDate = $endDate->format('Y-m-d');
+            $orders = $orders->whereBetween('programmed_date', [$startDate, $endDate]);
+        }
 
-		if ($service) {
-			$serviceName = '%' . $service . '%';
-			$serviceIds = Service::where('name', 'LIKE', $serviceName)->get()->pluck('id');
-			$orderIds = OrderService::whereIn('service_id', $serviceIds)->get()->pluck('order_id');
-			$orders = $orders->whereIn('id', $orderIds);
-		}
+        if ($service) {
+            $serviceName = '%' . $service . '%';
+            $serviceIds = Service::where('name', 'LIKE', $serviceName)->get()->pluck('id');
+            $orderIds = OrderService::whereIn('service_id', $serviceIds)->get()->pluck('order_id');
+            $orders = $orders->whereIn('id', $orderIds);
+        }
 
-		$size = $this->size;
-		$orders = $orders->paginate($size)->appends([
-			'date' => $date,
-			'time' => $time,
-			'service' => $service,
-			'status' => $status,
-		]);
-		$order_status = OrderStatus::all();
+        $size = $this->size;
+        $orders = $orders->paginate($size)->appends([
+            'date' => $date,
+            'time' => $time,
+            'service' => $service,
+            'status' => $status,
+        ]);
+        $order_status = OrderStatus::all();
 
-		return view(
-			'contract.show',
-			compact(
-				'orders',
-				'order_status',
+        return view(
+            'contract.show',
+            compact(
+                'orders',
+                'order_status',
                 'customer',
                 'contract',
-				'size'
-			)
-		);
+                'size'
+            )
+        );
     }
 
     public function show(string $id, int $section)
@@ -259,9 +275,9 @@ class ContractController extends Controller
         $order_status = OrderStatus::all();
         $orders = Order::where('contract_id', $contract->id)->paginate($this->size);
         $customer = $contract->customer();
-        return view('contract.show', compact( 'contract', 'orders', 'order_status', 'customer', 'section'));
+        return view('contract.show', compact('contract', 'orders', 'order_status', 'customer', 'section'));
     }
-    
+
     public function getSelectedTechnicians(Request $request)
     {
         $technicians = Technician::all();
@@ -335,24 +351,22 @@ class ContractController extends Controller
     {
         $orders = [];
         $contract = Contract::find($id);
-        $services = Service::whereIn('id', $contract->services()->get()->pluck('service_id'))->get();
-
-        foreach ($services as $service) {
+        $contract_services = $contract->services()->get();
+        $services = Service::whereIn('id', $contract_services->pluck('service_id'))->get();
+        $contracts = Contract::where('customer_id', $contract->customer_id)->where('id', '!=', $contract->id)->get();
+        $intervals = $this->intervals;
+        dd($contract_services);
+        foreach($contract_services as $contract_service) {
             $orders[] = [
-                'service_id' => $service->id,
-                'orders' => Order::whereIn(
-                    'id',
-                    OrderService::where('service_id', $service->id)
-                        ->get()->pluck('order_id')
-                )
-                    ->where('customer_id', $contract->customer_id)
-                    ->get()
+                'service_id' => $contract_service->service_id,
+                'frequency' => $contract_service->execution_frequency_id,
+                'interval' => $contract_service->interval,
+                'dates' => Order::where('setting_id', $contract_service->id)->where('contract_id', $id)->get()->pluck('programmed_date')
             ];
         }
 
         $technicians = Technician::all();
         $exec_frecuencies = ExecFrequency::all();
-        $contracts = Contract::where('customer_id', $contract->customer_id)->where('id', '!=', $contract->id)->get();
 
         return view(
             'contract.edit',
@@ -362,7 +376,8 @@ class ContractController extends Controller
                 'orders',
                 'technicians',
                 'exec_frecuencies',
-                'contracts'
+                'contracts',
+                'intervals'
             )
         );
     }
@@ -469,8 +484,8 @@ class ContractController extends Controller
                     }
                 }
             } else {
-                $order_technicians_delete =  array_unique(array_diff($order_technicians->pluck('technician_id')->toArray(), $contract_technicians->pluck('technician_id')->toArray()));
-                $order_technicians_insert =  array_unique(array_diff($contract_technicians->pluck('technician_id')->toArray(), $order_technicians->pluck('technician_id')->toArray()));
+                $order_technicians_delete = array_unique(array_diff($order_technicians->pluck('technician_id')->toArray(), $contract_technicians->pluck('technician_id')->toArray()));
+                $order_technicians_insert = array_unique(array_diff($contract_technicians->pluck('technician_id')->toArray(), $order_technicians->pluck('technician_id')->toArray()));
                 OrderTechnician::whereIn('technician_id', $order_technicians_delete)->whereIn('order_id', $orders->pluck('id'))->delete();
 
                 foreach ($orders as $order) {
@@ -494,7 +509,7 @@ class ContractController extends Controller
 
         return back();
     }
-    
+
     public function destroy(Request $request, int $id)
     {
         $contract = Contract::find($id);

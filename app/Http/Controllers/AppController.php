@@ -149,7 +149,7 @@ class AppController extends Controller
 					$floorplans = FloorPlans::where('service_id', $service->id)->where('customer_id', $customer->id)->get();
 
 					foreach ($floorplans as $floorplan) {
-						$version = $floorplan->version($order->programmed_date);
+						$version = $floorplan->version();
 						if ($version) {
 							$devicesForFloorplan = Device::where('floorplan_id', $floorplan->id)
 								->where('version', $version)

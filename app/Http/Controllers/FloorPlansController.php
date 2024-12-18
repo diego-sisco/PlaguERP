@@ -230,7 +230,7 @@ class FloorPlansController extends Controller
         $latestVersionNumber = $floorplan->versions()->latest('version')->value('version');
         $customer = Customer::findOrFail($customerID);
         $services = Service::all();
-        $applications_areas = ApplicationArea::where('customer_id', $customerID)->get();
+        $applications_areas = ApplicationArea::where('customer_id', $customerID)->orderBy('name', 'desc')->get();
         $devices = Device::where('floorplan_id', $id)->where('version', $latestVersionNumber)
             ->select('id', 'type_control_point_id', 'floorplan_id', 'application_area_id', 'product_id', 'nplan', 'latitude', 'itemnumber', 'longitude', 'map_x', 'map_y', 'img_tamx', 'img_tamy', 'color', 'code')
             ->get();
@@ -246,7 +246,7 @@ class FloorPlansController extends Controller
             $deviceRevisions[$device->id] = $revisions;
         }
 
-        $ctrlPoints = ControlPoint::all();
+        $ctrlPoints = ControlPoint::orderBy('name', 'asc')->get();
         $product_names = [];
         $products = ProductCatalog::where('presentation_id', '!=', 1)->get();
         $lastDevice = Device::whereIn('floorplan_id', $floorplanIds)->get()->last();
@@ -254,7 +254,7 @@ class FloorPlansController extends Controller
 
         $floorplansByService = Floorplans::where('service_id', $floorplan->service_id)->where('customer_id', $customerID)->get();
 
-        foreach($floorplansByService as $floorplanByService) {
+        foreach ($floorplansByService as $floorplanByService) {
             $latestVersionNumber = $floorplanByService->versions()->latest('version')->value('version');
             $nplan = Device::where('floorplan_id', $floorplanByService->id)->where('version', $latestVersionNumber)->get()->last()->nplan ?? 0;
         }
@@ -270,7 +270,7 @@ class FloorPlansController extends Controller
             $pointId = $request->input('point');
             $zoneId = $request->input('zone');
 
-            $devices = Device::where('version', $version)->where('floorplan_id', $floorplanId);
+            $devices = Device::where('floorplan_id', $floorplanId)->where('version', $version);
 
             if ($pointId != "null") {
                 $devices = $devices->where('type_control_point_id', $pointId);
@@ -305,6 +305,28 @@ class FloorPlansController extends Controller
         }
     }
 
+    public function searchDevicesbyVersion(Request $request, string $id)
+    {
+        $version = $request->input('version');
+        $devices = Device::where('floorplan_id', $id)->where('version', $version)
+            ->select('id', 'type_control_point_id', 'floorplan_id', 'application_area_id', 'product_id', 'nplan', 'latitude', 'itemnumber', 'longitude', 'map_x', 'map_y', 'img_tamx', 'img_tamy', 'color', 'code')
+            ->get();
+
+        $reviews = [];
+        foreach ($devices as $device) {
+            $review = OrderIncidents::where('device_id', $device->id)
+                ->orderBy('updated_at', 'desc')
+                ->limit(4)
+                ->select('answer', 'updated_at')
+                ->get();
+            $reviews[$device->id] = $review;
+        }
+
+        $data = ['devices' => $devices, 'reviews' => $reviews];
+
+        return response()->json($data, 200);
+    }
+
     public function update(Request $request, string $id, int $section)
     {
         //dd($request);
@@ -334,14 +356,22 @@ class FloorPlansController extends Controller
 
         if ($section == 2) {
             $pointsData = json_decode($request->input('points'));
-            $latestVersionNumber = $floorplan->versions()->latest('version')->value('version');
-            $latestVersionNumber++;
-            FloorplanVersion::insert([
-                'floorplan_id' => $floorplan->id,
-                'version' => $latestVersionNumber,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            $create_version = $request->input('create_version');
+
+            if ($create_version) {
+                $latestVersionNumber = $floorplan->versions()->latest(column: 'version')->value('version');
+                $latestVersionNumber++;
+
+                FloorplanVersion::insert([
+                    'floorplan_id' => $floorplan->id,
+                    'version' => $latestVersionNumber,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+
+            } else {
+                $latestVersionNumber = $request->input('version');
+            }
 
             foreach ($pointsData as $point) {
                 $found_point = ControlPoint::find($point->pointID);
@@ -414,10 +444,8 @@ class FloorPlansController extends Controller
             ->orderBy('application_area_id')
             ->get();
 
-        $control_points = ControlPoint::all();
-
-        $zone_ids = $devices->pluck('application_area_id')->unique();
-        $zones_areas = ApplicationArea::whereIn('id', $zone_ids)->get();
+        $control_points = ControlPoint::whereIn('id', $devices->pluck('type_control_point_id')->unique())->get();
+        $zones_areas = ApplicationArea::whereIn('id', $devices->pluck('application_area_id')->unique())->get();
         //dd($types);
         $customer = Customer::find($floorplan->customer_id);
         $type = $customer->service_type_id;

@@ -43,7 +43,7 @@
                     {{ $item->description }} {{ $item->value }}
                   
                     @if($item->id == 12)
-                        <select class="form-select border-secondary border-opacity-25 border-secondary" name="category_select" id="category_select">
+                        <select class="form-select border-secondary border-opacity-50 border-secondary" name="category_select" id="category_select">
                             <option value="0">Elegir categoría</option>
                             @foreach($pest_category as $pesc)
                                 @if($pesc->id == $question->pest_category_id)

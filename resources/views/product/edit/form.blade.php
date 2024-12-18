@@ -17,7 +17,7 @@
                     <div class="col-9 mb-3">
                         <label for="image" class="form-label">{{ __('product.data.image') }}</label>
                         <input type="file"
-                            class="form-control border-secondary border-opacity-25-file form-control border-secondary border-opacity-25"
+                            class="form-control border-secondary border-opacity-50-file form-control border-secondary border-opacity-50"
                             name="image" id="image">
                     </div>
                 </div>
@@ -25,22 +25,22 @@
                 <div class="row">
                     <div class="col-4 mb-3">
                         <label for="name" class="form-label is-required">{{ __('product.data.name') }}</label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="name"
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="name"
                             value="{{ $product->name }}">
                     </div>
                     <div class="col-4 mb-3">
                         <label for="business_name" class="form-label">{{ __('product.data.business_name') }}</label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="business_name"
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="business_name"
                             value="{{ $product->business_name }}">
                     </div>
                     <div class="col-2 mb-3">
                         <label for="bar_code" class="form-label">{{ __('product.data.bar_code') }}</label>
-                        <input type="number" min="0" class="form-control border-secondary border-opacity-25"
+                        <input type="number" min="0" class="form-control border-secondary border-opacity-50"
                             name="bar_code" value="{{ $product->bar_code }}">
                     </div>
                     <div class="col-auto mb-3">
                         <label for="obsolete" class="form-label is-required">{{ __('product.data.is_obsolete') }}</label>
-                        <select class="form-select border-secondary border-opacity-25 " name="is_obsolete" id="obsolete">
+                        <select class="form-select border-secondary border-opacity-50 " name="is_obsolete" id="obsolete">
                             <option value="0" {{ !$product->is_obsolete ? 'selected' : '' }}>No</option>
                             <option value="1" {{ $product->is_obsolete ? 'selected' : '' }}>Si</option>
                         </select>
@@ -50,7 +50,7 @@
                 <div class="row">
                     <div class="col-2 mb-3">
                         <label for="presentation" class="form-label is-required">{{ __('product.data.presentation') }}</label>
-                        <select class="form-select border-secondary border-opacity-25 " name="presentation_id"
+                        <select class="form-select border-secondary border-opacity-50 " name="presentation_id"
                             id="presentation">
                             @foreach ($presentations as $presentation)
                                 <option value="{{ $presentation->id }}"
@@ -64,7 +64,7 @@
                     <div class="col-3 mb-3">
                         <label for="linebusiness"
                             class="form-label is-required">{{ __('product.data.line_business') }}</label>
-                        <select class="form-select border-secondary border-opacity-25 " name="linebusiness_id"
+                        <select class="form-select border-secondary border-opacity-50 " name="linebusiness_id"
                             id="linebusiness">
                             @foreach ($line_business as $line)
                                 <option value="{{ $line->id }}"
@@ -76,7 +76,7 @@
 
                     <div class="col-3 mb-3">
                         <label for="application_method" class="form-label is-required">{{ __('product.data.metric') }}</label>
-                        <select class="form-select border-secondary border-opacity-25 " name="metric_id" id="metric">
+                        <select class="form-select border-secondary border-opacity-50 " name="metric_id" id="metric">
                             @foreach ($metrics as $metric)
                                 <option value="{{ $metric->id }}"
                                     {{ $metric->id == $product->metric_id ? 'selected' : '' }}>
@@ -89,11 +89,11 @@
                 <div class="row">
                     <div class="col mb-3">
                         <label for="description" class="form-label is-required">{{ __('product.data.description') }}</label>
-                        <textarea class="form-control border-secondary border-opacity-25" name="description" rows="5">{{ $product->description }}</textarea>
+                        <textarea class="form-control border-secondary border-opacity-50" name="description" rows="5">{{ $product->description }}</textarea>
                     </div>
                     <div class="col mb-3">
                         <label for="indications_execution" class="form-label">{{ __('product.data.execution_indications') }}</label>
-                        <textarea class="form-control border-secondary border-opacity-25" name="indications_execution" rows="5">{{ $product->execution_indications }}</textarea>
+                        <textarea class="form-control border-secondary border-opacity-50" name="indications_execution" rows="5">{{ $product->execution_indications }}</textarea>
                     </div>
                 </div>
                 <div class="row mb-3">
@@ -123,14 +123,14 @@
                     <div class="col-4 mb-3">
                         <label for="manufacturer" class="form-label">{{ __('product.data.manufacturer') }}/distribuidor
                         </label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="manufacturer"
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="manufacturer"
                             value="{{ $product->manufacturer }}">
                     </div>
 
                     <div class="col-4 mb-3">
                         <label for="register_number" class="form-label">{{ __('product.data.register_number') }}:
                         </label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="register_number"
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="register_number"
                             value="{{ $product->register_number }}">
                     </div>
                 </div>
@@ -139,37 +139,37 @@
                     <div class="col-4 mb-3">
                         <label for="activin" class="form-label">{{ __('product.data.active_ingredient') }}
                             :</label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="activin"
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="activin"
                             value="{{ $product->active_ingredient }}">
                     </div>
                     <div class="col-2 mb-3">
                         <label for="per_active_ingredient"
                             class="form-label">{{ __('product.data.per_active_ingredient') }} :</label>
-                        <input type="number" step="0.0001" class="form-control border-secondary border-opacity-25"
+                        <input type="number" step="0.0001" class="form-control border-secondary border-opacity-50"
                             name="per_active_ingredient" value="{{ $product->per_active_ingredient }}" min=0>
                     </div>
                     <div class="col-2 mb-3">
                         <label for="dosage" class="form-label">{{ __('product.data.dosage') }} :</label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="dosage"
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="dosage"
                             value="{{ $product->dosage }}">
                     </div>
                     <div class="col-2 mb-3">
                         <label for="safety_period" class="form-label">{{ __('product.data.safety_period') }}
                             :</label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="safety_period"
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="safety_period"
                             value="{{ $product->safety_period }}" maxlength="50">
                     </div>
                     <div class="col-2 mb-3">
                         <label for="residual_effect" class="form-label">{{ __('product.data.residual_effect') }}
                             :</label>
-                        <input type="text" class="form-control border-secondary border-opacity-25" name="residual_effect"
+                        <input type="text" class="form-control border-secondary border-opacity-50" name="residual_effect"
                             value="{{ $product->residual_effect }}">
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-3 mb-3">
                         <label for="valid_date" class="form-label">{{ __('product.data.validity_date') }}</label>
-                        <input type="date" class="form-control border-secondary border-opacity-25" name="validity_date"
+                        <input type="date" class="form-control border-secondary border-opacity-50" name="validity_date"
                             value="{{ $product->validity_date }}">
                     </div>
                 </div>
@@ -177,7 +177,7 @@
                 <div class="row">
                     <div class="col-3 mb-3">
                         <label for="purpose" class="form-label is-required">{{ __('product.data.purpose') }}</label>
-                        <select class="form-select border-secondary border-opacity-25 " name="purpose" id="purpose">
+                        <select class="form-select border-secondary border-opacity-50 " name="purpose" id="purpose">
                             @foreach ($purposes as $purpose)
                                 <option value="{{ $purpose->id }}"
                                     {{ $purpose->id == $product->purpose_id ? 'selected' : '' }}>{{ $purpose->type }}</option>
@@ -186,7 +186,7 @@
                     </div>
                     <div class="col-6 mb-3">
                         <label for="biocide" class="form-label is-required">{{ __('product.data.biocide') }}</label>
-                        <select class="form-select border-secondary border-opacity-25 " name="biocide_id" id="biocide"
+                        <select class="form-select border-secondary border-opacity-50 " name="biocide_id" id="biocide"
                             required>
                             @foreach ($biocides as $biocide)
                                 <option value="{{ $biocide->id }}"
@@ -205,7 +205,7 @@
                 <div class="row">
                     <div class="col-auto mb-3">
                         <label class="form-label">{{ __('product.data.is_toxic') }}</label>
-                        <select class="form-select border-secondary border-opacity-25 " name="toxicity" id="toxicity"
+                        <select class="form-select border-secondary border-opacity-50 " name="toxicity" id="toxicity"
                             onchange="changeProps('#toxicity', this.value, '#toxic-select');">
                             <option value="0" {{ !$product->toxicity ? 'selected' : '' }}> No </option>
                             <option value="1" {{ $product->toxicity ? 'selected' : '' }}> Si </option>
@@ -215,7 +215,7 @@
                 <div class="row">
                     <div class="col-auto mb-3">
                         <label class="form-label">{{ __('product.data.toxicity_category') }}</label>
-                        <select class="form-select border-secondary border-opacity-25 " name="toxic" id="toxic-select">
+                        <select class="form-select border-secondary border-opacity-50 " name="toxic" id="toxic-select">
                             <option value="" {{ $product->toxicity_categ_id == null ? 'selected' : '' }}> Libre de toxicidad </option>
                             @foreach ($toxics as $toxic)
                                 <option value="{{ $toxic->id }}"
@@ -232,25 +232,25 @@
                     <div class="col-auto mb-3">
                         <label for="purchase_price"
                             class="form-label">{{ __('product.data.purchase_price') }}</label>
-                        <input type="number" class="form-control border-secondary border-opacity-25" name="purchase_price"
+                        <input type="number" class="form-control border-secondary border-opacity-50" name="purchase_price"
                             value="{{ $product->purchase_price }}" min="0" step="0.01">
                     </div>
                     <div class="col-auto mb-3">
                         <label for="selling_price"
                             class="form-label">{{ __('product.data.selling_price') }}</label>
-                        <input type="number" class="form-control border-secondary border-opacity-25" name="selling_price"
+                        <input type="number" class="form-control border-secondary border-opacity-50" name="selling_price"
                             id="selling-price" value="{{ $product->selling_price }}" min="0" step="0.01">
                     </div>
                     <div class="col-auto mb-3">
                         <label for="min_purchase_unit"
                             class="form-label">{{ __('product.data.min_purchase_unit') }}</label>
-                        <input type="number" class="form-control border-secondary border-opacity-25"
+                        <input type="number" class="form-control border-secondary border-opacity-50"
                             name="min_purchase_unit" value="{{ $product->min_purchase_unit }}" min="0">
                     </div>
                     <div class="col-auto mb-3">
                         <label for="mult_purchase"
                             class="form-label">{{ __('product.data.mult_purchase') }}</label>
-                        <input type="number" class="form-control border-secondary border-opacity-25" name="mult_purchase"
+                        <input type="number" class="form-control border-secondary border-opacity-50" name="mult_purchase"
                             value="{{ $product->mult_purchase }}" min="0">
                     </div>
                 </div>
@@ -273,7 +273,7 @@
                     </div>
                     <div class="col-auto mb-3">
                         <label for="supplier" class="form-label">{{ __('product.data.is_selling') }}</label>
-                        <select class="form-select border-secondary border-opacity-25 " name="product_sale" id="product-sale"
+                        <select class="form-select border-secondary border-opacity-50 " name="product_sale" id="product-sale"
                             onchange="changeProps('#product-sale', this.value, '#selling-price')">
                             <option value="1" {{ $product->is_selling ? 'selected' : '' }}>Sí</option>
                             <option value="0" {{ !$product->is_selling ? 'selected' : '' }}>No</option>
@@ -285,13 +285,13 @@
                     <div class="col-auto mb-3">
                         <label for="subaccount_purchases"
                             class="form-label">{{ __('product.data.subaccount_purchases') }}</label>
-                        <input type="number" class="form-control border-secondary border-opacity-25"
+                        <input type="number" class="form-control border-secondary border-opacity-50"
                             name="subaccount_purchases" value="{{ $product->subaccount_purchases }}" min=0>
                     </div>
                     <div class="col-auto mb-3">
                         <label for="subaccount_sales"
                             class="form-label">{{ __('product.data.subaccount_sales') }}</label>
-                        <input type="number" class="form-control border-secondary border-opacity-25" name="subaccount_sales"
+                        <input type="number" class="form-control border-secondary border-opacity-50" name="subaccount_sales"
                             value="{{ $product->subaccount_sales }}" min=0>
                     </div>
                 </div>

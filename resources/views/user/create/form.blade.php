@@ -18,7 +18,7 @@
         <div class="col-6">
             <label for="name" class="form-label is-required">{{ __('user.data.name') }}:
             </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="name" name="name"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="name" name="name"
                 placeholder="Example" autocomplete="off" required />
         </div>
 
@@ -28,12 +28,12 @@
             </label>
             <div class="input-group">
                 <input type="text"
-                    class="form-control border-secondary border-opacity-25 border-end-0 rounded-0 rounded-start"
+                    class="form-control border-secondary border-opacity-50 border-end-0 rounded-0 rounded-start"
                     id="username" placeholder="example"
                     onblur="$('#email').val(this.value + $('#mailType').val()); console.log($('#mailType').val())"
                     required />
                 <select
-                    class="form-select border-secondary border-opacity-25 input-group-text bg-secondary-subtle rounded-0 rounded-end"
+                    class="form-select border-secondary border-opacity-50 input-group-text bg-secondary-subtle rounded-0 rounded-end"
                     id="mailType" required>
                     <option value="@siscoplagas.com">@siscoplagas.com</option>
                     <option value="@terkleen.com">@terkleen.com</option>
@@ -48,7 +48,7 @@
         <div class="col-3">
             <label for="company" class="form-label">{{ __('user.data.company') }}:
             </label>
-            <select class="form-select border-secondary border-opacity-25" id="company" name="company_id"
+            <select class="form-select border-secondary border-opacity-50" id="company" name="company_id"
                 autocomplete="off">
                 @foreach ($companies as $company)
                     <option value="{{ $company->id }}">{{ $company->name }}</option>
@@ -59,7 +59,7 @@
             <label for="branch" class="form-label">{{ __('user.data.branch') }}:
             </label>
             <div class="input-group flex-nowrap">
-                <select class="form-select border-secondary border-opacity-25" id="branch" name="branch_id"
+                <select class="form-select border-secondary border-opacity-50" id="branch" name="branch_id"
                     autocomplete="off">
                     @foreach ($branches as $branch)
                         <option value="{{ $branch->id }}">
@@ -73,7 +73,7 @@
         <div class="col-3">
             <label for="role" class="form-label">{{ __('user.data.role') }}:
             </label>
-            <select class="form-select border-secondary border-opacity-25" id="role" name="role_id"
+            <select class="form-select border-secondary border-opacity-50" id="role" name="role_id"
                 onchange="restiction(this.value)">
                 @foreach ($roles as $role)
                     <option value="{{ $role->id }}">{{ $role->name }}</option>
@@ -84,7 +84,7 @@
         <div class="col-3">
             <label for="work-department" class="form-label">{{ __('user.data.department') }}:
             </label>
-            <select class="form-select border-secondary border-opacity-25" id="wk-department"
+            <select class="form-select border-secondary border-opacity-50" id="wk-department"
                 onchange="$('#work-department').val(this.value)">
                 @foreach ($work_departments as $department)
                     <option class="option-department" value="{{ $department->id }}">
@@ -113,17 +113,17 @@
             <div class="row border rounded m-0 p-2 bg-body-tertiary">
                 <div class="col-3">
                     <label for="client" class="form-label">Nombre: </label>
-                    <input class="form-control border-secondary border-opacity-25" name="customer_name"
+                    <input class="form-control border-secondary border-opacity-50" name="customer_name"
                         id="customer-name" placeholder="Example" value="" />
                 </div>
                 <div class="col-3">
                     <label for="client" class="form-label">Teléfono: </label>
-                    <input class="form-control border-secondary border-opacity-25" name="customer_phone"
+                    <input class="form-control border-secondary border-opacity-50" name="customer_phone"
                         id="customer-phone" placeholder="0000000000" value="" />
                 </div>
                 <div class="col-6">
                     <label for="client" class="form-label">Dirección: </label>
-                    <input class="form-control border-secondary border-opacity-25" name="customer_address"
+                    <input class="form-control border-secondary border-opacity-50" name="customer_address"
                         id="customer-address" placeholder="Example #00, Col. Example" value="" />
                 </div>
                 <div class="col-3 mt-2">

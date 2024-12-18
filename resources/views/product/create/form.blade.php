@@ -6,25 +6,25 @@
         <h5 class="border-bottom pb-1 fw-bold"> Datos generales </h5>
         <div class="col-4 mb-3">
             <label for="name" class="form-label is-required">{{ __('product.data.name') }}</label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="name" name="name"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="name" name="name"
                 required>
         </div>
         <div class="col-4 mb-3">
             <label for="business_name" class="form-label">{{ __('product.data.business_name') }}
             </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="business-name"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="business-name"
                 name="business_name">
         </div>
         <div class="col-4 mb-3">
             <label for="manufacturer" class="form-label">{{ __('product.data.manufacturer') }}/distribuidor</label>
-            <input type="text" class="form-control border-secondary border-opacity-25" name="manufacturer"
+            <input type="text" class="form-control border-secondary border-opacity-50" name="manufacturer"
                 id="manufacturer">
         </div>
     </div>
     <div class="row">
         <div class="col-3 mb-3">
             <label for="presentation" class="form-label is-required"> {{ __('product.data.presentation') }}</label>
-            <select class="form-select border-secondary border-opacity-25 " name="presentation_id" id="presentation"
+            <select class="form-select border-secondary border-opacity-50 " name="presentation_id" id="presentation"
                 required>
                 @foreach ($presentations as $presentation)
                     <option value="{{ $presentation->id }}">{{ $presentation->name }}</option>
@@ -33,7 +33,7 @@
         </div>
         <div class="col-3 mb-3">
             <label for="line-business" class="form-label is-required">{{ __('product.data.line_business') }}</label>
-            <select class="form-select border-secondary border-opacity-25 " id="linebusiness" name="linebusiness_id"
+            <select class="form-select border-secondary border-opacity-50 " id="linebusiness" name="linebusiness_id"
                 required>
                 @foreach ($line_business as $line)
                     <option value="{{ $line->id }}">{{ $line->name }}</option>
@@ -43,7 +43,7 @@
 
         <div class="col-3 mb-3">
             <label for="application_method" class="form-label is-required">{{ __('product.data.metric') }}</label>
-            <select class="form-select border-secondary border-opacity-25 " name="metric_id" id="metric">
+            <select class="form-select border-secondary border-opacity-50 " name="metric_id" id="metric">
                 @foreach ($metrics as $metric)
                     <option value="{{ $metric->id }}">{{ $metric->value }}</option>
                 @endforeach
@@ -54,18 +54,18 @@
         <div class="col-6 mb-3">
             <label for="description" class="form-label">{{ __('product.data.description') }}
             </label>
-            <textarea class="form-control border-secondary border-opacity-25" name="description" id="description" rows="4"> </textarea>
+            <textarea class="form-control border-secondary border-opacity-50" name="description" id="description" rows="4"> </textarea>
         </div>
         <div class="col-6 mb-3">
             <label for="execution_indications"
                 class="form-label">{{ __('product.data.execution_indications') }}</label>
-            <textarea class="form-control border-secondary border-opacity-25" name="execution_indications"
+            <textarea class="form-control border-secondary border-opacity-50" name="execution_indications"
                 id="execution_indications" rows="4"> </textarea>
         </div>
 
         <div class="col-12 mb-3">
             <label for="image" class="form-label">{{ __('product.data.image') }}</label>
-            <input type="file" class="form-control-file form-control border-secondary border-opacity-25"
+            <input type="file" class="form-control-file form-control border-secondary border-opacity-50"
                 name="image" id="image">
         </div>
     </div>
@@ -75,7 +75,7 @@
         <h5 class="border-bottom pb-1 fw-bold"> Detalle del producto </h5>
         <div class="col-auto mb-3">
             <label for="type_b" class="form-label is-required">{{ __('product.data.biocide') }}</label>
-            <select class="form-select border-secondary border-opacity-25 " name="biocide_id" id="biocide" required>
+            <select class="form-select border-secondary border-opacity-50 " name="biocide_id" id="biocide" required>
                 @foreach ($biocides as $biocide)
                     <option value="{{ $biocide->id }}"> ({{ $biocide->group }}) {{ $biocide->type }}</option>
                 @endforeach
@@ -83,7 +83,7 @@
         </div>
         <div class="col-2 mb-3">
             <label for="purpose" class="form-label is-required">{{ __('product.data.purpose') }}</label>
-            <select class="form-select border-secondary border-opacity-25 " name="purpose_id" id="purpose" required>
+            <select class="form-select border-secondary border-opacity-50 " name="purpose_id" id="purpose" required>
                 @foreach ($purposes as $purpose)
                     <option value="{{ $purpose->id }}">{{ $purpose->type }}</option>
                 @endforeach
@@ -159,7 +159,7 @@
     </div>
     <div class="row" id="toxic" style="display: none">
         <div class="col-auto mb-3">
-            <select class="form-select border-secondary border-opacity-25 " name="is_toxic" id="is_toxic">
+            <select class="form-select border-secondary border-opacity-50 " name="is_toxic" id="is_toxic">
                 @foreach ($toxics as $toxic)
                     <option value="{{ $toxic->id }}">{{ $toxic->name }}</option>
                 @endforeach

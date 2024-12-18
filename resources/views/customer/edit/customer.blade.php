@@ -5,7 +5,7 @@
         </label>
         <input
             type="text"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="name"
             name="name"
             value="{{ $customer->name }}"
@@ -18,7 +18,7 @@
         </label>
         <input
             type="text"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="email"
             name="email"
             value="{{ $customer->email }}"
@@ -31,7 +31,7 @@
         <input
             type="number"
             min="1"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="phone"
             name="phone"
             value="{{ $customer->phone }}"
@@ -64,7 +64,7 @@
         </label>
         <input
             type="text"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="address"
             name="address"
             value="{{ $customer->address }}"
@@ -77,7 +77,7 @@
         </label>
         <input
             type="number"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="zip_code"
             name="zip_code"
             value="{{ $customer->zip_code }}"
@@ -89,7 +89,7 @@
             >{{ __('customer.data.state') }}:
         </label>
         <select
-            class="form-select border-secondary border-opacity-25"
+            class="form-select border-secondary border-opacity-50"
             id="state"
             name="state"
             onchange="load_city()"
@@ -112,7 +112,7 @@
             >{{ __('customer.data.city') }}:
         </label>
         <select
-            class="form-select border-secondary border-opacity-25"
+            class="form-select border-secondary border-opacity-50"
             id="city"
             name="city"
             required
@@ -147,7 +147,7 @@
         >
         <input
             type="text"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="url"
             name="map_location_url"
             value="{{ $customer->map_location_url }}"
@@ -161,7 +161,7 @@
             >Tipo de servicio:</label
         >
         <select
-            class="form-select border-secondary border-opacity-25"
+            class="form-select border-secondary border-opacity-50"
             id="servicetype"
             name="service_type_id"
         >
@@ -180,7 +180,7 @@
             >{{ __('customer.data.category') }}:</label
         >
         <select
-            class="form-select border-secondary border-opacity-25"
+            class="form-select border-secondary border-opacity-50"
             id="category"
             name="company_category_id"
         >
@@ -204,7 +204,7 @@
             type="time"
             min="08:00"
             max="19:00"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="start_time"
             name="start_time"
             value="{{ $customer->start_time }}"
@@ -218,7 +218,7 @@
             type="time"
             min="08:00"
             max="19:00"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="end_time"
             name="end_time"
             value="{{ $customer->end_time }}"
@@ -233,7 +233,7 @@
         </label>
         <input
             type="text"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="tax-name"
             name="tax_name"
             value="{{ $customer->tax_name }}"
@@ -245,7 +245,7 @@
         </label>
         <input
             type="text"
-            class="form-control border-secondary border-opacity-25"
+            class="form-control border-secondary border-opacity-50"
             id="rfc"
             name="rfc"
             value="{{ $customer->rfc }}"
@@ -256,7 +256,7 @@
             >{{ __('customer.data.tax') }}:
         </label>
         <select
-            class="form-select border-secondary border-opacity-25"
+            class="form-select border-secondary border-opacity-50"
             id="tax-regime"
             name="tax_regime"
         >

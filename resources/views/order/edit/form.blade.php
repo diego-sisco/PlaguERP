@@ -26,27 +26,27 @@
         <h5 class="border-bottom pb-1 fw-bold"> Datos basicos de la solicitud: </h5>
         <div class="col-2 mb-2">
             <label for="start_time" class="form-label is-required">{{ __('order.data.start_time') }}:</label>
-            <input type="time" class="form-control border-secondary border-opacity-25" id="start_time"
+            <input type="time" class="form-control border-secondary border-opacity-50" id="start_time"
                 name="start_time" value="{{ $order->start_time }}" onchange="validate_time()" required>
         </div>
         <div class="col-2 mb-2">
             <label for="end_time" class="form-label">{{ __('order.data.end_time') }}:</label>
-            <input type="time" class="form-control border-secondary border-opacity-25" id="end_time" name="end_time"
+            <input type="time" class="form-control border-secondary border-opacity-50" id="end_time" name="end_time"
                 value="{{ $order->end_time }}">
         </div>
         <div class="col-2 mb-2">
             <label for="request_date" class="form-label is-required">{{ __('order.data.programmed_date') }}:</label>
-            <input type="date" class="form-control border-secondary border-opacity-25" id="programmed_date"
+            <input type="date" class="form-control border-secondary border-opacity-50" id="programmed_date"
                 name="programmed_date" value="{{ $order->programmed_date }}" required>
         </div>
         <div class="col-2 mb-2">
             <label for="request_date" class="form-label">Fecha de finalización:</label>
-            <input type="date" class="form-control border-secondary border-opacity-25" id="completed_date"
+            <input type="date" class="form-control border-secondary border-opacity-50" id="completed_date"
                 name="completed_date"" value="{{ $order->completed_date }}">
         </div>
         <div class="col-3 mb-2">
             <label for="request_date" class="form-label is-required">{{ __('order.data.status') }}:</label>
-            <select class="form-select border-secondary border-opacity-25 " id="status" name="status_id">
+            <select class="form-select border-secondary border-opacity-50 " id="status" name="status_id">
                 @foreach ($order_status as $status)
                     <option value="{{ $status->id }}" {{ $status->id == $order->status->id ? 'selected' : '' }}>
                         {{ $status->name }}
@@ -86,7 +86,7 @@
         <div class="col-12">
             <h6 class="pb-1 mb-1 fw-bold">{{ __('order.title.find_service') }}:</h6>
             <div class="input-group mb-3">
-                <input type="search" class="form-control border-secondary border-opacity-25" id="search-service-input"
+                <input type="search" class="form-control border-secondary border-opacity-50" id="search-service-input"
                     name="search_service_input" placeholder="Nombre del servicio">
                 <button class="btn btn-primary btn-sm" type="button" id="btn-search-service" onclick="searchService()">
                     <i class="bi bi-search"></i> {{ __('buttons.search') }}
@@ -144,7 +144,7 @@
                                 onchange="setTechnician()" {{ $order->allTechnicians() ? 'disabled' : '' }}
                                 {{ !$order->allTechnicians() && $order->hasTechnician($technician->id) ? 'checked' : '' }}>
                             <label class="form-check-label" for="technician-{{ $technician->id }}">
-                                {{ $technician->user->name }}
+                                {{ $technician->name }}
                             </label>
                         </div>
                     </li>
@@ -158,18 +158,18 @@
         <h5 class="border-bottom pb-1 mb-3 fw-bold"> Datos técnicos adicionales: </h5>
         <div class="col-12 mb-3">
             <label class="mb-2">{{ __('order.data.execution') }}: </label>
-            <textarea class="form-control border-secondary border-opacity-25" id="floatingTextarea" id="execution"
+            <textarea class="form-control border-secondary border-opacity-50" id="floatingTextarea" id="execution"
                 name="execution" style="height: 100px">{{ $order->execution }}</textarea>
 
         </div>
         <div class="col-12 mb-3">
             <label class="mb-2">{{ __('order.data.areas') }}: </label>
-            <textarea class="form-control border-secondary border-opacity-25" id="areas" name="areas"
+            <textarea class="form-control border-secondary border-opacity-50" id="areas" name="areas"
                 style="height: 100px">{{ $order->areas }}</textarea>
         </div>
         <div class="col-12">
             <label class="mb-2">{{ __('order.data.comments') }}: </label>
-            <textarea class="form-control border-secondary border-opacity-25" id="additional_comments" name="additional_comments"
+            <textarea class="form-control border-secondary border-opacity-50" id="additional_comments" name="additional_comments"
                 style="height: 100px">{{ $order->additional_comments }}</textarea>
         </div>
     </div>

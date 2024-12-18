@@ -3,19 +3,19 @@
     <div class="row">
         <div class="col-4 mb-3">
             <label for="name" class="form-label is-required">Nombre: </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="name" name="name"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="name" name="name"
                 placeholder="Equipo" onblur="setCode(this.value)" required>
         </div>
         <div class="col-auto mb-3">
             <label for="code" class="form-label is-required">Código: </label>
-            <input type="text" class="form-control border-secondary border-opacity-25" id="code" name="code"
+            <input type="text" class="form-control border-secondary border-opacity-50" id="code" name="code"
                 placeholder="EQ" required>
         </div>
     </div>
     <div class="row">
         <div class="col-4 mb-3">
             <label for="device" class="form-label is-required"> Dispositivo asociado: </label>
-            <select class="form-select border-secondary border-opacity-25 " name="device_id"
+            <select class="form-select border-secondary border-opacity-50 " name="device_id"
                 id="associated-device-id" required>
                 @foreach ($devices as $device)
                     <option value="{{ $device->id }}">{{ $device->name }}</option>
@@ -25,7 +25,7 @@
         <div class="col-auto mb-3">
             <label for="colorPicker" class="form-label is-required">Color: </label>
             <input type="color" style="height: 40px;"
-                class="form-control-file form-control border-secondary border-opacity-25" id="color" name="color"
+                class="form-control-file form-control border-secondary border-opacity-50" id="color" name="color"
                 required>
         </div>
     </div>

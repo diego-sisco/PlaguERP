@@ -2,13 +2,13 @@
     $offset = ($orders->currentPage() - 1) * $orders->perPage();
 @endphp
 
-<table class="table table-bordered text-center">
+<table class="table table-bordered text-center align-middle">
     <thead>
         <form method="GET" action="{{ route('order.search') }}">
             <tr>
                 <th scope="col">#</th>
-                <th scope="col">ID</th>
-                <th scope="col">
+                <th scope="col">Id</th>
+                <th class="col-2" scope="col">
                     {{ __('order.data.customer') }}
                     @if (!isset($customer))
                         <div class="input-group input-group-sm">
@@ -34,7 +34,8 @@
                         <button class="btn btn-primary" type="submit"><i class="bi bi-search"></i></button>
                     </div>
                 </th>
-                <th class="col-4" scope="col">{{ __('order.data.service') }}
+                <th scope="col">Tipo</th>
+                <th class="col-3" scope="col">{{ __('order.data.service') }}
                     <div class="input-group input-group-sm">
                         <input type="text" class="form-control" id="search-service" name="service"
                             placeholder="Filtrar por servicio">
@@ -53,8 +54,7 @@
                             <i class="bi bi-search"></i></button>
                     </div>
                 </th>
-                <th scope="col">{{ __('buttons.actions') }}</th>
-                
+                <th class="col-2" scope="col">{{ __('buttons.actions') }}</th>
             </tr>
         </form>
     </thead>
@@ -62,10 +62,11 @@
         @foreach ($orders as $index => $order)
             <tr id="order-{{ $order->id }}">
                 <th scope="row">{{ $offset + $index + 1 }}</th>
-                <td>{{ $order->id }}</td>
+                <td class="text-primary">{{ $order->id }}</td>
                 <td>{{ $order->customer->name }}</td>
                 <td>{{ $order->start_time }}</td>
                 <td>{{ $order->programmed_date }}</td>
+                <td>{{ $order->contract_id > 0 ? 'Programación' : 'Seguimiento' }}</td>
                 <td>
                     @foreach ($order->services as $service)
                         {{ $service->name }} <br>

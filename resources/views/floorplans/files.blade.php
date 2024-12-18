@@ -19,7 +19,7 @@
                         <label for="filename" class="form-label is-required">Nombre: </label>
                     </div>
                     <div class="col-sm-10">
-                        <input class="form-control border-secondary border-opacity-25" type="text" id="filename" name="filename"
+                        <input class="form-control border-secondary border-opacity-50" type="text" id="filename" name="filename"
                             required>
                     </div>
                 </div>

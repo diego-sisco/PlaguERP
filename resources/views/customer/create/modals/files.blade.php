@@ -26,7 +26,7 @@
                             {{ __('customer.customerfiles.expire_date') }}
                         </label>
                         <div class="col-5">
-                            <input type="date" class="form-control border-secondary border-opacity-25" name="expirated_date"
+                            <input type="date" class="form-control border-secondary border-opacity-50" name="expirated_date"
                             id="expirated_date" />
                         </div>
                     </div>

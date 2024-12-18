@@ -34,7 +34,7 @@
                     </label>
                     <input
                         type="text"
-                        class="form-control border-secondary border-opacity-25"
+                        class="form-control border-secondary border-opacity-50"
                         id="filename"
                         name="filename"
                         placeholder="Example"
@@ -46,7 +46,7 @@
                         >Servicio:
                     </label>
                     <select
-                        class="form-select border-secondary border-opacity-25"
+                        class="form-select border-secondary border-opacity-50"
                         name="service_id"
                         required
                     >

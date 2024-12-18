@@ -8,7 +8,7 @@
         <div class="card-body">
             <h5 class="card-title fw-bold d-flex justify-content-between">
                 <span> Servicios agendados (Ordenes) </span>
-                <select class="form-select border-secondary border-opacity-25  w-25" onchange="updateChart(this.value)">
+                <select class="form-select border-secondary border-opacity-50  w-25" onchange="updateChart(this.value)">
                     @foreach ($months as $i => $month)
                         <option value="{{ $i + 1 }}" {{ $date->month == $i + 1 ? 'selected' : '' }}>
                             {{ $month }} </option>

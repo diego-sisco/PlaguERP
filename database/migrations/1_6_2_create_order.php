@@ -16,7 +16,8 @@ return new class extends Migration
             $table->foreignId('administrative_id')->constrained('administrative')->onDelete('cascade');
             $table->foreignId('customer_id')->constrained('customer')->onDelete('cascade');
             $table->foreignId('status_id')->constrained('order_status')->onDelete('cascade');
-            $table->foreignId('contract_id')->nullable();
+            $table->foreignId('contract_id')->nullable()->constrained('contract')->onDelete('cascade');
+            $table->foreignId('setting_id')->nullable()->constrained('contract_service')->onDelete('cascade');
             $table->string('customer_observations')->nullable();
             $table->string('technical_observations')->nullable();
             $table->string('recommendations', 1000)->nullable();

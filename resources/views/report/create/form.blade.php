@@ -137,7 +137,7 @@
         <div class="col-12">
             <label for="additional_comments" class="mb-2 fw-bold">{{ __('order.data.comments') }}:
             </label>
-            <textarea class="form-control border-secondary border-opacity-25" id="additional_comments" name="additional_comments"
+            <textarea class="form-control border-secondary border-opacity-50" id="additional_comments" name="additional_comments"
                 style="height: 100px">{{ $order->comments }}</textarea>
         </div>
     </div-->

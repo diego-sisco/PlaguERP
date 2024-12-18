@@ -13,7 +13,7 @@
                         </option>
                     @endforeach
                 </select>
-                <input type="text" class="form-control border-secondary border-opacity-25 rounded-end " id="name" name="name"
+                <input type="text" class="form-control border-secondary border-opacity-50 rounded-end " id="name" name="name"
                     placeholder="Control de plagas" value="{{ old('name') }}" autocomplete="off"
                     required />
             </div>
@@ -21,7 +21,7 @@
 
         <div class="col-3 mb-3">
             <label for="name" class="form-label is-required">{{ __('service.data.type') }}</label>
-            <select class="form-select border-secondary border-opacity-25 " id="service_type_id" name="service_type_id" required>
+            <select class="form-select border-secondary border-opacity-50 " id="service_type_id" name="service_type_id" required>
                 @foreach ($service_types as $service_type)
                     <option value="{{ $service_type->id }}">{{ $service_type->name }}</option>
                 @endforeach
@@ -30,7 +30,7 @@
 
         <div class="col-3 mb-3">
             <label for="name" class="form-label is-required">{{ __('service.data.business_line') }}</label>
-            <select class="form-select border-secondary border-opacity-25 " id="business_line_id" name="business_line_id" required>
+            <select class="form-select border-secondary border-opacity-50 " id="business_line_id" name="business_line_id" required>
                 @foreach ($business_lines as $business_line)
                     <option value="{{ $business_line->id }}" {{ $business_line->id == 2 ? 'selected' : '' }}>{{ $business_line->name }}</option>
                 @endforeach
@@ -41,12 +41,12 @@
             <div class="row">
                 <div class="col-4 mb-1">
                     <label for="name" class="form-label">Duración</label>
-                    <input type="number" class="form-control border-secondary border-opacity-25" id="time" name="time"
+                    <input type="number" class="form-control border-secondary border-opacity-50" id="time" name="time"
                         min="0" max="59" placeholder="0" value="0" />
                 </div>
                 <div class="col-8 mb-1">
                     <label for="name" class="form-label">{{ __('service.data.time_unit') }}</label>
-                    <select class="form-select border-secondary border-opacity-25 " id="time_unit" name="time_unit">
+                    <select class="form-select border-secondary border-opacity-50 " id="time_unit" name="time_unit">
                         @for ($i = 0; $i < count($time_types); $i++)
                             <option value="{{ $i + 1 }}">{{ $time_types[$i] }}</option>
                         @endfor
@@ -120,7 +120,7 @@
 
         <div class="col-12 mb-3">
             <h5 class="fw-bold pb-1 mb-3 border-bottom">Descripción del servicio</h5>
-            <textarea type="text" class="form-control border-secondary border-opacity-25 p-3" id="description" name="description"
+            <textarea type="text" class="form-control border-secondary border-opacity-50 p-3" id="description" name="description"
                 rows="7" placeholder="Incluye una descripción, directrices o prevenciones sobre el servicio." style="text-align: justify;"></textarea>
         </div>
 

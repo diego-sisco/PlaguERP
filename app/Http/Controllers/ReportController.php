@@ -45,7 +45,7 @@ class ReportController extends Controller
         $answers = json_decode(file_get_contents(public_path($this->file_answers_path)), true);
         $order = Order::find($orderId);
         $floorplan = FloorPlans::find($floorplanId);
-        $version = $floorplan->version($order->programmed_date);
+        $version = $floorplan->version();
         $devices = $floorplan->devices($version)->get();
 
         $incidents = OrderIncidents::where('order_id', $order->id)
@@ -164,12 +164,12 @@ class ReportController extends Controller
             }
 
             $product = ProductCatalog::find($device->product_id);
-            $order_product = OrderProduct::where('order_id', $order->id)
+            /*$order_product = OrderProduct::where('order_id', $order->id)
                 ->where('product_id', $product->id)
                 ->where('service_id', $service->id)->first();
-            $appMethod = $product->applicationMethods()->first();
+            //$appMethod = $product->applicationMethods()->first();
 
-            if (!$order_product) {
+            /*if (!$order_product) {
                 $order_product = OrderProduct::create(
                     [
                         'order_id' => $orderId,
@@ -184,7 +184,7 @@ class ReportController extends Controller
             $order_product->save();
 
 
-            $product = ProductCatalog::find($device->controlPoint->product->id);
+            /*$product = ProductCatalog::find($device->controlPoint->product->id);
             $order_product = OrderProduct::where('order_id', $order->id)
                 ->where('product_id', $product->id)
                 ->where('service_id', $service->id)->first();
@@ -203,13 +203,13 @@ class ReportController extends Controller
             }
 
             $order_product->amount = DeviceStates::where('order_id', $order->id)->where('is_device_changed', true)->count();
-            $order_product->save();   // Guarda los cambios
+            $order_product->save();   // Guarda los cambios*/
 
             return response()->json([
                 'success' => true,
                 'message' => 'Incidencias guardadas correctamente.',
                 'reviews' => $reviews,
-                'is_changed' => $order_product,
+                'product' => $product
             ]);
         } catch (\Exception $e) {
             return response()->json([

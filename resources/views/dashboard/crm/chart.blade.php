@@ -10,7 +10,7 @@
             <div class="card-body">
                 <h5 class="card-title fw-bold d-flex justify-content-between">
                     <span> {{ $chartNames[$count] }} </span>
-                    <select class="form-select border-secondary border-opacity-25  w-25"
+                    <select class="form-select border-secondary border-opacity-50  w-25"
                         onchange="updateChart{{$name}}(this.value, '{{ $name }}')">
                         @foreach ($months as $i => $month)
                             <option value="{{ $i + 1 }}" {{ $date->month == $i + 1 ? 'selected' : '' }}>

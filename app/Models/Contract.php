@@ -61,4 +61,8 @@ class Contract extends Model
         $users = User::whereIn('id', $technicianIds)->get()->pluck('name')->toArray();
         return $users;
     }
+
+    public function rotationPlans() {
+        return $this->hasMany(RotationPlan::class, 'contract_id', 'id');
+    }
 }

@@ -38,10 +38,12 @@ class FloorPlans extends Model
         return $this->hasMany(FloorplanVersion::class, 'floorplan_id', 'id')->orderBy('created_at', 'desc');
     }
 
-    public function version($date)
+    public function version()
     {
-        $version = $this->versions()->whereDate('created_at', '<=', Carbon::parse($date)->toDateString())->first();
-        return $version ? $version->version : null;
+        //$version = $this->versions()->whereDate('created_at', '<=', Carbon::parse($date)->toDateString())->first();
+        //return $version ? $version->version : null;
+        $floorplan_version = $this->versions()->first();
+        return $floorplan_version ? $floorplan_version->version : null;
     }
 
 

@@ -10,12 +10,12 @@
             <div class="modal-body">
                 <div class="mb-3">
                     <label for="exampleFormControlInput1" class="form-label is-required">Nombre de zona</label>
-                    <input type="text" class="form-control border-secondary border-opacity-25" id="area-name" name="name"
+                    <input type="text" class="form-control border-secondary border-opacity-50" id="area-name" name="name"
                         placeholder="Agrega una nueva zona/área">
                 </div>
                 <div class="mb-3">
                     <label for="exampleFormControlInput2" class="form-label">Tipo de zona</label>
-                    <select class="form-select border-secondary border-opacity-25 " id="area-zone-type" name="zone_type_id">
+                    <select class="form-select border-secondary border-opacity-50 " id="area-zone-type" name="zone_type_id">
                         <option value="">No Aplica (N/A)</option>
                         @foreach($zone_types as $item)
                             <option value="{{$item->id}}">{{$item->name}}</option>
@@ -24,7 +24,7 @@
                 </div>
                 <div class="mb-3">
                     <label for="m2" class="form-label is-required">Metros cuadrados (m²)</label>
-                    <input type="number" class="form-control border-secondary border-opacity-25" id="area-m2" name="m2" min="0" max="10000" value="0" required>
+                    <input type="number" class="form-control border-secondary border-opacity-50" id="area-m2" name="m2" min="0" max="10000" value="0" required>
                 </div>
             </div>
             <div class="modal-footer">

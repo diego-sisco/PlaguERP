@@ -1,4 +1,5 @@
 @php
+    $answer = null;
     $pests_data = [];
 
     function shortenText($text, $limit = 20)
@@ -6,19 +7,19 @@
         return strlen($text) > $limit ? substr($text, 0, $limit) . '...' : $text;
     }
 @endphp
+
 <div class="row">
     @foreach ($order->services as $service)
         @if ($service->prefix == 1)
             @foreach ($order->customer->floorplans as $floorplan)
                 @if (!$floorplan->versions->isEmpty() && $floorplan->service_id == $service->id)
-                    @php $version = $floorplan->version($order->programmed_date); @endphp
+                    @php $version = $floorplan->version(); @endphp
                     <h5 class="border-bottom pb-1 mb-3 fw-bold">{{ $service->name }} [
                         Plano: {{ $floorplan->filename }} ]</h5>
                     <div class="input-group mb-3">
                         <span class="input-group-text bg-secondary-subtle">Versión del plano</span>
                         <input type="text" class="form-control bg-white"
-                            value="{{ $floorplan->version($order->programmed_date) ?? '0' }} - ({{ $floorplan->created_at }})"
-                            disabled>
+                            value="{{ $floorplan->version() ?? '0' }} - ({{ $floorplan->created_at }})" disabled>
                         <a href="{{ route('report.autoreview', ['orderId' => $order->id, 'floorplanId' => $floorplan->id]) }}"
                             class="btn btn-warning"
                             onclick="return confirm('{{ __('messages.are_you_sure_autoreview') }}')"><i
@@ -30,6 +31,7 @@
                             <thead>
                                 <tr>
                                     <th scope="col"># (Número)</th>
+                                    <th scope="col">Código</th>
                                     <th scope="col">Nombre</th>
                                     <th scope="col">Zona</th>
                                     <th scope="col">Escaneado</th>
@@ -44,6 +46,7 @@
                                 @foreach ($floorplan->devices($version)->get() as $device)
                                     <tr>
                                         <th scope="row" class="align-middle">{{ $device->nplan }}</th>
+                                        <td class="align-middle fw-bold text-primary">{{ $device->code }}</td>
                                         <td class="align-middle">
                                             {{ $device->controlPoint->name ?? '' }}
                                         </td>
@@ -81,7 +84,7 @@
 
                                         <div class="modal modal-dialog-scrollable" id="reviewModal{{ $device->id }}"
                                             tabindex="-1" aria-labelledby="reviewModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog">
+                                            <div class="modal-dialog modal-dialog-scrollable">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title" id="reviewModalLabel">Revisión:
@@ -101,6 +104,11 @@
                                                                     $incident = $order
                                                                         ->incident($device->id, $question->id)
                                                                         ->first();
+                                                                    if ($incident) {
+                                                                        $answer = $incident->answer ?? null;
+                                                                    } else {
+                                                                        $answer = null;
+                                                                    }
                                                                 @endphp
                                                                 <div class="col-12 mb-3">
                                                                     <label for="exampleInputEmail1"
@@ -108,7 +116,7 @@
                                                                     @if ($question->question_option_id == 5 || $question->question_option_id == 6)
                                                                         <textarea class="form-control" placeholder="Agrega texto..." rows="5"
                                                                             onblur="setQuestion({{ $service->id }}, {{ $device->id }}, {{ $question->id }}, this.value, 'text')">
-                                                                            {{ $incident->answer ?? '' }}
+                                                                            {{ $answer ?? '' }}
                                                                         </textarea>
                                                                     @elseif (
                                                                         $question->question_option_id == 3 ||
@@ -117,18 +125,20 @@
                                                                             $question->question_option_id == 9)
                                                                         <input class="form-control" type="number"
                                                                             id="" name="" step="0.001"
-                                                                            value="{{ $incident->answer ?? '' }}"
+                                                                            value="{{ $answer ?? '' }}"
                                                                             placeholder="00.00" min="1"
                                                                             onblur="setQuestion({{ $service->id }}, {{ $device->id }}, {{ $question->id }}, this.value, 'number')">
                                                                     @else
                                                                         <select
-                                                                            class="form-select border-secondary border-opacity-25"
+                                                                            class="form-select border-secondary border-opacity-50"
                                                                             onchange="setQuestion({{ $service->id }}, {{ $device->id }}, {{ $question->id }}, this.value, 'select')">
-                                                                            <option value="0">Sin
+                                                                            <option value="0"
+                                                                                {{ $answer == null ? 'selected' : '' }}>
+                                                                                Sin
                                                                                 opción</option>
                                                                             @foreach (getOptions($question->option->id, $answers) as $option)
                                                                                 <option value="{{ $option }}"
-                                                                                    {{ $incident && $incident->answer == $option ? 'selected' : '' }}>
+                                                                                    {{ $answer && $answer == $option ? 'selected' : '' }}>
                                                                                     {{ $option }}
                                                                                 </option>
                                                                             @endforeach
@@ -492,6 +502,19 @@
         }
     }
 
+    function isFormDataEmpty(formData) {
+        for (let pair of formData.entries()) {
+            return true;
+        }
+        return false;
+    }
+
+    function printFormData(formData) {
+    for (let [key, value] of formData.entries()) {
+        console.log(`${key}: ${value}`);
+    }
+}
+
     function storeIncidents(device_id) {
         var formData = new FormData();
         var csrfToken = $('meta[name="csrf-token"]').attr("content");
@@ -502,45 +525,36 @@
         var count = $(`#device${device_id}-product-count`).val();
         var fetched_pests = pests_data.find(item => item.device_id == device_id);
 
-        formData.append('deviceId', JSON.stringify(device_id))
+        formData.append('deviceId', JSON.stringify(device_id));
         formData.append('incidents', JSON.stringify(incidents));
-        formData.append('pests_found', JSON.stringify(fetched_pests))
-        formData.append('is_product_changed', JSON.stringify(is_product_changed))
-        formData.append('is_device_changed', JSON.stringify(is_device_changed))
-        formData.append('lot_id', JSON.stringify(lot))
-        formData.append('service_id', JSON.stringify(service))
-        formData.append('amount', JSON.stringify(count))
+        formData.append('pests_found', JSON.stringify(fetched_pests));
+        formData.append('is_product_changed', JSON.stringify(is_product_changed));
+        formData.append('is_device_changed', JSON.stringify(is_device_changed));
+        formData.append('lot_id', JSON.stringify(lot));
+        formData.append('service_id', JSON.stringify(service));
+        formData.append('amount', JSON.stringify(count));
 
-        console.log(formData);
 
-        $.ajax({
-            url: "{{ route('report.store.incidents', ['orderId' => $order->id]) }}",
-            type: "POST",
-            data: formData,
-            contentType: false,
-            processData: false,
-            headers: {
-                "X-CSRF-TOKEN": csrfToken,
-            },
-            success: function(response) {
-                console.log(response)
-                if (response.success) {
-                    /*$('#status-device' + device_id).html(
-                        '<i class="bi bi-check-circle-fill text-success"></i>');
-
-                    if (response.is_changed) {
-                        $('#change-product-device' + device_id).html(
-                            '<i class="bi bi-check-circle-fill text-success"></i>');
-                    } else {
-                        $('#change-product-device' + device_id).html(
-                            '<i class="bi bi-exclamation-triangle-fill text-warning"></i>');
-                    }*/
-                    location.reload();
+        if (isFormDataEmpty(formData)) {
+            $.ajax({
+                url: "{{ route('report.store.incidents', ['orderId' => $order->id]) }}",
+                type: "POST",
+                data: formData,
+                contentType: false,
+                processData: false,
+                headers: {
+                    "X-CSRF-TOKEN": csrfToken,
+                },
+                success: function(response) {
+                    console.log(response)
+                    if (response.success) {
+                        //location.reload();
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("Error:", error);
                 }
-            },
-            error: function(xhr, status, error) {
-                console.error("Error:", error);
-            }
-        });
+            });
+        }
     }
 </script>

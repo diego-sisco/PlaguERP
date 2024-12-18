@@ -55,6 +55,9 @@
                                 <i class="bi bi-person-fill-add"></i> {{ __('buttons.convert') }}
                             </a>
                         @endif
+                        <a href="{{ route('customer.destroy', ['id' => $customer->id]) }}" class="btn btn-danger btn-sm"
+                            onclick="return confirm('{{ __('messages.are_you_sure_delete') }}')"><i class="bi bi-trash-fill"></i>
+                            {{ __('buttons.delete') }}</a>
                     @endcan
                 </td>
             </tr>
