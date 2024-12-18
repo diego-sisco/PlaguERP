@@ -29,7 +29,8 @@
         const devices = @json($devices);
         const legend = @json($legend);
         const img_src = "{{ route('image.show', ['filename' => $floorplan->path]) }}";
-        // console.log(img_src);
+        const logo_src = "{{ asset('images/logo.png') }}";
+
         var points = [];
         var size = {};
         var color = '';
@@ -116,13 +117,37 @@
             const pageWidth = pdf.internal.pageSize.getWidth();
             const pageHeight = pdf.internal.pageSize.getHeight();
 
-            // Escala para ajustar la imagen a la página
-            const scale = Math.min(pageWidth / originalWidth, pageHeight / originalHeight);
-            const imgWidth = originalWidth * scale;
-            const imgHeight = originalHeight * scale;
+            // Tamaño mínimo requerido para la simbología
+            const minSymbolWidth = 50; // Ancho mínimo necesario para la simbología
+            const minSymbolHeight = 80; // Alto mínimo necesario para la simbología
 
-            const x = (pageWidth - imgWidth) / 2;
-            const y = (pageHeight - imgHeight) / 2;
+            let scale =Math.min(pageWidth / originalWidth, pageHeight / originalHeight)/1.225;
+
+            let imgWidth = originalWidth * scale;
+            let imgHeight = originalHeight * scale;
+
+            let spaceWidth = pageWidth - imgWidth - 7;
+            let spaceHeight = pageHeight - imgHeight - 7;
+
+            // Si el espacio es insuficiente para la simbología, reduce la escala para la imagen
+            if ((spaceWidth > spaceHeight && spaceWidth < minSymbolWidth) || (spaceHeight < minSymbolHeight && spaceWidth < spaceHeight)) {
+                const additionalScaleFactor = Math.min(
+                    (pageWidth - minSymbolWidth) / originalWidth,
+                    (pageHeight - minSymbolHeight) / originalHeight
+                );
+                scale = Math.min(scale, additionalScaleFactor);
+
+                // Recalcular las dimensiones de la imagen
+                imgWidth = originalWidth * scale;
+                imgHeight = originalHeight * scale;
+
+                // Recalcular el espacio restante
+                spaceWidth = pageWidth - imgWidth - 7;
+                spaceHeight = pageHeight - imgHeight - 7;
+            }
+
+            const x = 0;
+            const y = 0;
 
             // Agregar la imagen al PDF
             pdf.addImage(img_src, 'JPEG', x, y, imgWidth, imgHeight);
@@ -145,8 +170,111 @@
                 pdf.text(point.nplan.toString(), adjustedX + 2, adjustedY + 2);
             });
 
+            const offsetX = spaceWidth * 0.075;
+            const offsetY = spaceHeight * 0.075;
+            const marginX = offsetX + offsetX;
+            const marginY = offsetY + offsetY;
+
+            const simbologyX = imgWidth + offsetX;
+            const simbologyY = imgHeight + offsetY;
+
+            // Medidas del logo
+            const logoWidth = 602, logoHeight = 180;
+            const scaleLogo = Math.min(
+                spaceWidth > spaceHeight 
+                    ? spaceWidth / logoWidth
+                    : spaceHeight / logoHeight,
+                0.11
+            );
+
+            const logoResizeWidth = (logoWidth - marginX) * scaleLogo;
+            const logoResizeHeight = (logoHeight - marginY) * scaleLogo;
+
+               // Texto dinámico para la simbología
+            let textTest = legend.customer + "\n\n";
+            textTest += "Perímetro: " + legend.name +
+                "\n" +
+                "Cantidad de dispositivos: " + legend.quantity +
+                "\n\n";
+
+            legend.data.forEach(function (item, index) {
+                const range = formatRange(item.numbers);
+                textTest +=
+                    "Tipo de dispositivo/objetivo: " + item.label +
+                    "\n" +
+                    "Producto tipo de equipo: " + item.product +
+                    "\n" +
+                    "Numeración: " + range +
+                    "\n\n";
+            });
+
+            textTest +=
+                "Versión del plano: " + legend.floorplan_version +
+                "\nFecha de actualizacion: " + legend.date_version;
+
+            if (spaceWidth > spaceHeight) {
+                // El espacio esta a la derecha
+                pdf.addImage(logo_src, 'PNG', simbologyX, offsetX, logoResizeWidth, logoResizeHeight);
+                addWrappedText(pdf, textTest, simbologyX, offsetX + logoResizeHeight + 3, pageWidth - simbologyX - 10, pageHeight - offsetY - 10);
+            } else {
+                // El espacio esta abajo
+                pdf.addImage(logo_src, 'PNG', offsetY, simbologyY, logoResizeWidth, logoResizeHeight);
+                if(orientation == "p")
+                    addColumnText(pdf, textTest, offsetY, simbologyY + logoResizeHeight + 3, pageWidth / 4 - 5, pageHeight - offsetY + 2, 4);
+                else
+                    addColumnText(pdf, textTest, offsetY, simbologyY + logoResizeHeight + 3, pageWidth / 5 - 5, pageHeight - offsetY + 2, 5);
+            }
+
             // Guardar el archivo PDF
-            pdf.save('imagen-horizontal.pdf');
+            const filename = `Plano_${legend.name}_${legend.customer}.pdf`;
+            pdf.save(filename);
+        }
+
+        // Funcion para formatear texto en negritas
+        function formatBoldText(pdf, fontSize = 10) {
+            pdf.setFont("helvetica", "bold");
+            pdf.setFontSize(fontSize);
+            // return text;
+        }
+        
+        // Funcion para formatear texto en negritas
+        function formatNormalText(pdf, fontSize = 10) {
+            pdf.setFont("helvetica", "normal");
+            pdf.setFontSize(fontSize);
+            // return text;
+        }
+        
+        // Ajusta el texto por lineas
+        function addWrappedText(pdf, text, x, y, maxWidth, maxHeight) {
+            const lines = pdf.splitTextToSize(text, maxWidth);
+            let currentY = y;
+
+            for (const line of lines) {
+                if (currentY + 10 > maxHeight) break; // Detener si excede la altura máxima
+                legend.customer.includes(line) ? formatBoldText(pdf, 12) : formatNormalText(pdf, 10);
+                pdf.text(line, x, currentY);
+                currentY += 5; // Espaciado entre líneas
+            }
+        }
+
+        // Ajustar texto en columnas
+        function addColumnText(pdf, text, startX, startY, columnWidth, maxHeight, numColumns) {
+            const lines = pdf.splitTextToSize(text, columnWidth);
+            let currentX = startX;
+            let currentY = startY;
+
+            for (const line of lines) {
+                if (currentY + 10 > maxHeight) {
+                    // Mover a la siguiente columna
+                    currentX += columnWidth + 5; // Espaciado entre columnas
+                    currentY = startY;
+
+                    if (currentX > startX + columnWidth * numColumns) break; // Detener si excede el número de columnas
+                }
+                legend.customer.includes(line) ? formatBoldText(pdf, 12) : formatNormalText(pdf, 10);
+                pdf.text(line, currentX, currentY);
+                currentY += 5;
+            }
         }
 
         function formatRange(numbers) {
@@ -172,7 +300,7 @@
             if (start == end) {
                 result.push(start);
             } else {
-                result.push(`${start}-${end}`);
+                result.push(`${start} - ${end}`);
             }
 
             // Unir los resultados con coma
@@ -199,8 +327,6 @@
 
             return result;
         }
-
-
 
         // Convertir la vista en un PDF
         document.getElementById('print-button').addEventListener('click', function() {

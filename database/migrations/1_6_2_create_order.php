@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('technical_observations')->nullable();
             $table->string('recommendations', 1000)->nullable();
             $table->string('comments')->nullable();
-            $table->binary('customer_signature')->nullable();
+            $table->longBlob('customer_signature')->nullable();
             $table->string('customer_sig_path')->nullable();
             $table->string('signature_name')->nullable();
             $table->time('start_time');

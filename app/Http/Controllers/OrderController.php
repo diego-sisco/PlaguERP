@@ -180,6 +180,27 @@ class OrderController extends Controller
 		return redirect()->route('order.index');
 	}
 
+	public function storeSignature(Request $request)
+{
+    $request->validate([
+        'image' => 'required|image|mimes:jpeg,png,jpg|max:5120'
+    ]);
+
+    $signature_name = $request->signature_name;
+    $order_id = $request->order_id;
+
+    $order = Order::find($order_id);
+    $order->signature_name = $signature_name;
+
+    $image = $request->file('image');
+    $imageBinary = base64_encode(file_get_contents($image->getRealPath())); // Leer datos binarios
+    $order->customer_signature = $imageBinary;
+
+    $order->save();
+
+    return redirect()->back()->with('success', 'Firma guardada correctamente.');
+}
+
 	public function search(Request $request)
 	{
 		$customer = $request->input('customer');

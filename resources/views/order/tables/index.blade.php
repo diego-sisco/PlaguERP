@@ -85,18 +85,23 @@
                 </td>
                 <td>
                     <a class="btn
-                        btn-info btn-sm"
+                        btn-info btn-sm mb-2"
                         href="{{ route('order.show', ['id' => $order->id, 'section' => 1]) }}">
                         <i class="bi bi-eye-fill"></i> {{ __('buttons.show') }}
                     </a>
                     @can('write_order')
-                        <a class="btn btn-secondary btn-sm" href="{{ route('order.edit', ['id' => $order->id]) }}">
+                        <button class="btn btn-warning btn-sm mb-2" data-bs-toggle="modal"
+                            data-bs-target="#signatureModal" onclick="setSignatureId({{ $order->id }})">
+                            <i class="bi bi-pencil-square"></i> {{ __('buttons.signature') }}
+                        </button>
+                        <a class="btn btn-secondary btn-sm mb-2" href="{{ route('order.edit', ['id' => $order->id]) }}">
                             <i class="bi bi-pencil-square"></i> {{ __('buttons.edit') }}
                         </a>
                     @endcan
+
                     @can('write_order')
                         @if ($order->status->id != 6)
-                            <a href="{{ route('order.destroy', ['id' => $order->id]) }}" class="btn btn-danger btn-sm"
+                            <a href="{{ route('order.destroy', ['id' => $order->id]) }}" class="btn btn-danger btn-sm mb-2"
                                 onclick="return confirm('{{ __('messages.are_you_sure') }}')">
                                 <i class="bi bi-x-lg"></i> {{ __('buttons.cancel') }}
                             </a>
@@ -108,27 +113,4 @@
     </tbody>
 </table>
 
-<script>
-    $(function() {
-        $('#search-date').daterangepicker({
-            opens: 'left',
-            locale: {
-                format: 'DD/MM/YYYY' // Cambiar el formato aquí
-            },
-            ranges: {
-                'Hoy': [moment(), moment()],
-                'Esta semana': [moment().startOf('week'), moment().endOf('week')],
-                'Últimos 7 días': [moment().subtract(6, 'days'), moment()],
-                'Este mes': [moment().startOf('month'), moment().endOf('month')],
-                'Últimos 30 días': [moment().subtract(29, 'days'), moment()],
-                'Este año': [moment().startOf('year'), moment().endOf('year')],
-            },
-            alwaysShowCalendars: true,
-            autoUpdateInput: false,
-        });
-    });
-
-    $('#search-date').on('apply.daterangepicker', function(ev, picker) {
-        $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
-    });
-</script>
+@include('order.modals.signature')

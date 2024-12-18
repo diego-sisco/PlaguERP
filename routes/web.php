@@ -85,7 +85,7 @@ Route::prefix('quality')->name('quality.')->middleware('auth')->group(function (
     Route::get('/customer/{id}/floorplans', [QualityController::class, 'floorplans'])->name('floorplans');
     Route::get('/customer/{id}/zones', [QualityController::class, 'zones'])->name('zones');
     Route::get('/customer/{id}/devices', [QualityController::class, 'devices'])->name('devices');
-
+    Route::post('/customer/{id}/replace/technicians', [QualityController::class, 'replaceTechnicians'])->name('technicians.replace');
     //Route::get('/control', [PagesController::class, 'qualityControl'])->name('control');
     //Route::get('/control/destroy/{customerId}', [PagesController::class, 'qualityControlDestroy'])->name('control.destroy');
     //Route::get('/orders/{status}', [PagesController::class, 'qualityOrders'])->name('orders');
@@ -279,6 +279,8 @@ Route::prefix('orders')
         Route::get('/create', [OrderController::class, 'create'])->name('create');
         Route::post('/store', [OrderController::class, 'store'])->name('store');
         Route::get('/search', [OrderController::class, 'search'])->name('search');
+
+        Route::post('/store/signature', [OrderController::class, 'storeSignature'])->name('signature.store');
         // Route::get('/search')
         Route::get('/show/{id}/{section}', [OrderController::class, 'show'])->name('show');
         Route::get('/edit/{id}', [OrderController::class, 'edit'])->name('edit');
@@ -513,7 +515,8 @@ Route::prefix('ajax')
         Route::post('/quality/search/orders/time', [QualityController::class, 'getOrdersByTime'])->name('quality.search.time');
         Route::post('/quality/search/orders/service', [QualityController::class, 'getOrdersByService'])->name('quality.search.service');
         Route::post('/quality/search/orders/status', [QualityController::class, 'getOrdersByStatus'])->name('quality.search.status');
-
+        Route::post('/quality/search/orders/technician/{id}', [QualityController::class, 'searchOrdersTechnician'])->name('quality.search.date.technician');
+        
 
         Route::get('/contract/service', [ContractController::class, 'getSelectData'])->name('contract.service');
         Route::post('/search/devices/{floorplan_id}', [FloorPlansController::class, 'searchDevices'])->name('search.devices');

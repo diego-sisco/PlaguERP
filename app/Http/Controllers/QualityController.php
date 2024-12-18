@@ -12,6 +12,8 @@ use App\Models\Service;
 use App\Models\User;
 use App\Models\Contract;
 use App\Models\ZoneType;
+use App\Models\OrderTechnician;
+use App\Models\Technician;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
@@ -162,10 +164,18 @@ class QualityController extends Controller
         $size = count($pendings);
         $start = count($pendings) - 20;
         $pendings = array_slice($pendings, $start, 20);
+        $techniciansAll = Technician::with('user')->get();
+
+        $technicians = $techniciansAll->map(function ($techniciansAll) {
+            return [
+                'id' => $techniciansAll->id,
+                'name' => $techniciansAll->user->name, // Aquí accedes al nombre del usuario relacionado
+            ];
+        });
 
         return view(
             'dashboard.quality.show.customer',
-            compact('customer', 'count_devices', 'pendings')
+            compact('customer', 'count_devices', 'pendings', 'technicians')
         );
     }
 
@@ -280,6 +290,96 @@ class QualityController extends Controller
         return response()->json(['orders' => 1]);
     }
     
+    public function searchOrdersTechnician(Request $request, string $id)
+    {
+        $orders = Order::where('customer_id', $id)->where('status_id', 1);
+        $technicianSelected = [];
+        $date = $request->input('date');
+
+        if ($date) {
+			[$startDate, $endDate] = array_map(function ($d) {
+				return Carbon::createFromFormat('d/m/Y', trim($d));
+			}, explode(' - ', $date));
+			$startDate = $startDate->format('Y-m-d');
+			$endDate = $endDate->format('Y-m-d');
+			$orders = $orders->whereBetween('programmed_date', [$startDate, $endDate]);
+            
+		}else
+        {
+            $orders = [];
+            return response()->json(['orders' => $orders, 'technicianSelected' => $technicianSelected]);
+        }
+        $orders = $orders->get();
+
+        foreach($orders as $order)
+        {
+            foreach($order->technicians as $technician)
+            {
+                $id_technician = $technician->id;
+                if (!isset($technicianSelected[$id_technician])) {
+                    $technicianSelected[$id_technician] = $id_technician;
+                }
+            }
+        }
+        $technicianSelected = array_values($technicianSelected);
+        return response()->json(['orders' => $orders, 'technicianSelected' => $technicianSelected]);
+    }
+
+    public function replaceTechnicians(Request $request, string $id)
+    {
+        $customer = Customer::find($id);
+        $technicians = $request->input('technicians');
+        $id_orders = $request->input('id_orders');
+
+        if (is_string($id_orders)) {
+            $id_orders = json_decode($id_orders, true);
+        }
+
+        if (is_string($technicians)) {
+            $technicians = json_decode($technicians, true);
+        }
+        
+        if(!$technicians || !$id_orders) 
+            return redirect()->back();
+
+            // dd("aaa");
+        foreach($id_orders as $id_order)
+        {
+            $order = Order::find($id_order);
+            if (!$order) {
+                continue; // Si no existe la orden, pasa a la siguiente
+            }
+        
+            // Obtener los técnicos relacionados actualmente con la orden
+            $currentTechnicians = OrderTechnician::where('order_id', $id_order)
+            ->pluck('technician_id')
+            ->toArray();
+        
+            // Determinar las relaciones que se deben agregar y eliminar
+            $techniciansToAdd = array_diff($technicians, $currentTechnicians); // Técnicos nuevos
+            $techniciansToRemove = array_diff($currentTechnicians, $technicians); // Técnicos extra
+            
+            // Agregar las nuevas relaciones
+            foreach ($techniciansToAdd as $technicianId) {
+                OrderTechnician::create([
+                    'order_id' => $id_order,
+                    'technician_id' => $technicianId,
+                ]);
+            }
+    
+            // Eliminar las relaciones extra en la tabla intermedia
+            foreach ($techniciansToRemove as $technicianId) {
+                OrderTechnician::where('order_id', $id_order)
+                    ->where('technician_id', $technicianId)
+                    ->delete();
+            }
+    
+        }
+
+        return redirect()->back();
+        
+    }
+
     public function searchOrders(Request $request, string $id) {
 
         $customer = Customer::find($id);
